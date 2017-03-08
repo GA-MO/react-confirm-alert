@@ -1,11 +1,11 @@
-# react-confirm-dialog
+# react-confirm-alert
 ##### react component confirm dialog.
 
 ## Getting started
 
 #### Install with NPM:
 ```
-$ npm install react-confirm-dialog --save
+$ npm install react-confirm-alert --save
 ```
 
 #### Use with function:
