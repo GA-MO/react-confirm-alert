@@ -1,6 +1,6 @@
 # react-confirm-alert
 ##### react component confirm dialog.
-
+[Live demo](https://ga-mo.github.io/react-confirm-alert/demo/)
 ## Getting started
 
 #### Install with NPM:
