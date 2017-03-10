@@ -7,6 +7,7 @@
     "start": "node dev/server.js",
     "clean": "rimraf lib dist",
     "build": "babel src --out-dir lib",
+    "build:prd": "webpack --progress --hide-modules --config webpack.config.production.js",
     "build:umd": "webpack src/index.js dist/react-confirm-alert.js && cross-env NODE_ENV=production webpack src/index.js dist/react-confirm-alert.min.js",
     "lint": "eslint src test examples",
     "test": "cross-env cross-env NODE_ENV=test mocha",

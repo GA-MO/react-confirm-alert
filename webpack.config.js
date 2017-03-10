@@ -29,7 +29,7 @@ module.exports = {
     }]
   },
   output: {
-    library: 'react-confirm-dialog',
+    library: 'react-confirm-alert',
     libraryTarget: 'umd'
   },
   plugins: plugins,

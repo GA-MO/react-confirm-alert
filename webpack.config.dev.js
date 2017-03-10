@@ -19,7 +19,7 @@ module.exports = {
   ],
   resolve: {
     alias: {
-      'react-confirm-dialog': path.join(__dirname, 'src')
+      'react-confirm-alert': path.join(__dirname, 'src')
     },
     extensions: ['', '.js']
   },
