@@ -21,10 +21,10 @@
   -ms-align-items: center;
   align-items: center;
   opacity: 0;
-  -webkit-animation: zoomIn 0.5s 0.2s forwards;
-  -moz-animation: zoomIn 0.5s 0.2s forwards;
-  -o-animation: zoomIn 0.5s 0.2s forwards;
-  animation: zoomIn 0.5s 0.2s forwards;
+  -webkit-animation: react-confirm-alert-fadeIn 0.5s 0.2s forwards;
+  -moz-animation: react-confirm-alert-fadeIn 0.5s 0.2s forwards;
+  -o-animation: react-confirm-alert-fadeIn 0.5s 0.2s forwards;
+  animation: react-confirm-alert-fadeIn 0.5s 0.2s forwards;
 }
 
 .react-confirm-alert {
@@ -69,7 +69,7 @@
   font-size: 12px;
 }
 
-@-webkit-keyframes zoomIn {
+@-webkit-keyframes react-confirm-alert-fadeIn {
   from {
     opacity: 0;
   }
@@ -78,7 +78,7 @@
   }
 }
 
-@-moz-keyframes zoomIn {
+@-moz-keyframes react-confirm-alert-fadeIn {
   from {
     opacity: 0;
   }
@@ -87,7 +87,7 @@
   }
 }
 
-@-o-keyframes zoomIn {
+@-o-keyframes react-confirm-alert-fadeIn {
   from {
     opacity: 0;
   }
@@ -96,7 +96,7 @@
   }
 }
 
-@keyframes zoomIn {
+@keyframes react-confirm-alert-fadeIn {
   from {
     opacity: 0;
   }
