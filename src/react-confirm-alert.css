@@ -21,6 +21,9 @@
   -ms-align-items: center;
   align-items: center;
   opacity: 0;
+  -webkit-animation: zoomIn 0.5s 0.2s forwards;
+  -moz-animation: zoomIn 0.5s 0.2s forwards;
+  -o-animation: zoomIn 0.5s 0.2s forwards;
   animation: zoomIn 0.5s 0.2s forwards;
 }
 
