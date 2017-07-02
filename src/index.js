@@ -14,12 +14,13 @@ export default class ReactConfirmAlert extends Component {
   };
 
   static defaultProps = {
-    title: 'Confirm',
-    message: 'Are you sure to do this.',
-    confirmLabel: 'Confirm',
-    cancelLabel: 'Cancel',
-    onConfirm: () => {},
-    onCancel: () => {},
+    title: false,
+    message: false,
+    childrenElement: () => null,
+    confirmLabel: false,
+    cancelLabel: false,
+    onConfirm: () => null,
+    onCancel: () => null,
   };
 
   onClickConfirm = () => {
@@ -48,18 +49,18 @@ export default class ReactConfirmAlert extends Component {
       message,
       confirmLabel,
       cancelLabel,
-      children,
+      childrenElement,
     } = this.props;
 
     return (
       <div className="react-confirm-alert-overlay">
         <div className="react-confirm-alert">
-          <h1>{title}</h1>
-          <h3>{message}</h3>
-          {children}
+          {title && <h1>{title}</h1>}
+          {message && <h3>{message}</h3>}
+          {childrenElement()}
           <div className="react-confirm-alert-button-group">
-            <button onClick={this.onClickCancel}>{cancelLabel}</button>
-            <button onClick={this.onClickConfirm}>{confirmLabel}</button>
+            {cancelLabel && <button onClick={this.onClickCancel}>{cancelLabel}</button>}
+            {confirmLabel && <button onClick={this.onClickConfirm}>{confirmLabel}</button>}
           </div>
         </div>
       </div>

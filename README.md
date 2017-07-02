@@ -21,6 +21,7 @@ class App extends React.Component {
     confirmAlert({
       title: 'Confirm to submit',                        // Title dialog
       message: 'Are you sure to do this.',               // Message dialog
+      childrenElement: () => <div>Custom UI</div>,       // Custom UI or Component
       confirmLabel: 'Confirm',                           // Text button confirm
       cancelLabel: 'Cancel',                             // Text button cancel
       onConfirm: () => alert('Action after Confirm'),    // Action after Confirm
