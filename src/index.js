@@ -80,6 +80,7 @@ function createSVG() {
 
   const svgElem = document.createElementNS(svgNS, 'svg');
   svgElem.setAttribute('id', 'react-confirm-alert-firm-svg');
+  svgElem.setAttribute('class', 'react-confirm-alert-svg');
   svgElem.appendChild(filter);
 
   document.body.appendChild(svgElem);
