@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { render } from 'react-dom';
+import { render, unmountComponentAtNode } from 'react-dom';
 
 export default class ReactConfirmAlert extends Component {
-
   static propTypes = {
     title: PropTypes.string,
     message: PropTypes.string,
@@ -11,7 +10,7 @@ export default class ReactConfirmAlert extends Component {
     cancelLabel: PropTypes.string,
     onConfirm: PropTypes.func,
     onCancel: PropTypes.func,
-    children: PropTypes.node,
+    children: PropTypes.node
   };
 
   static defaultProps = {
@@ -21,37 +20,26 @@ export default class ReactConfirmAlert extends Component {
     confirmLabel: false,
     cancelLabel: false,
     onConfirm: () => null,
-    onCancel: () => null,
+    onCancel: () => null
   };
 
   onClickConfirm = () => {
     this.props.onConfirm();
-    this.close()
+    this.close();
   };
 
   onClickCancel = () => {
     this.props.onCancel();
-    this.close()
+    this.close();
   };
 
   close = () => {
-    const target = document.getElementById('react-confirm-alert');
-    const svg = document.getElementById('react-confirm-alert-firm-svg');
-    target.parentNode.removeChild(target);
-    svg.parentNode.removeChild(svg);
-    const root = document.body.children[0];
-    root.classList.remove('react-confirm-alert-blur');
-  }
+    removeElementReconfirm();
+    removeSVGBlurReconfirm();
+  };
 
   render() {
-
-    const {
-      title,
-      message,
-      confirmLabel,
-      cancelLabel,
-      childrenElement,
-    } = this.props;
+    const { title, message, confirmLabel, cancelLabel, childrenElement } = this.props;
 
     return (
       <div className="react-confirm-alert-overlay">
@@ -69,7 +57,7 @@ export default class ReactConfirmAlert extends Component {
   }
 }
 
-function createSVG() {
+function createSVGBlurReconfirm() {
   const svgNS = 'http://www.w3.org/2000/svg';
   const feGaussianBlur = document.createElementNS(svgNS, 'feGaussianBlur');
   feGaussianBlur.setAttribute('stdDeviation', '0.7');
@@ -86,6 +74,12 @@ function createSVG() {
   document.body.appendChild(svgElem);
 }
 
+function removeSVGBlurReconfirm() {
+  const svg = document.getElementById('react-confirm-alert-firm-svg');
+  svg.parentNode.removeChild(svg);
+  document.body.children[0].classList.remove('react-confirm-alert-blur');
+}
+
 function createElementReconfirm(properties) {
   document.body.children[0].classList.add('react-confirm-alert-blur');
   const divTarget = document.createElement('div');
@@ -94,8 +88,13 @@ function createElementReconfirm(properties) {
   render(<ReactConfirmAlert {...properties} />, divTarget);
 }
 
-export function confirmAlert(properties) {
-  createSVG()
-  createElementReconfirm(properties)
+function removeElementReconfirm() {
+  const target = document.getElementById('react-confirm-alert');
+  unmountComponentAtNode(target);
+  target.parentNode.removeChild(target);
 }
 
+export function confirmAlert(properties) {
+  createSVGBlurReconfirm();
+  createElementReconfirm(properties);
+}

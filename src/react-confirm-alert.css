@@ -73,6 +73,7 @@
   margin-right: 10px;
   border-radius: 5px;
   font-size: 12px;
+  cursor: pointer;
 }
 
 @-webkit-keyframes react-confirm-alert-fadeIn {
