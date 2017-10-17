@@ -86,7 +86,7 @@ function createSVG() {
   document.body.appendChild(svgElem);
 }
 
-function createElemetReconfirm(properties) {
+function createElementReconfirm(properties) {
   document.body.children[0].classList.add('react-confirm-alert-blur');
   const divTarget = document.createElement('div');
   divTarget.id = 'react-confirm-alert';
@@ -96,6 +96,6 @@ function createElemetReconfirm(properties) {
 
 export function confirmAlert(properties) {
   createSVG()
-  createElemetReconfirm(properties)
+  createElementReconfirm(properties)
 }
 

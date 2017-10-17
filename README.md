@@ -12,7 +12,7 @@ $ npm install react-confirm-alert --save
 
 #### Use with function:
 ```js
-import ReactConfirmAlert, { confirmAlert } from 'react-confirm-alert'; // Import
+import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css' // Import css
 
 class App extends React.Component {
