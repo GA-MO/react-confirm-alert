@@ -7,7 +7,6 @@ export default class ReactConfirmAlert extends Component {
     title: PropTypes.string,
     message: PropTypes.string,
     buttons: PropTypes.array.isRequired,
-    children: PropTypes.node,
     childrenElement: PropTypes.func,
     customUI: PropTypes.func,
     willUnmount: PropTypes.func
@@ -70,10 +69,10 @@ export default class ReactConfirmAlert extends Component {
                   <button
                     key={i}
                     onClick={() => this.handleClickButton(button)}
-                    >
+                  >
                     {button.label}
                   </button>
-                  ))}
+                ))}
               </div>
             </div>}
         </div>

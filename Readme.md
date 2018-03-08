@@ -1,7 +1,6 @@
 # react-confirm-alert
 react component confirm dialog. [Live demo](https://ga-mo.github.io/react-confirm-alert/demo/)
 
-[![Build Status](https://circleci.com/gh/GA-MO/react-confirm-alert.png)](https://circleci.com/gh/GA-MO/react-confirm-alert)
 [![npm version](https://badge.fury.io/js/react-confirm-alert.png)](https://badge.fury.io/js/react-confirm-alert)
 
 Document for v.1.x.x [see](https://github.com/GA-MO/react-confirm-alert/blob/master/Document-v1.md)
