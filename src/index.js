@@ -1,100 +1,125 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { render, unmountComponentAtNode } from 'react-dom';
+import React, { Component } from 'react'
+import PropTypes from 'prop-types'
+import { render, unmountComponentAtNode } from 'react-dom'
 
 export default class ReactConfirmAlert extends Component {
   static propTypes = {
     title: PropTypes.string,
     message: PropTypes.string,
-    confirmLabel: PropTypes.string,
-    cancelLabel: PropTypes.string,
-    onConfirm: PropTypes.func,
-    onCancel: PropTypes.func,
-    children: PropTypes.node
-  };
+    buttons: PropTypes.array.isRequired,
+    children: PropTypes.node,
+    childrenElement: PropTypes.func,
+    customUI: PropTypes.func,
+    willUnmount: PropTypes.func
+  }
 
   static defaultProps = {
-    title: false,
-    message: false,
+    buttons: [
+      {
+        label: 'Cancel',
+        onClick: () => null
+      },
+      {
+        label: 'Confirm',
+        onClick: () => null
+      }
+    ],
     childrenElement: () => null,
-    confirmLabel: false,
-    cancelLabel: false,
-    onConfirm: () => null,
-    onCancel: () => null
-  };
+    willUnmount: () => null
+  }
 
-  onClickConfirm = () => {
-    this.props.onConfirm();
-    this.close();
-  };
-
-  onClickCancel = () => {
-    this.props.onCancel();
-    this.close();
-  };
+  handleClickButton = button => {
+    if (button.onClick) button.onClick()
+    this.close()
+  }
 
   close = () => {
-    removeElementReconfirm();
-    removeSVGBlurReconfirm();
-  };
+    removeElementReconfirm()
+    removeSVGBlurReconfirm()
+  }
 
-  render() {
-    const { title, message, confirmLabel, cancelLabel, childrenElement } = this.props;
+  componentWillUnmount = () => {
+    this.props.willUnmount()
+  }
+
+  renderCustomUI = () => {
+    const { title, message, customUI } = this.props
+    const dataCustomUI = {
+      title,
+      message,
+      onClose: this.close
+    }
+
+    return customUI(dataCustomUI)
+  }
+
+  render () {
+    const { title, message, buttons, childrenElement, customUI } = this.props
 
     return (
-      <div className="react-confirm-alert-overlay">
-        <div className="react-confirm-alert">
-          {title && <h1>{title}</h1>}
-          {message && <h3>{message}</h3>}
-          {childrenElement()}
-          <div className="react-confirm-alert-button-group">
-            {cancelLabel && <button onClick={this.onClickCancel}>{cancelLabel}</button>}
-            {confirmLabel && <button onClick={this.onClickConfirm}>{confirmLabel}</button>}
-          </div>
+      <div className='react-confirm-alert-overlay'>
+        <div className='react-confirm-alert'>
+          {customUI
+            ? this.renderCustomUI()
+            : <div className='react-confirm-alert-body'>
+              {title && <h1>{title}</h1>}
+              {message}
+              {childrenElement()}
+              <div className='react-confirm-alert-button-group'>
+                {buttons.map((button, i) => (
+                  <button
+                    key={i}
+                    onClick={() => this.handleClickButton(button)}
+                    >
+                    {button.label}
+                  </button>
+                  ))}
+              </div>
+            </div>}
         </div>
       </div>
-    );
+    )
   }
 }
 
-function createSVGBlurReconfirm() {
-  const svgNS = 'http://www.w3.org/2000/svg';
-  const feGaussianBlur = document.createElementNS(svgNS, 'feGaussianBlur');
-  feGaussianBlur.setAttribute('stdDeviation', '0.7');
+function createSVGBlurReconfirm () {
+  const svgNS = 'http://www.w3.org/2000/svg'
+  const feGaussianBlur = document.createElementNS(svgNS, 'feGaussianBlur')
+  feGaussianBlur.setAttribute('stdDeviation', '0.7')
 
-  const filter = document.createElementNS(svgNS, 'filter');
-  filter.setAttribute('id', 'gaussian-blur');
-  filter.appendChild(feGaussianBlur);
+  const filter = document.createElementNS(svgNS, 'filter')
+  filter.setAttribute('id', 'gaussian-blur')
+  filter.appendChild(feGaussianBlur)
 
-  const svgElem = document.createElementNS(svgNS, 'svg');
-  svgElem.setAttribute('id', 'react-confirm-alert-firm-svg');
-  svgElem.setAttribute('class', 'react-confirm-alert-svg');
-  svgElem.appendChild(filter);
+  const svgElem = document.createElementNS(svgNS, 'svg')
+  svgElem.setAttribute('id', 'react-confirm-alert-firm-svg')
+  svgElem.setAttribute('class', 'react-confirm-alert-svg')
+  svgElem.appendChild(filter)
 
-  document.body.appendChild(svgElem);
+  document.body.appendChild(svgElem)
 }
 
-function removeSVGBlurReconfirm() {
-  const svg = document.getElementById('react-confirm-alert-firm-svg');
-  svg.parentNode.removeChild(svg);
-  document.body.children[0].classList.remove('react-confirm-alert-blur');
+function removeSVGBlurReconfirm () {
+  const svg = document.getElementById('react-confirm-alert-firm-svg')
+  svg.parentNode.removeChild(svg)
+  document.body.children[0].classList.remove('react-confirm-alert-blur')
 }
 
-function createElementReconfirm(properties) {
-  document.body.children[0].classList.add('react-confirm-alert-blur');
-  const divTarget = document.createElement('div');
-  divTarget.id = 'react-confirm-alert';
-  document.body.appendChild(divTarget);
-  render(<ReactConfirmAlert {...properties} />, divTarget);
+function createElementReconfirm (properties) {
+  document.body.children[0].classList.add('react-confirm-alert-blur')
+  const divTarget = document.createElement('div')
+  divTarget.id = 'react-confirm-alert'
+  document.body.appendChild(divTarget)
+  render(<ReactConfirmAlert {...properties} />, divTarget)
 }
 
-function removeElementReconfirm() {
-  const target = document.getElementById('react-confirm-alert');
-  unmountComponentAtNode(target);
-  target.parentNode.removeChild(target);
+function removeElementReconfirm () {
+  const target = document.getElementById('react-confirm-alert')
+  unmountComponentAtNode(target)
+  target.parentNode.removeChild(target)
 }
 
-export function confirmAlert(properties) {
-  createSVGBlurReconfirm();
-  createElementReconfirm(properties);
+export function confirmAlert (properties) {
+  createSVGBlurReconfirm()
+  createElementReconfirm(properties)
 }

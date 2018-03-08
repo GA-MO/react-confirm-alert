@@ -1,43 +1,59 @@
+var config = require('./configs')
 var path = require('path')
 var webpack = require('webpack')
 
 module.exports = {
-  // devtool: 'source-map',
   entry: './dev/index.js',
   output: {
     path: path.join(__dirname, 'demo'),
-    filename: 'bundle.js',
+    filename: 'bundle.js'
   },
   plugins: [
     new webpack.optimize.OccurrenceOrderPlugin(),
     new webpack.HotModuleReplacementPlugin(),
     new webpack.DefinePlugin({
       'process.env': {
-        NODE_ENV: JSON.stringify('production'),
-      },
+        NODE_ENV: JSON.stringify('production')
+      }
     }),
     new webpack.optimize.DedupePlugin(),
     new webpack.ProvidePlugin({
       React: 'react',
-      _: 'lodash',
+      _: 'lodash'
     }),
     new webpack.optimize.UglifyJsPlugin({
       compressor: {
-        warnings: false,
+        warnings: false
       },
-      minimize: true,
+      minimize: true
     }),
-    new webpack.NoErrorsPlugin(),
+    new webpack.NoErrorsPlugin()
   ],
   module: {
     loaders: [
-      { test: /\.jsx?$/, loaders: ['babel-loader'], exclude: /node_modules/, include: __dirname },
-    ],
+      {
+        test: /\.jsx?$/,
+        loaders: ['babel-loader'],
+        exclude: /node_modules/,
+        include: __dirname
+      },
+      {
+        test: /\.css$/,
+        use: [
+          {
+            loader: 'style-loader'
+          },
+          {
+            loader: 'css-loader'
+          }
+        ]
+      },
+    ]
   },
   resolve: {
     alias: {
-      'react-confirm-alert': path.join(__dirname, 'src')
+      [config.name]: path.join(__dirname, 'src')
     },
-    extensions: ['', '.js', '.jsx', '.json'],
-  },
+    extensions: ['.js', '.jsx', '.json']
+  }
 }

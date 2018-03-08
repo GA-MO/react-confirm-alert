@@ -1,6 +1,6 @@
 .DS_Store
-*.log
-src/index.js
-test
-dev
-coverage
+/node_modules
+/lib
+yarn.lock
+yarn-error.log
+debug.log

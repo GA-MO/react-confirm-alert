@@ -1,39 +1,42 @@
-'use strict';
-
-var webpack = require('webpack');
-
-var plugins = [
-  new webpack.optimize.OccurenceOrderPlugin(),
-  new webpack.DefinePlugin({
-    'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)
-  })
-];
-
-if (process.env.NODE_ENV === 'production') {
-  plugins.push(
-    new webpack.optimize.UglifyJsPlugin({
-      compressor: {
-        screw_ie8: true,
-        warnings: false
-      }
-    })
-  );
-}
+const config = require('./configs')
+const path = require('path')
 
 module.exports = {
-  module: {
-    loaders: [{
-      test: /\.js$/,
-      loaders: ['babel-loader'],
-      exclude: /node_modules/
-    }]
-  },
+  devtool: 'eval',
+  entry: ['babel-polyfill', './dev/index.js'],
   output: {
-    library: 'react-confirm-alert',
-    libraryTarget: 'umd'
+    publicPath: '',
+    filename: 'bundle.js'
   },
-  plugins: plugins,
+  module: {
+    rules: [
+      {
+        test: /\.jsx?$/,
+        loaders: ['react-hot-loader', 'babel-loader'],
+        exclude: /node_modules/
+      },
+      {
+        test: /\.css$/,
+        use: [
+          {
+            loader: 'style-loader'
+          },
+          {
+            loader: 'css-loader'
+          }
+        ]
+      },
+      {
+        test: /\.(woff2?|ttf|eot|svg|jpg|png)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+        loader: 'url-loader?limit=10000'
+      }
+    ]
+  },
   resolve: {
-    extensions: ['', '.js']
+    alias: {
+      [config.name]: path.join(__dirname, 'src')
+    },
+    modules: ['node_modules', 'src', 'dev'],
+    extensions: ['.js', '.jsx']
   }
-};
+}

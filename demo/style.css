@@ -938,7 +938,15 @@ section {
   border-radius: 50px;
   font-size: 14px;
   width: 100%;
-  max-width: 150px; }
+  max-width: 250px;
+  margin: 10px;
+}
+
+.button.outline {
+  background: none;
+  color: #0f4042;
+  border: 1px solid #0f4042;
+}
 
 .box-hover, .box-hover-2 {
   display: inline-block;
@@ -983,3 +991,27 @@ section {
   height: 100px;
   background: #0f4042;
   margin: 60px 20px; }
+
+.custom-ui {
+  text-align: center;
+  width: 500px;
+  padding: 40px;
+  background: #28bae6;
+  box-shadow: 0 20px 75px rgba(0, 0, 0, 0.23);
+  color: #fff;
+}
+
+.custom-ui > h1 {
+  margin-top: 0;
+}
+
+.custom-ui > button {
+  width: 160px;
+  padding: 10px;
+  border: 1px solid #fff;
+  margin: 10px;
+  cursor: pointer;
+  background: none;
+  color: #fff;
+  font-size: 14px;
+}
