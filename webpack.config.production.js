@@ -16,7 +16,6 @@ module.exports = {
         NODE_ENV: JSON.stringify('production')
       }
     }),
-    new webpack.optimize.DedupePlugin(),
     new webpack.ProvidePlugin({
       React: 'react',
       _: 'lodash'
@@ -27,7 +26,7 @@ module.exports = {
       },
       minimize: true
     }),
-    new webpack.NoErrorsPlugin()
+    new webpack.NoEmitOnErrorsPlugin()
   ],
   module: {
     loaders: [
