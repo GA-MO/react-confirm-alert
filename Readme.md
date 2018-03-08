@@ -1,7 +1,7 @@
 # react-confirm-alert
 react component confirm dialog. [Live demo](https://ga-mo.github.io/react-confirm-alert/demo/)
 
-[![npm version](https://badge.fury.io/js/react-confirm-alert.png)](https://badge.fury.io/js/react-confirm-alert)
+[![npm version](https://badge.fury.io/js/react-confirm-alert.svg)](https://badge.fury.io/js/react-confirm-alert)
 
 Document for v.1.x.x [see](https://github.com/GA-MO/react-confirm-alert/blob/master/Document-v1.md)
 
@@ -28,8 +28,8 @@ $ npm install react-confirm-alert --save
         onClick: () => alert('Click No')
       }
     ],
-    childrenElement: () => <div>Custom UI</div>,
-    customUI: ({ title, message, onClose }) => {},
+    childrenElement: () => <div />,
+    customUI: ({ title, message, onClose }) => <div>Custom UI</div>,
     willUnmount: () => {}
   }
 
