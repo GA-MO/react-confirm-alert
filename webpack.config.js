@@ -3,7 +3,11 @@ const path = require('path')
 
 module.exports = {
   devtool: 'eval',
-  entry: ['babel-polyfill', './dev/index.js'],
+  entry: [
+    'babel-polyfill',
+    'react-hot-loader/patch',
+    './dev/index.js'
+  ],
   output: {
     publicPath: '',
     filename: 'bundle.js'
@@ -12,7 +16,7 @@ module.exports = {
     rules: [
       {
         test: /\.jsx?$/,
-        loaders: ['react-hot-loader', 'babel-loader'],
+        loaders: [ 'babel-loader' ],
         exclude: /node_modules/
       },
       {
@@ -36,7 +40,7 @@ module.exports = {
     alias: {
       [config.name]: path.join(__dirname, 'src')
     },
-    modules: ['node_modules', 'src', 'dev'],
-    extensions: ['.js', '.jsx']
+    modules: [ 'node_modules', 'src', 'dev' ],
+    extensions: [ '.js', '.jsx' ]
   }
 }
