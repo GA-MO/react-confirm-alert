@@ -1,6 +1,6 @@
-import React, { Component } from 'react'
+import React from 'react'
 import ReactDOM from 'react-dom'
-import ReactConfirmAlert, { confirmAlert } from 'react-confirm-alert'
+import { confirmAlert } from 'react-confirm-alert'
 import '../src/react-confirm-alert.css'
 
 class App extends React.Component {
