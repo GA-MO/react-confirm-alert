@@ -3,11 +3,7 @@ const path = require('path')
 
 module.exports = {
   devtool: 'eval',
-  entry: [
-    'babel-polyfill',
-    'react-hot-loader/patch',
-    './dev/index.js'
-  ],
+  entry: [ 'babel-polyfill', 'react-hot-loader/patch', './dev/index.js' ],
   output: {
     publicPath: '',
     filename: 'bundle.js'
