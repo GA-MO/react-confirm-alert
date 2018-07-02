@@ -1,16 +1,16 @@
 {
   "name": "react-confirm-alert",
-  "version": "2.0.4",
+  "version": "2.0.5",
   "description": "react component confirm dialog.",
   "main": "lib/index.js",
   "scripts": {
-    "dev": "webpack-dev-server --hot --inline",
+    "dev": "cross-env NODE_ENV=development webpack-dev-server --hot --inline",
     "test": "npm run lint && mocha ./test/**/*.test.js --compilers js:babel-register",
     "test:watch": "mocha ./test/**/*.test.js --compilers js:babel-register --watch",
     "lint": "eslint ./src",
     "clean": "rimraf lib",
-    "build": "npm run clean && babel src --out-dir lib && npm run build:demo",
-    "build:demo": "webpack --config webpack.config.production.js",
+    "build": "npm run clean && cross-env NODE_ENV=production babel src --out-dir lib && npm run build:demo",
+    "build:demo": "cross-env NODE_ENV=production webpack --config webpack.config.production.js",
     "prepublish": "npm run build"
   },
   "repository": {
@@ -49,6 +49,7 @@
     "babel-preset-react": "^6.24.1",
     "babel-preset-stage-0": "^6.24.1",
     "chai": "^4.1.2",
+    "cross-env": "^5.2.0",
     "css-loader": "^0.28.7",
     "eslint": "^4.5.0",
     "eslint-config-standard": "^10.2.1",
