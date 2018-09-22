@@ -33,11 +33,23 @@ export default class ReactConfirmAlert extends Component {
   }
 
   close = () => {
+    removeBodyClass()
     removeElementReconfirm()
     removeSVGBlurReconfirm()
   }
 
+  keyboardClose = event => {
+    if (event.keyCode === 27) {
+      this.close()
+    }
+  }
+
+  componentDidMount = () => {
+    document.addEventListener('keydown', this.keyboardClose, false)
+  }
+
   componentWillUnmount = () => {
+    document.removeEventListener('keydown', this.keyboardClose, false)
     this.props.willUnmount()
   }
 
@@ -118,7 +130,16 @@ function removeElementReconfirm () {
   target.parentNode.removeChild(target)
 }
 
+function addBodyClass () {
+  document.body.classList.add('react-confirm-alert-body-element')
+}
+
+function removeBodyClass () {
+  document.body.classList.remove('react-confirm-alert-body-element')
+}
+
 export function confirmAlert (properties) {
+  addBodyClass()
   createSVGBlurReconfirm()
   createElementReconfirm(properties)
 }
