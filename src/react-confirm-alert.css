@@ -1,3 +1,7 @@
+body.react-confirm-alert-body-element {
+  overflow: hidden;
+}
+
 .react-confirm-alert-blur {
   filter: url(#gaussian-blur);
   filter: blur(2px);
@@ -27,8 +31,6 @@
   animation: react-confirm-alert-fadeIn 0.5s 0.2s forwards;
 }
 
-.react-confirm-alert {}
-
 .react-confirm-alert-body {
   font-family: Arial, Helvetica, sans-serif;
   width: 400px;
@@ -40,7 +42,7 @@
   color: #666;
 }
 
-.react-confirm-alert-svg{
+.react-confirm-alert-svg {
   position: absolute;
   top: 0;
   left: 0;
