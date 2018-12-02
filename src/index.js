@@ -138,6 +138,10 @@ function removeBodyClass () {
   document.body.classList.remove('react-confirm-alert-body-element')
 }
 
+export function updateElementReconfirm (properties) {
+  render(<ReactConfirmAlert {...properties} />, document.getElementById('react-confirm-alert'))
+}
+
 export function confirmAlert (properties) {
   addBodyClass()
   createSVGBlurReconfirm()
