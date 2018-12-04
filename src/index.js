@@ -94,6 +94,9 @@ export default class ReactConfirmAlert extends Component {
 }
 
 function createSVGBlurReconfirm () {
+  // If has svg ignore to create the svg
+  const svg = document.getElementById('react-confirm-alert-firm-svg')
+  if (svg) return
   const svgNS = 'http://www.w3.org/2000/svg'
   const feGaussianBlur = document.createElementNS(svgNS, 'feGaussianBlur')
   feGaussianBlur.setAttribute('stdDeviation', '0.7')
@@ -117,11 +120,18 @@ function removeSVGBlurReconfirm () {
 }
 
 function createElementReconfirm (properties) {
-  document.body.children[0].classList.add('react-confirm-alert-blur')
-  const divTarget = document.createElement('div')
-  divTarget.id = 'react-confirm-alert'
-  document.body.appendChild(divTarget)
-  render(<ReactConfirmAlert {...properties} />, divTarget)
+  let divTarget = document.getElementById('react-confirm-alert')
+  if (divTarget) {
+    // Rerender - the mounted ReactConfirmAlert
+    render(<ReactConfirmAlert {...properties} />, divTarget)
+  } else {
+    // Mount the ReactConfirmAlert component
+    document.body.children[0].classList.add('react-confirm-alert-blur')
+    divTarget = document.createElement('div')
+    divTarget.id = 'react-confirm-alert'
+    document.body.appendChild(divTarget)
+    render(<ReactConfirmAlert {...properties} />, divTarget)
+  }
 }
 
 function removeElementReconfirm () {
