@@ -127,7 +127,7 @@ function createElementReconfirm (properties) {
   } else {
     // Mount the ReactConfirmAlert component
     document.body.children[0].classList.add('react-confirm-alert-blur')
-    const divTarget = document.createElement('div')
+    divTarget = document.createElement('div')
     divTarget.id = 'react-confirm-alert'
     document.body.appendChild(divTarget)
     render(<ReactConfirmAlert {...properties} />, divTarget)
