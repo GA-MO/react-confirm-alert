@@ -32,6 +32,10 @@ export default class ReactConfirmAlert extends Component {
     this.close()
   }
 
+  handleClickOverlay = (e) => {
+    if (e.target === this.overlay) this.close()
+  }
+
   close = () => {
     removeBodyClass()
     removeElementReconfirm()
@@ -68,7 +72,11 @@ export default class ReactConfirmAlert extends Component {
     const { title, message, buttons, childrenElement, customUI } = this.props
 
     return (
-      <div className='react-confirm-alert-overlay'>
+      <div
+        className='react-confirm-alert-overlay'
+        ref={dom => (this.overlay = dom)}
+        onClick={this.handleClickOverlay}
+      >
         <div className='react-confirm-alert'>
           {customUI
             ? this.renderCustomUI()
