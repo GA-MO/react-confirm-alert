@@ -34,9 +34,11 @@
     "url": "https://github.com/GA-MO/react-confirm-alert/issues"
   },
   "homepage": "https://github.com/GA-MO/react-confirm-alert",
+  "typings": "./index.d.ts",
   "files": [
     "lib",
-    "src/react-confirm-alert.css"
+    "src/react-confirm-alert.css",
+    "index.d.ts"
   ],
   "devDependencies": {
     "babel-cli": "^6.26.0",
