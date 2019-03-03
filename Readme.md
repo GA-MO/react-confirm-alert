@@ -28,8 +28,10 @@ $ npm install react-confirm-alert --save
       }
     ],
     childrenElement: () => <div />,
-    customUI: ({ title, message, onClose }) => <div>Custom UI</div>,
-    willUnmount: () => {}
+    customUI: ({ onClose }) => <div>Custom UI</div>,
+    willUnmount: () => {},
+    onClickOutside: () => {},
+    onKeypressEscape: () => {}
   }
 
   confirmAlert(options)

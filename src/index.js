@@ -9,7 +9,9 @@ export default class ReactConfirmAlert extends Component {
     buttons: PropTypes.array.isRequired,
     childrenElement: PropTypes.func,
     customUI: PropTypes.func,
-    willUnmount: PropTypes.func
+    willUnmount: PropTypes.func,
+    onClickOutside: PropTypes.func,
+    onKeypressEscape: PropTypes.func
   }
 
   static defaultProps = {
@@ -24,7 +26,9 @@ export default class ReactConfirmAlert extends Component {
       }
     ],
     childrenElement: () => null,
-    willUnmount: () => null
+    willUnmount: () => null,
+    onClickOutside: () => null,
+    onKeypressEscape: () => null
   }
 
   handleClickButton = button => {
@@ -33,7 +37,11 @@ export default class ReactConfirmAlert extends Component {
   }
 
   handleClickOverlay = (e) => {
-    if (e.target === this.overlay) this.close()
+    const { onClickOutside } = this.props
+    if (e.target === this.overlay) {
+      onClickOutside()
+      this.close()
+    }
   }
 
   close = () => {
@@ -43,7 +51,9 @@ export default class ReactConfirmAlert extends Component {
   }
 
   keyboardClose = event => {
+    const { onKeypressEscape } = this.props
     if (event.keyCode === 27) {
+      onKeypressEscape(event)
       this.close()
     }
   }
@@ -107,7 +117,7 @@ function createSVGBlurReconfirm () {
   if (svg) return
   const svgNS = 'http://www.w3.org/2000/svg'
   const feGaussianBlur = document.createElementNS(svgNS, 'feGaussianBlur')
-  feGaussianBlur.setAttribute('stdDeviation', '0.7')
+  feGaussianBlur.setAttribute('stdDeviation', '0.3')
 
   const filter = document.createElementNS(svgNS, 'filter')
   filter.setAttribute('id', 'gaussian-blur')

@@ -21,7 +21,7 @@ class App extends React.Component {
     })
   }
 
-  submitCustomUI = () => {
+  handleClickCustomUI = () => {
     confirmAlert({
       customUI: ({ onClose }) => {
         return (
@@ -50,7 +50,7 @@ class App extends React.Component {
             <a
               href='javascript:;'
               className='button outline'
-              onClick={this.submitCustomUI}
+              onClick={this.handleClickCustomUI}
             >
               Show confirm Custom UI
             </a>
