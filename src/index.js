@@ -9,6 +9,8 @@ export default class ReactConfirmAlert extends Component {
     buttons: PropTypes.array.isRequired,
     childrenElement: PropTypes.func,
     customUI: PropTypes.func,
+    closeOnClickOutside: PropTypes.bool,
+    closeOnEscape: PropTypes.bool,
     willUnmount: PropTypes.func,
     onClickOutside: PropTypes.func,
     onKeypressEscape: PropTypes.func
@@ -26,6 +28,8 @@ export default class ReactConfirmAlert extends Component {
       }
     ],
     childrenElement: () => null,
+    closeOnClickOutside: true,
+    closeOnEscape: true,
     willUnmount: () => null,
     onClickOutside: () => null,
     onKeypressEscape: () => null
@@ -36,9 +40,11 @@ export default class ReactConfirmAlert extends Component {
     this.close()
   }
 
-  handleClickOverlay = (e) => {
-    const { onClickOutside } = this.props
-    if (e.target === this.overlay) {
+  handleClickOverlay = e => {
+    const { closeOnClickOutside, onClickOutside } = this.props
+    const isClickOutside = e.target === this.overlay
+
+    if (closeOnClickOutside && isClickOutside) {
       onClickOutside()
       this.close()
     }
@@ -51,8 +57,10 @@ export default class ReactConfirmAlert extends Component {
   }
 
   keyboardClose = event => {
-    const { onKeypressEscape } = this.props
-    if (event.keyCode === 27) {
+    const { closeOnEscape, onKeypressEscape } = this.props
+    const isKeyCodeEscape = event.keyCode === 27
+
+    if (closeOnEscape && isKeyCodeEscape) {
       onKeypressEscape(event)
       this.close()
     }
@@ -88,23 +96,22 @@ export default class ReactConfirmAlert extends Component {
         onClick={this.handleClickOverlay}
       >
         <div className='react-confirm-alert'>
-          {customUI
-            ? this.renderCustomUI()
-            : <div className='react-confirm-alert-body'>
+          {customUI ? (
+            this.renderCustomUI()
+          ) : (
+            <div className='react-confirm-alert-body'>
               {title && <h1>{title}</h1>}
               {message}
               {childrenElement()}
               <div className='react-confirm-alert-button-group'>
                 {buttons.map((button, i) => (
-                  <button
-                    key={i}
-                    onClick={() => this.handleClickButton(button)}
-                  >
+                  <button key={i} onClick={() => this.handleClickButton(button)}>
                     {button.label}
                   </button>
                 ))}
               </div>
-            </div>}
+            </div>
+          )}
         </div>
       </div>
     )
