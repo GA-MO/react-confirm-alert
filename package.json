@@ -1,6 +1,6 @@
 {
   "name": "react-confirm-alert",
-  "version": "2.4.0",
+  "version": "2.4.1",
   "description": "react component confirm dialog.",
   "main": "lib/index.js",
   "scripts": {
@@ -71,5 +71,9 @@
     "url-loader": "^0.5.9",
     "webpack": "^3.5.5",
     "webpack-dev-server": "^2.7.1"
+  },
+  "peerDependencies": {
+    "react": ">=16.0.0",
+    "react-dom": ">=16.0.0"
   }
 }
