@@ -76,10 +76,11 @@ export default class ReactConfirmAlert extends Component {
   }
 
   renderCustomUI = () => {
-    const { title, message, customUI } = this.props
+    const { title, message, buttons, customUI } = this.props
     const dataCustomUI = {
       title,
       message,
+      buttons,
       onClose: this.close
     }
 
