@@ -20,11 +20,13 @@ export default class ReactConfirmAlert extends Component {
     buttons: [
       {
         label: 'Cancel',
-        onClick: () => null
+        onClick: () => null,
+        className: null
       },
       {
         label: 'Confirm',
-        onClick: () => null
+        onClick: () => null,
+        className: null
       }
     ],
     childrenElement: () => null,
@@ -105,7 +107,7 @@ export default class ReactConfirmAlert extends Component {
               {childrenElement()}
               <div className='react-confirm-alert-button-group'>
                 {buttons.map((button, i) => (
-                  <button key={i} onClick={() => this.handleClickButton(button)}>
+                  <button key={i} onClick={() => this.handleClickButton(button)} className={button.className}>
                     {button.label}
                   </button>
                 ))}
