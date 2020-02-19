@@ -164,10 +164,10 @@ function createElementReconfirm (properties) {
 
 function removeElementReconfirm () {
   const target = document.getElementById('react-confirm-alert')
-  if(target) {
+  if (target) {
     unmountComponentAtNode(target)
+    target.parentNode.removeChild(target)
   }
-  target.parentNode.removeChild(target)
 }
 
 function addBodyClass () {
