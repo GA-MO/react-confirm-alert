@@ -35,6 +35,7 @@ const options = {
   closeOnEscape: true,
   closeOnClickOutside: true,
   willUnmount: () => {},
+  afterClose: () => {}
   onClickOutside: () => {},
   onKeypressEscape: () => {}
 };

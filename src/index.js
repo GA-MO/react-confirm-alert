@@ -12,6 +12,7 @@ export default class ReactConfirmAlert extends Component {
     closeOnClickOutside: PropTypes.bool,
     closeOnEscape: PropTypes.bool,
     willUnmount: PropTypes.func,
+    afterClose: PropTypes.func,
     onClickOutside: PropTypes.func,
     onKeypressEscape: PropTypes.func
   }
@@ -33,6 +34,7 @@ export default class ReactConfirmAlert extends Component {
     closeOnClickOutside: true,
     closeOnEscape: true,
     willUnmount: () => null,
+    afterClose: () => null,
     onClickOutside: () => null,
     onKeypressEscape: () => null
   }
@@ -53,8 +55,9 @@ export default class ReactConfirmAlert extends Component {
   }
 
   close = () => {
+    const { afterClose } = this.props
     removeBodyClass()
-    removeElementReconfirm()
+    removeElementReconfirm(afterClose)
     removeSVGBlurReconfirm()
   }
 
@@ -162,11 +165,12 @@ function createElementReconfirm (properties) {
   }
 }
 
-function removeElementReconfirm () {
+function removeElementReconfirm (afterClose) {
   const target = document.getElementById('react-confirm-alert')
   if (target) {
     unmountComponentAtNode(target)
     target.parentNode.removeChild(target)
+    afterClose()
   }
 }
 
