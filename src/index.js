@@ -57,8 +57,8 @@ export default class ReactConfirmAlert extends Component {
   close = () => {
     const { afterClose } = this.props
     removeBodyClass()
-    removeElementReconfirm(afterClose)
-    removeSVGBlurReconfirm()
+    removeElementReconfirm()
+    removeSVGBlurReconfirm(afterClose)
   }
 
   keyboardClose = event => {
@@ -144,10 +144,11 @@ function createSVGBlurReconfirm () {
   document.body.appendChild(svgElem)
 }
 
-function removeSVGBlurReconfirm () {
+function removeSVGBlurReconfirm (afterClose) {
   const svg = document.getElementById('react-confirm-alert-firm-svg')
   svg.parentNode.removeChild(svg)
   document.body.children[0].classList.remove('react-confirm-alert-blur')
+  afterClose()
 }
 
 function createElementReconfirm (properties) {
@@ -165,12 +166,11 @@ function createElementReconfirm (properties) {
   }
 }
 
-function removeElementReconfirm (afterClose) {
+function removeElementReconfirm () {
   const target = document.getElementById('react-confirm-alert')
   if (target) {
     unmountComponentAtNode(target)
     target.parentNode.removeChild(target)
-    afterClose()
   }
 }
 
