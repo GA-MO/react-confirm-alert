@@ -21,15 +21,44 @@ class App extends React.Component {
     })
   }
 
-  handleClickCustomUI = () => {
+    handleClickCustomUI = () => {
+      confirmAlert({
+        customUI: ({ onClose }) => {
+          return (
+            <div className='custom-ui'>
+              <h1>Are you sure?</h1>
+              <p>You want to delete this file?</p>
+              <button onClick={onClose}>No</button>
+              <button onClick={onClose}>Yes, Delete it!</button>
+            </div>
+          )
+        }
+      })
+    }
+
+  openDialog1 = () => {
     confirmAlert({
       customUI: ({ onClose }) => {
         return (
           <div className='custom-ui'>
-            <h1>Are you sure?</h1>
-            <p>You want to delete this file?</p>
-            <button onClick={onClose}>No</button>
-            <button onClick={onClose}>Yes, Delete it!</button>
+            <h1>This is dialog #1</h1>
+            <p>Close dialog?</p>
+            <button onClick={onClose}>Yes</button>
+            <button onClick={this.openDialog2}>No, open another one!</button>
+          </div>
+        )
+      }
+    })
+  }
+
+  openDialog2 = () => {
+    confirmAlert({
+      customUI: ({ onClose }) => {
+        return (
+          <div className='custom-ui'>
+            <h1>This is dialog #2</h1>
+            <p>Close dialog?</p>
+            <button onClick={onClose}>Yes</button>
           </div>
         )
       }
@@ -49,6 +78,9 @@ class App extends React.Component {
             </a>
             <a href='javascript:;' className='button outline' onClick={this.handleClickCustomUI}>
               Show confirm Custom UI
+            </a>
+            <a href='javascript:;' className='button outline' onClick={this.openDialog1}>
+              Nested modals
             </a>
           </div>
         </section>
