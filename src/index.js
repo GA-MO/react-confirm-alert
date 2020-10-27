@@ -146,7 +146,9 @@ function createSVGBlurReconfirm () {
 
 function removeSVGBlurReconfirm (afterClose) {
   const svg = document.getElementById('react-confirm-alert-firm-svg')
-  svg.parentNode.removeChild(svg)
+  if (svg) {
+    svg.parentNode.removeChild(svg)
+  }
   document.body.children[0].classList.remove('react-confirm-alert-blur')
   afterClose()
 }
