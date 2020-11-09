@@ -14,7 +14,8 @@ export default class ReactConfirmAlert extends Component {
     willUnmount: PropTypes.func,
     afterClose: PropTypes.func,
     onClickOutside: PropTypes.func,
-    onKeypressEscape: PropTypes.func
+    onKeypressEscape: PropTypes.func,
+    overlayClassName: PropTypes.string
   }
 
   static defaultProps = {
@@ -93,11 +94,11 @@ export default class ReactConfirmAlert extends Component {
   }
 
   render () {
-    const { title, message, buttons, childrenElement, customUI } = this.props
+    const { title, message, buttons, childrenElement, customUI, overlayClassName } = this.props
 
     return (
       <div
-        className='react-confirm-alert-overlay'
+        className={`react-confirm-alert-overlay ${overlayClassName}`}
         ref={dom => (this.overlay = dom)}
         onClick={this.handleClickOverlay}
       >

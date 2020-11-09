@@ -37,7 +37,8 @@ const options = {
   willUnmount: () => {},
   afterClose: () => {}
   onClickOutside: () => {},
-  onKeypressEscape: () => {}
+  onKeypressEscape: () => {},
+  overlayClassName: "overlay-custom-class-name"
 };
 
 confirmAlert(options);
