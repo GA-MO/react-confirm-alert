@@ -25,6 +25,7 @@ class App extends React.Component {
       cancelLabel: 'Cancel',                             // Text button cancel
       onConfirm: () => alert('Action after Confirm'),    // Action after Confirm
       onCancel: () => alert('Action after Cancel'),      // Action after Cancel
+      overlayClassName: "overlay-custom-class-name"      // Custom overlay class name
     })
   };
 
