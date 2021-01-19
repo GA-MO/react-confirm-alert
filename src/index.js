@@ -55,10 +55,17 @@ export default class ReactConfirmAlert extends Component {
   }
 
   close = () => {
-    const { afterClose } = this.props
-    removeBodyClass()
-    removeElementReconfirm()
-    removeSVGBlurReconfirm(afterClose)
+    try {
+      const { afterClose } = this.props
+      if (openModalsCount === 1) {
+        removeBodyClass()
+        removeSVGBlurReconfirm()
+      }
+      removeElementReconfirm()
+      afterClose()
+    } finally {
+      openModalsCount--
+    }
   }
 
   keyboardClose = event => {
@@ -124,6 +131,8 @@ export default class ReactConfirmAlert extends Component {
   }
 }
 
+let openModalsCount = 0
+
 function createSVGBlurReconfirm () {
   // If has svg ignore to create the svg
   const svg = document.getElementById('react-confirm-alert-firm-svg')
@@ -144,17 +153,16 @@ function createSVGBlurReconfirm () {
   document.body.appendChild(svgElem)
 }
 
-function removeSVGBlurReconfirm (afterClose) {
+function removeSVGBlurReconfirm () {
   const svg = document.getElementById('react-confirm-alert-firm-svg')
   if (svg) {
     svg.parentNode.removeChild(svg)
   }
   document.body.children[0].classList.remove('react-confirm-alert-blur')
-  afterClose()
 }
 
 function createElementReconfirm (properties) {
-  let divTarget = document.getElementById('react-confirm-alert')
+  let divTarget = document.getElementById(getConfirmAlertId())
   if (divTarget) {
     // Rerender - the mounted ReactConfirmAlert
     render(<ReactConfirmAlert {...properties} />, divTarget)
@@ -162,14 +170,14 @@ function createElementReconfirm (properties) {
     // Mount the ReactConfirmAlert component
     document.body.children[0].classList.add('react-confirm-alert-blur')
     divTarget = document.createElement('div')
-    divTarget.id = 'react-confirm-alert'
+    divTarget.id = getConfirmAlertId()
     document.body.appendChild(divTarget)
     render(<ReactConfirmAlert {...properties} />, divTarget)
   }
 }
 
 function removeElementReconfirm () {
-  const target = document.getElementById('react-confirm-alert')
+  const target = document.getElementById(getConfirmAlertId())
   if (target) {
     unmountComponentAtNode(target)
     target.parentNode.removeChild(target)
@@ -184,8 +192,15 @@ function removeBodyClass () {
   document.body.classList.remove('react-confirm-alert-body-element')
 }
 
+function getConfirmAlertId () {
+  return 'react-confirm-alert' + openModalsCount
+}
+
 export function confirmAlert (properties) {
-  addBodyClass()
-  createSVGBlurReconfirm()
+  openModalsCount++
+  if (openModalsCount === 1) {
+    addBodyClass()
+    createSVGBlurReconfirm()
+  }
   createElementReconfirm(properties)
 }
