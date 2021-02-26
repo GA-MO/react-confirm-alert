@@ -6,6 +6,7 @@ export default class ReactConfirmAlert extends Component {
   static propTypes = {
     title: PropTypes.string,
     message: PropTypes.string,
+    width: PropTypes.string,
     buttons: PropTypes.array.isRequired,
     childrenElement: PropTypes.func,
     customUI: PropTypes.func,
@@ -106,7 +107,7 @@ export default class ReactConfirmAlert extends Component {
           {customUI ? (
             this.renderCustomUI()
           ) : (
-            <div className='react-confirm-alert-body'>
+            <div style={{width:width}} className='react-confirm-alert-body'>
               {title && <h1>{title}</h1>}
               {message}
               {childrenElement()}
