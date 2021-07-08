@@ -103,9 +103,10 @@ export default class ReactConfirmAlert extends Component {
         onClick={this.handleClickOverlay}
       >
         <div className='react-confirm-alert'>
-          {customUI ? (
-            this.renderCustomUI()
-          ) : (
+        {customUI ? (
+          this.renderCustomUI()
+        ) : (
+          <div className='react-confirm-alert'>
             <div className='react-confirm-alert-body'>
               {title && <h1>{title}</h1>}
               {message}
@@ -118,8 +119,8 @@ export default class ReactConfirmAlert extends Component {
                 ))}
               </div>
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     )
   }
