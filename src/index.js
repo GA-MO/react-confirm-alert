@@ -13,8 +13,10 @@ export default class ReactConfirmAlert extends Component {
     closeOnEscape: PropTypes.bool,
     willUnmount: PropTypes.func,
     afterClose: PropTypes.func,
+    afterEnter: PropTypes.func,
     onClickOutside: PropTypes.func,
     onKeypressEscape: PropTypes.func,
+    onkeyPressEnter: PropTypes.func,
     overlayClassName: PropTypes.string
   }
 
@@ -63,12 +65,17 @@ export default class ReactConfirmAlert extends Component {
   }
 
   keyboardClose = event => {
-    const { closeOnEscape, onKeypressEscape } = this.props
+    const { closeOnEscape, onKeypressEscape, onkeyPressEnter, afterEnter } = this.props
     const isKeyCodeEscape = event.keyCode === 27
+    const isKeyCodeEnter = event.keyCode === 13
 
     if (closeOnEscape && isKeyCodeEscape) {
       onKeypressEscape(event)
       this.close()
+    } else if (closeOnEscape && isKeyCodeEnter) {
+      onkeyPressEnter(event)
+      this.close()
+      afterEnter()
     }
   }
 

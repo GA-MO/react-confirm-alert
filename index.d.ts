@@ -18,6 +18,7 @@ declare module 'react-confirm-alert' {
     willUnmount?: () => void
     onClickOutside?: () => void
     onKeypressEscape?: () => void
+    onkeyPressEnter?: () => void
     overlayClassName?: string
   }
 
