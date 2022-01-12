@@ -190,3 +190,25 @@ export function confirmAlert (properties) {
   createSVGBlurReconfirm()
   createElementReconfirm(properties)
 }
+
+const confirmAlertWaitingQueue = [];
+export function confirmAlert2( props ) {
+    const { afterClose } = props;
+    const showNextAfterClose = () => {
+      if (afterClose) {
+        afterClose();
+      }
+      const next = confirmAlertWaitingQueue.shift();
+      if (next) {
+        confirmAlert(next);
+      }
+    };
+    props = { ...props, afterClose: showNextAfterClose };
+
+    const busy = document.body.children[0].classList.contains('react-confirm-alert-blur');
+    if (busy) {
+        confirmAlertWaitingQueue.push(props);
+    } else {
+      confirmAlert(props);
+    }
+}

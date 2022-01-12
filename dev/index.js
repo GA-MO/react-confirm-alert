@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { confirmAlert } from 'react-confirm-alert'
+import { confirmAlert, confirmAlert2 } from 'react-confirm-alert'
 import '../src/react-confirm-alert.css'
 
 class App extends React.Component {
@@ -36,6 +36,35 @@ class App extends React.Component {
     })
   }
 
+  handleClickCustomUiMultiple = () => {
+    confirmAlert2({
+      customUI: ({ onClose }) => {
+        return (
+          <div className='custom-ui'>
+            <h1>Confirmation for file 1</h1>
+            <p>You want to delete the file #1?</p>
+            <button onClick={onClose}>No</button>
+            <button onClick={onClose}>Yes, Delete it!</button>
+          </div>
+        )
+      }
+    })
+
+    confirmAlert2({
+      customUI: ({ onClose }) => {
+        return (
+          <div className='custom-ui'>
+            <h1>Confirmation for file 2</h1>
+            <p>You want to delete the file #2?</p>
+            <button onClick={onClose}>No</button>
+            <button onClick={onClose}>Yes, Delete it!</button>
+          </div>
+        )
+      }
+    })
+  }
+
+
   render () {
     return (
       <div className='main-container'>
@@ -50,6 +79,11 @@ class App extends React.Component {
             <a href='javascript:;' className='button outline' onClick={this.handleClickCustomUI}>
               Show confirm Custom UI
             </a>
+            <a href='javascript:;' className='button' onClick={
+              () => { this.handleClickCustomUiMultiple()}}>
+              Show multiple confirms
+            </a>
+            
           </div>
         </section>
       </div>
