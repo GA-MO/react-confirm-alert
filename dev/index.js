@@ -36,26 +36,13 @@ class App extends React.Component {
     })
   }
 
-  handleClickCustomUiMultiple = () => {
+  showConfirmAlert2 = (name) => {
     confirmAlert2({
       customUI: ({ onClose }) => {
         return (
           <div className='custom-ui'>
-            <h1>Confirmation for file 1</h1>
-            <p>You want to delete the file #1?</p>
-            <button onClick={onClose}>No</button>
-            <button onClick={onClose}>Yes, Delete it!</button>
-          </div>
-        )
-      }
-    })
-
-    confirmAlert2({
-      customUI: ({ onClose }) => {
-        return (
-          <div className='custom-ui'>
-            <h1>Confirmation for file 2</h1>
-            <p>You want to delete the file #2?</p>
+            <h1>Confirmation for file '{name}'</h1>
+            <p>You want to delete the file '{name}'?</p>
             <button onClick={onClose}>No</button>
             <button onClick={onClose}>Yes, Delete it!</button>
           </div>
@@ -80,7 +67,7 @@ class App extends React.Component {
               Show confirm Custom UI
             </a>
             <a href='javascript:;' className='button' onClick={
-              () => { this.handleClickCustomUiMultiple()}}>
+              () => { this.showConfirmAlert2('apple.gif'); this.showConfirmAlert2('orange.gif') }}>
               Show multiple confirms
             </a>
             
