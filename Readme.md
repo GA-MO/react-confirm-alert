@@ -34,6 +34,7 @@ const options = {
   customUI: ({ onClose }) => <div>Custom UI</div>,
   closeOnEscape: true,
   closeOnClickOutside: true,
+  keyCodeForClose: [8, 32],
   willUnmount: () => {},
   afterClose: () => {}
   onClickOutside: () => {},

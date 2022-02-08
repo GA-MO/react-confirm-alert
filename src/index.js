@@ -11,6 +11,7 @@ export default class ReactConfirmAlert extends Component {
     customUI: PropTypes.func,
     closeOnClickOutside: PropTypes.bool,
     closeOnEscape: PropTypes.bool,
+    keyCodeForClose: PropTypes.arrayOf(PropTypes.number),
     willUnmount: PropTypes.func,
     afterClose: PropTypes.func,
     onClickOutside: PropTypes.func,
@@ -34,6 +35,7 @@ export default class ReactConfirmAlert extends Component {
     childrenElement: () => null,
     closeOnClickOutside: true,
     closeOnEscape: true,
+    keyCodeForClose: [],
     willUnmount: () => null,
     afterClose: () => null,
     onClickOutside: () => null,
@@ -63,8 +65,13 @@ export default class ReactConfirmAlert extends Component {
   }
 
   keyboardClose = event => {
-    const { closeOnEscape, onKeypressEscape } = this.props
-    const isKeyCodeEscape = event.keyCode === 27
+    const { closeOnEscape, onKeypressEscape, keyCodeForClose } = this.props
+    const keyCode = event.keyCode
+    const isKeyCodeEscape = keyCode === 27
+
+    if (keyCodeForClose.includes(keyCode)) {
+      this.close()
+    }
 
     if (closeOnEscape && isKeyCodeEscape) {
       onKeypressEscape(event)
