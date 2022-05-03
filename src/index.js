@@ -1,6 +1,9 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import { render, unmountComponentAtNode } from 'react-dom'
+import ReactDOM from 'react-dom/client';
+
+// The React root for dialog
+let root;
 
 export default class ReactConfirmAlert extends Component {
   static propTypes = {
@@ -162,25 +165,27 @@ function removeSVGBlurReconfirm (afterClose) {
 }
 
 function createElementReconfirm (properties) {
+  // DOM Root element where the component will be shown
   let divTarget = document.getElementById('react-confirm-alert')
-  if (divTarget) {
-    // Rerender - the mounted ReactConfirmAlert
-    render(<ReactConfirmAlert {...properties} />, divTarget)
-  } else {
-    // Mount the ReactConfirmAlert component
+
+  if (!divTarget) {
     document.body.children[0].classList.add('react-confirm-alert-blur')
     divTarget = document.createElement('div')
     divTarget.id = 'react-confirm-alert'
     document.body.appendChild(divTarget)
-    render(<ReactConfirmAlert {...properties} />, divTarget)
-  }
+  } 
+    
+  // Syntax for React 18 (which replaces ReactDOM.render)
+  root = ReactDOM.createRoot(divTarget);
+  root.render(<ReactConfirmAlert {...properties} />);
 }
 
 function removeElementReconfirm () {
   const target = document.getElementById('react-confirm-alert')
   if (target) {
-    unmountComponentAtNode(target)
     target.parentNode.removeChild(target)
+    // Syntax for React 18 (which replaces ReactDOM.unmountComponentAtNode)
+    root && root.unmount();
   }
 }
 
