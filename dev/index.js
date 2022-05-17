@@ -6,7 +6,6 @@ import '../src/react-confirm-alert.css'
 class App extends React.Component {
   submit = () => {
     confirmAlert({
-      targetId: 'gamo',
       title: 'Confirm to submit',
       message: 'Are you sure to do this.',
       buttons: [
