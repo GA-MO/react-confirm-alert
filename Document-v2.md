@@ -1,14 +1,10 @@
 # react-confirm-alert
 
-### React 18 is supported!!
-
-React component confirm dialog. [Live demo](https://ga-mo.github.io/react-confirm-alert/demo/)
+react component confirm dialog. [Live demo](https://ga-mo.github.io/react-confirm-alert/demo/)
 
 [![npm version](https://badge.fury.io/js/react-confirm-alert.svg)](https://badge.fury.io/js/react-confirm-alert)
 
-Document for 
-[v.1.x.x](https://github.com/GA-MO/react-confirm-alert/blob/master/Document-v1.md), 
-[v.2.x.x](https://github.com/GA-MO/react-confirm-alert/blob/master/Document-v2.md)
+Document for v.1.x.x [see](https://github.com/GA-MO/react-confirm-alert/blob/master/Document-v1.md)
 
 ## Getting started
 
@@ -34,13 +30,14 @@ const options = {
       onClick: () => alert('Click No')
     }
   ],
+  childrenElement: () => <div />,
+  customUI: ({ onClose }) => <div>Custom UI</div>,
   closeOnEscape: true,
   closeOnClickOutside: true,
   keyCodeForClose: [8, 32],
   willUnmount: () => {},
   afterClose: () => {}
   onClickOutside: () => {},
-  onKeypress: () => {},
   onKeypressEscape: () => {},
   overlayClassName: "overlay-custom-class-name"
 };

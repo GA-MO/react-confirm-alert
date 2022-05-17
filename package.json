@@ -63,8 +63,8 @@
     "eslint-plugin-standard": "^3.0.1",
     "mocha": "^3.5.0",
     "prop-types": "^15.6.2",
-    "react": "^16.4.1",
-    "react-dom": "^16.4.1",
+    "react": "^18.1.0",
+    "react-dom": "^18.1.0",
     "react-hot-loader": "^4.3.3",
     "rimraf": "^2.6.1",
     "style-loader": "^0.18.2",
@@ -73,7 +73,7 @@
     "webpack-dev-server": "^2.7.1"
   },
   "peerDependencies": {
-    "react": ">=16.0.0",
-    "react-dom": ">=16.0.0"
+    "react": ">=18.0.0",
+    "react-dom": ">=10.0.0"
   }
 }

@@ -1,11 +1,12 @@
 import React from 'react'
-import ReactDOM from 'react-dom'
+import { createRoot } from 'react-dom/client'
 import { confirmAlert } from 'react-confirm-alert'
 import '../src/react-confirm-alert.css'
 
 class App extends React.Component {
   submit = () => {
     confirmAlert({
+      targetId: 'gamo',
       title: 'Confirm to submit',
       message: 'Are you sure to do this.',
       buttons: [
@@ -44,10 +45,10 @@ class App extends React.Component {
             <div className='title'>React confirm alert 2</div>
             <br />
             <br />
-            <a href='javascript:;' className='button' onClick={this.submit}>
+            <a className='button' onClick={this.submit}>
               Show confirm
             </a>
-            <a href='javascript:;' className='button outline' onClick={this.handleClickCustomUI}>
+            <a className='button outline' onClick={this.handleClickCustomUI}>
               Show confirm Custom UI
             </a>
           </div>
@@ -58,4 +59,5 @@ class App extends React.Component {
 }
 
 const rootEl = document.getElementById('root')
-ReactDOM.render(<App />, rootEl)
+const root = createRoot(rootEl)
+root.render(<App />)

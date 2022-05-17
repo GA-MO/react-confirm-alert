@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import { render, unmountComponentAtNode } from 'react-dom'
+import { createRoot } from 'react-dom/client'
 
 export default class ReactConfirmAlert extends Component {
   static propTypes = {
@@ -16,6 +16,7 @@ export default class ReactConfirmAlert extends Component {
     afterClose: PropTypes.func,
     onClickOutside: PropTypes.func,
     onKeypressEscape: PropTypes.func,
+    onkeyPress: PropTypes.func,
     overlayClassName: PropTypes.string
   }
 
@@ -60,12 +61,12 @@ export default class ReactConfirmAlert extends Component {
   close = () => {
     const { afterClose } = this.props
     removeBodyClass()
-    removeElementReconfirm()
+    removeElementReconfirm(this.props)
     removeSVGBlurReconfirm(afterClose)
   }
 
-  keyboardClose = event => {
-    const { closeOnEscape, onKeypressEscape, keyCodeForClose } = this.props
+  keyboard = event => {
+    const { closeOnEscape, onKeypressEscape, onkeyPress, keyCodeForClose } = this.props
     const keyCode = event.keyCode
     const isKeyCodeEscape = keyCode === 27
 
@@ -77,14 +78,18 @@ export default class ReactConfirmAlert extends Component {
       onKeypressEscape(event)
       this.close()
     }
+
+    if (onkeyPress) {
+      onkeyPress()
+    }
   }
 
   componentDidMount = () => {
-    document.addEventListener('keydown', this.keyboardClose, false)
+    document.addEventListener('keydown', this.keyboard, false)
   }
 
   componentWillUnmount = () => {
-    document.removeEventListener('keydown', this.keyboardClose, false)
+    document.removeEventListener('keydown', this.keyboard, false)
     this.props.willUnmount()
   }
 
@@ -119,7 +124,12 @@ export default class ReactConfirmAlert extends Component {
               {childrenElement()}
               <div className='react-confirm-alert-button-group'>
                 {buttons.map((button, i) => (
-                  <button key={i} onClick={() => this.handleClickButton(button)} className={button.className}>
+                  <button
+                    key={i}
+                    onClick={() => this.handleClickButton(button)}
+                    className={button.className}
+                    {...button}
+                  >
                     {button.label}
                   </button>
                 ))}
@@ -131,6 +141,9 @@ export default class ReactConfirmAlert extends Component {
     )
   }
 }
+
+let root = null
+const targetId = 'react-confirm-alert'
 
 function createSVGBlurReconfirm () {
   // If has svg ignore to create the svg
@@ -162,25 +175,29 @@ function removeSVGBlurReconfirm (afterClose) {
 }
 
 function createElementReconfirm (properties) {
-  let divTarget = document.getElementById('react-confirm-alert')
+  let divTarget = document.getElementById(properties.targetId || targetId)
+
+  if (properties.targetId && !divTarget) {
+    console.error('React Confirm Alert:', `Can not get element id (#${properties.targetId})`)
+  }
+
   if (divTarget) {
-    // Rerender - the mounted ReactConfirmAlert
-    render(<ReactConfirmAlert {...properties} />, divTarget)
+    root = createRoot(divTarget)
+    root.render(<ReactConfirmAlert {...properties} />)
   } else {
-    // Mount the ReactConfirmAlert component
     document.body.children[0].classList.add('react-confirm-alert-blur')
     divTarget = document.createElement('div')
-    divTarget.id = 'react-confirm-alert'
+    divTarget.id = targetId
     document.body.appendChild(divTarget)
-    render(<ReactConfirmAlert {...properties} />, divTarget)
+    root = createRoot(divTarget)
+    root.render(<ReactConfirmAlert {...properties} />)
   }
 }
 
-function removeElementReconfirm () {
-  const target = document.getElementById('react-confirm-alert')
+function removeElementReconfirm (properties) {
+  const target = document.getElementById(properties.targetId || targetId)
   if (target) {
-    unmountComponentAtNode(target)
-    target.parentNode.removeChild(target)
+    root.unmount(target)
   }
 }
 

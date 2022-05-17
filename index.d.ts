@@ -1,23 +1,25 @@
 declare module 'react-confirm-alert' {
   export interface ReactConfirmAlertProps {
+    targetId: string
     title?: string
     message?: string
     buttons?: Array<{
       label: string
-      onClick: () => void
       className?: string
-    }>
+    } & HTMLButtonElement>
     childrenElement?: () => React.ReactNode
     customUI?: (customUiOptions: {
-    title: string
-    message: string
-    onClose: () => void
+      title: string
+      message: string
+      onClose: () => void
     }) => React.ReactNode
     closeOnClickOutside?: boolean
     closeOnEscape?: boolean
+    keyCodeForClose: Array<number>
     willUnmount?: () => void
     onClickOutside?: () => void
     onKeypressEscape?: () => void
+    onkeyPress?: () => void
     overlayClassName?: string
   }
 
