@@ -126,9 +126,9 @@ export default class ReactConfirmAlert extends Component {
                 {buttons.map((button, i) => (
                   <button
                     key={i}
-                    onClick={() => this.handleClickButton(button)}
                     className={button.className}
                     {...button}
+                    onClick={(e) => this.handleClickButton(button)}
                   >
                     {button.label}
                   </button>
