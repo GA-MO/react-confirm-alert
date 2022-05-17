@@ -42,7 +42,7 @@ class App extends React.Component {
       <div className='main-container'>
         <section className='section1'>
           <div className='center'>
-            <div className='title'>React confirm alert 2</div>
+            <div className='title'>React confirm alert 3</div>
             <br />
             <br />
             <a className='button' onClick={this.submit}>
