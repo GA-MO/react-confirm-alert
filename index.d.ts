@@ -1,6 +1,6 @@
 declare module 'react-confirm-alert' {
   export interface ReactConfirmAlertProps {
-    targetId: string
+    targetId?: string
     title?: string
     message?: string
     buttons?: Array<{
@@ -15,7 +15,7 @@ declare module 'react-confirm-alert' {
     }) => React.ReactNode
     closeOnClickOutside?: boolean
     closeOnEscape?: boolean
-    keyCodeForClose: Array<number>
+    keyCodeForClose?: Array<number>
     willUnmount?: () => void
     onClickOutside?: () => void
     onKeypressEscape?: () => void
