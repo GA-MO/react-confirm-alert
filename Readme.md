@@ -38,7 +38,7 @@ const options = {
   closeOnClickOutside: true,
   keyCodeForClose: [8, 32],
   willUnmount: () => {},
-  afterClose: () => {}
+  afterClose: () => {},
   onClickOutside: () => {},
   onKeypress: () => {},
   onKeypressEscape: () => {},
