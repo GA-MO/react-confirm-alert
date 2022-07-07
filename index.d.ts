@@ -1,3 +1,5 @@
+import React, { ButtonHTMLAttributes } from 'react';
+
 declare module 'react-confirm-alert' {
   export interface ReactConfirmAlertProps {
     targetId?: string
@@ -6,7 +8,7 @@ declare module 'react-confirm-alert' {
     buttons?: Array<{
       label: string
       className?: string
-    } & HTMLButtonElement>
+    } & ButtonHTMLAttributes<HTMLButtonElement>>
     childrenElement?: () => React.ReactNode
     customUI?: (customUiOptions: {
       title: string
