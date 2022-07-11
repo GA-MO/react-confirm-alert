@@ -56,6 +56,8 @@ export default class ReactConfirmAlert extends Component {
       onClickOutside()
       this.close()
     }
+
+    e.stopPropagation()
   }
 
   close = () => {
