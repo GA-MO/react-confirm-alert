@@ -1,6 +1,7 @@
 # react-confirm-alert
 
 ### React 18 is supported!!
+### For React <= 17.x.x use version 2.x.x
 
 React component confirm dialog. [Live demo](https://ga-mo.github.io/react-confirm-alert/demo/)
 
