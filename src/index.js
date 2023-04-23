@@ -82,7 +82,7 @@ export default class ReactConfirmAlert extends Component {
     }
 
     if (onkeyPress) {
-      onkeyPress()
+      onkeyPress(event, this.close.bind(this))
     }
   }
 
