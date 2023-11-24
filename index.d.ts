@@ -22,6 +22,7 @@ declare module 'react-confirm-alert' {
     onClickOutside?: () => void
     onKeypressEscape?: () => void
     onkeyPress?: () => void
+    afterClose?: () => void
     overlayClassName?: string
   }
 
