@@ -33,7 +33,51 @@ export interface DialogRenderProps<R> {
   onClose: () => void
 }
 
-export interface BaseOptions {
+export type DialogSlot =
+  | 'dialog' | 'panel' | 'body' | 'title' | 'message' | 'actions' | 'button' | 'field' | 'label' | 'input' | 'error'
+
+export type DialogClassNames = Partial<Record<DialogSlot, string>>
+
+export interface StyleOptions {
+  /** leave out the v3 class names; only classNames, data attributes and ARIA remain */
+  unstyled?: boolean | undefined
+  /** added to each slot's classes, after the app defaults */
+  classNames?: DialogClassNames | undefined
+}
+
+export interface DialogDefaults extends StyleOptions {
+  closeOnEscape?: boolean | undefined
+  closeOnClickOutside?: boolean | undefined
+  strategy?: Strategy | undefined
+  modal?: boolean | undefined
+  /** default true: body gets react-confirm-alert-body-element while a dialog is open */
+  lockScroll?: boolean | undefined
+  labels?: { ok?: ReactNode, confirm?: ReactNode, cancel?: ReactNode, submit?: ReactNode } | undefined
+  /** separate defaults for confirmAlert, which otherwise keeps v3 behavior */
+  confirmAlert?: (StyleOptions & { modal?: boolean | undefined, strategy?: Strategy | undefined }) | undefined
+}
+
+/** Attributes on the frame, for CSS and Tailwind data-* variants. A type only, kept in step by tests. */
+export interface DialogDataAttributes {
+  'data-rca': ''
+  'data-state': 'open' | 'closing'
+  'data-kind': DialogKind
+  'data-tone': 'default' | 'danger'
+  'data-busy'?: ''
+  'data-depth': `${number}`
+  'data-topmost'?: ''
+}
+
+export interface SlotDataAttributes {
+  'data-slot': DialogSlot
+}
+
+export interface ButtonDataAttributes extends SlotDataAttributes {
+  'data-variant': 'primary' | 'secondary' | 'danger'
+  'data-busy'?: ''
+}
+
+export interface BaseOptions extends StyleOptions {
   title?: ReactNode | undefined
   message?: ReactNode | undefined
   closeOnEscape?: boolean | undefined
@@ -89,6 +133,8 @@ export interface EntryOptions extends BaseOptions {
   onClickOutside?: (() => void) | undefined
   /** @internal the v3 API: Escape from document keydown, blur on body.children[0] */
   legacy?: boolean | undefined
+  /** @internal confirm's tone, shown as data-tone on the frame */
+  tone?: 'default' | 'danger' | undefined
   /** @internal v3 callback, runs before afterClose when the dialog unmounts */
   willUnmount?: (() => void) | undefined
 }

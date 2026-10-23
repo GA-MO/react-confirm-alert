@@ -1,5 +1,5 @@
 import type { Root } from 'react-dom/client'
-import type { DialogId, EntryOptions, Strategy } from './types'
+import type { DialogDefaults, DialogId, EntryOptions, Strategy } from './types'
 
 export type Phase = 'queued' | 'open' | 'closing'
 
@@ -102,6 +102,7 @@ export interface Runtime {
   pageSynced: boolean
   /** open <Dialog> and <ConfirmDialog> elements, which live outside the store but lock scroll too */
   inPlace: number
+  defaults: DialogDefaults
   watchingContainers: boolean
 }
 
@@ -119,6 +120,7 @@ export function runtime (): Runtime {
     busy: new Set(),
     pageSynced: false,
     inPlace: 0,
+    defaults: {},
     watchingContainers: false
   }
 }

@@ -1,8 +1,10 @@
 import { Component, useId, useLayoutEffect, useRef, type ButtonHTMLAttributes, type ReactElement, type ReactNode } from 'react'
 import { DialogFrame } from './DialogFrame'
+import { styleLayers, useSlot } from './classNames'
+import { runtime } from './store'
 import { openEntry } from './lifecycle'
 import { store, topmost } from './store'
-import type { DialogId, DialogRenderProps, Strategy } from './types'
+import type { DialogClassNames, DialogId, DialogRenderProps, Strategy } from './types'
 
 export type ReactConfirmAlertButton = {
   label: string
@@ -36,6 +38,10 @@ export interface ReactConfirmAlertProps {
   modal?: boolean
   /** what happens to a dialog that is already open (default 'replace', as in v3) */
   strategy?: Strategy
+  /** leave out the v3 class names */
+  unstyled?: boolean
+  /** classes per slot, added after the app defaults */
+  classNames?: DialogClassNames
 }
 
 export type ConfirmAlertOptions = ReactConfirmAlertProps
@@ -79,23 +85,23 @@ function LegacyContent ({ props, titleId, close, id }: LegacyContentProps) {
     return () => document.removeEventListener('keydown', keyboard, false)
   }, [])
 
+  const slot = useSlot()
   const { title, message, customUI, childrenElement } = props
   const buttons = props.buttons ?? defaultButtons
   if (customUI) {
     return <CustomUIHost render={customUI} args={{ title: title as string, message: message as string, buttons, onClose: close }} />
   }
   return (
-    <div className='react-confirm-alert-body' data-slot='body'>
-      {title && <h1 id={titleId} data-slot='title'>{title}</h1>}
+    <div {...slot('body')}>
+      {title && <h1 id={titleId} {...slot('title')}>{title}</h1>}
       {message}
       {childrenElement?.()}
-      <div className='react-confirm-alert-button-group' data-slot='actions'>
+      <div {...slot('actions')}>
         {buttons.map((button, i) => (
           <button
             key={i}
-            className={button.className}
             {...button}
-            data-slot='button'
+            {...slot('button', button.className)}
             onClick={() => {
               if (button.onClick) (button.onClick as () => void)()
               close()
@@ -116,7 +122,9 @@ export function confirmAlert (properties: ReactConfirmAlertProps): void {
   openEntry({
     kind: 'custom',
     title: properties.title,
-    modal: properties.modal ?? false,
+    modal: properties.modal ?? runtime().defaults.confirmAlert?.modal ?? false,
+    unstyled: properties.unstyled,
+    classNames: properties.classNames,
     closeOnClickOutside: properties.closeOnClickOutside ?? true,
     closeOnEscape: properties.closeOnEscape ?? true,
     overlayClassName: properties.overlayClassName,
@@ -125,7 +133,7 @@ export function confirmAlert (properties: ReactConfirmAlertProps): void {
     willUnmount: properties.willUnmount,
     afterClose: properties.afterClose,
     render: Content
-  }, properties.targetId ?? null, properties.strategy ?? 'replace')
+  }, properties.targetId ?? null, properties.strategy ?? runtime().defaults.confirmAlert?.strategy ?? 'replace')
 }
 
 function DeclarativeDialog (props: ReactConfirmAlertProps) {
@@ -136,8 +144,8 @@ function DeclarativeDialog (props: ReactConfirmAlertProps) {
       modal={props.modal ?? false}
       state='open'
       kind='custom'
-      className={['react-confirm-alert-overlay', props.overlayClassName].filter(Boolean).join(' ')}
-      panelClassName='react-confirm-alert'
+      layers={styleLayers({ unstyled: props.unstyled, classNames: props.classNames }, true)}
+      extraClass={props.overlayClassName}
       labelledBy={props.title ? titleId : undefined}
       closeOnClickOutside={props.closeOnClickOutside ?? true}
       closeOnEscape={props.closeOnEscape ?? true}

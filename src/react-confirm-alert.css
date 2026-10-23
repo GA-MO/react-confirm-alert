@@ -102,6 +102,13 @@ dialog.react-confirm-alert-overlay::backdrop {
   outline: none;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .react-confirm-alert-overlay {
+    animation: none;
+    opacity: 1;
+  }
+}
+
 @keyframes react-confirm-alert-fadeIn {
   from {
     opacity: 0;

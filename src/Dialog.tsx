@@ -3,7 +3,8 @@ import { Body, Buttons, PromptBody } from './api'
 import { DialogFrame } from './DialogFrame'
 import { syncPage } from './page'
 import { runtime } from './store'
-import type { AlertOptions, ConfirmOptions, DialogButton, DialogId, DialogRenderProps, PromptOptions } from './types'
+import { styleLayers } from './classNames'
+import type { DialogClassNames, AlertOptions, ConfirmOptions, DialogButton, DialogId, DialogRenderProps, PromptOptions } from './types'
 
 interface InPlace {
   open: boolean
@@ -16,7 +17,8 @@ export interface DialogProps extends InPlace {
   closeOnEscape?: boolean | undefined
   closeOnClickOutside?: boolean | undefined
   onKeyDown?: ((event: KeyboardEvent<HTMLElement>, close: () => void) => void) | undefined
-  className?: string | undefined
+  unstyled?: boolean | undefined
+  classNames?: DialogClassNames | undefined
   'aria-label'?: string | undefined
   'aria-labelledby'?: string | undefined
   'aria-describedby'?: string | undefined
@@ -60,8 +62,7 @@ export function Dialog (props: DialogProps): ReactElement | null {
       modal={props.modal ?? true}
       state='open'
       kind='custom'
-      className={props.className ?? 'react-confirm-alert-overlay'}
-      panelClassName='react-confirm-alert'
+      layers={styleLayers(props, false)}
       label={props['aria-label']}
       labelledBy={props['aria-labelledby']}
       describedBy={props['aria-describedby']}
@@ -128,8 +129,8 @@ export function ConfirmDialog (props: ConfirmDialogProps): ReactElement | null {
       modal={props.modal ?? true}
       state='open'
       kind={props.kind}
-      className='react-confirm-alert-overlay'
-      panelClassName='react-confirm-alert'
+      layers={styleLayers(props, false)}
+      tone={props.kind === 'confirm' ? props.tone : undefined}
       labelledBy={props.title ? titleId : undefined}
       describedBy={props.message ? descriptionId : undefined}
       role={props.kind === 'prompt' ? 'dialog' : 'alertdialog'}

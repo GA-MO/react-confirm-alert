@@ -8,7 +8,7 @@ const BLUR_CLASS = 'react-confirm-alert-blur'
 export function syncPage () {
   const rt = runtime()
   const open = store.get().entries.filter((e) => e.phase === 'open')
-  document.body.classList.toggle(BODY_CLASS, open.length + rt.inPlace > 0)
+  document.body.classList.toggle(BODY_CLASS, rt.defaults.lockScroll !== false && open.length + rt.inPlace > 0)
   const wantsBlur = open.some((e) => e.blur)
   if (wantsBlur && !rt.blurred) {
     rt.blurred = document.body.children[0] ?? null

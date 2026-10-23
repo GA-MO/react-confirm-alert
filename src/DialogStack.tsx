@@ -1,7 +1,8 @@
 import { useId, useLayoutEffect, useSyncExternalStore, type ReactElement } from 'react'
 import { DialogFrame } from './DialogFrame'
 import { closeDialog } from './lifecycle'
-import { emptyState, store, type Entry } from './store'
+import { emptyState, runtime, store, type Entry } from './store'
+import { styleLayers } from './classNames'
 
 const serverState = () => emptyState
 
@@ -14,14 +15,14 @@ export function DialogStack ({ target, host }: { target: string | null, host?: s
     <>
       {entries
         .filter((e) => e.target === target && e.phase !== 'queued')
-        .map((e) => <EntryView key={e.id} entry={e} />)}
+        .map((e, i, visible) => <EntryView key={e.id} entry={e} depth={i} topmost={i === visible.length - 1} />)}
     </>
   )
 }
 
 // Every kind renders through the same frame. A kind only differs in its render component, which the
 // API that opens it supplies, so importing confirmAlert never bundles the confirm or prompt bodies.
-function EntryView ({ entry }: { entry: Entry }) {
+function EntryView ({ entry, depth, topmost }: { entry: Entry, depth: number, topmost: boolean }) {
   const { id, options } = entry
   const titleId = useId()
   const descriptionId = useId()
@@ -40,21 +41,25 @@ function EntryView ({ entry }: { entry: Entry }) {
     entry.settle(value)
     closeDialog(id)
   }
-  const { render: Render, modal = true, closeOnClickOutside = true, closeOnEscape = true } = options
+  const defaults = runtime().defaults
+  const { render: Render } = options
   return (
     <DialogFrame
       id={id}
-      modal={modal}
+      modal={options.modal ?? defaults.modal ?? true}
       state={entry.phase === 'closing' ? 'closing' : 'open'}
       kind={options.kind}
-      className={options.overlayClassName ? `react-confirm-alert-overlay ${options.overlayClassName}` : 'react-confirm-alert-overlay'}
-      panelClassName='react-confirm-alert'
+      layers={styleLayers(options, !!options.legacy)}
+      extraClass={options.overlayClassName}
+      tone={options.tone}
+      depth={depth}
+      topmost={topmost}
       labelledBy={options.title ? titleId : undefined}
       describedBy={options.message ? descriptionId : undefined}
       role={options.kind === 'alert' || options.kind === 'confirm' ? 'alertdialog' : 'dialog'}
       onKeyDown={options.onKeyDown}
-      closeOnClickOutside={closeOnClickOutside}
-      closeOnEscape={closeOnEscape}
+      closeOnClickOutside={options.closeOnClickOutside ?? defaults.closeOnClickOutside ?? true}
+      closeOnEscape={options.closeOnEscape ?? defaults.closeOnEscape ?? true}
       legacy={!!options.legacy}
       onClickOutside={options.onClickOutside}
       onDismiss={dismiss}

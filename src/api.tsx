@@ -1,6 +1,7 @@
 import { useId, useState, type FormEvent, type ReactNode, type ReactElement } from 'react'
 import { closeDialog as closeEntry, openEntry } from './lifecycle'
 import { runtime, store, update } from './store'
+import { useSlot } from './classNames'
 import type {
   AlertOptions,
   ConfirmOptions,
@@ -32,24 +33,27 @@ function open<R> (options: Omit<EntryOptions, 'render'>, dismissValue: R, body: 
   }
   const render = (props: DialogRenderProps<any>) => <>{body(props, controller.signal)}</>
   const onAbort = () => closeEntry(id)
-  const id = openEntry({ ...options, render }, null, options.strategy ?? 'stack', settle)
+  const id = openEntry({ ...options, render }, null, options.strategy ?? runtime().defaults.strategy ?? 'stack', settle)
   options.signal?.addEventListener('abort', onAbort, { once: true })
   if (options.signal?.aborted) closeEntry(id)
   return { id, result }
 }
 
 export function Body ({ props, children }: { props: DialogRenderProps<any>, children: ReactNode }): ReactElement {
+  const slot = useSlot()
   return (
-    <div className='react-confirm-alert-body' data-slot='body'>
-      {props.title && <h1 id={props.titleId} data-slot='title'>{props.title}</h1>}
-      {props.message != null && <p id={props.descriptionId} data-slot='message'>{props.message}</p>}
+    <div {...slot('body')}>
+      {props.title && <h1 id={props.titleId} {...slot('title')}>{props.title}</h1>}
+      {props.message != null && <p id={props.descriptionId} {...slot('message')}>{props.message}</p>}
       {children}
     </div>
   )
 }
 
 export function Buttons<R> ({ props, signal: getSignal, focus }: { props: DialogRenderProps<R>, signal: () => AbortSignal, focus: number }): ReactElement {
+  const slot = useSlot()
   const [busy, setBusy] = useState<number | null>(null)
+  const markBusy = (on: boolean) => runtime().frames.get(props.id)?.frame.toggleAttribute('data-busy', on)
   const press = async (button: DialogButton<R>, index: number) => {
     const signal = getSignal()
     let waiting = false
@@ -61,6 +65,7 @@ export function Buttons<R> ({ props, signal: getSignal, focus }: { props: Dialog
       }
       waiting = true
       setBusy(index)
+      markBusy(true)
       runtime().busy.add(props.id)
       if ((await outcome) !== false && !signal.aborted) props.close(button.value as R)
     } catch (error) {
@@ -68,17 +73,18 @@ export function Buttons<R> ({ props, signal: getSignal, focus }: { props: Dialog
     } finally {
       if (!waiting) return
       runtime().busy.delete(props.id)
+      markBusy(false)
       if (!signal.aborted) setBusy(null)
     }
   }
   return (
-    <div className='react-confirm-alert-button-group' data-slot='actions'>
-      {props.buttons.map(({ label, value, variant = 'secondary', onClick, disabled, ...rest }, i) => (
+    <div {...slot('actions')}>
+      {props.buttons.map(({ label, value, variant = 'secondary', onClick, disabled, className, ...rest }, i) => (
         <button
           key={i}
           type='button'
           {...rest}
-          data-slot='button'
+          {...slot('button', className)}
           data-variant={variant}
           data-busy={busy === i ? '' : undefined}
           data-autofocus={i === focus ? '' : undefined}
@@ -101,7 +107,7 @@ const normalize = <O,>(input: string | O): O => (typeof input === 'string' ? { t
 
 export function alert (input: string | Omit<AlertOptions, 'kind'>): Promise<void> {
   const options = normalize(input)
-  const buttons: DialogButton<void>[] = [{ label: options.okLabel ?? 'OK', variant: 'primary' }]
+  const buttons: DialogButton<void>[] = [{ label: options.okLabel ?? runtime().defaults.labels?.ok ?? 'OK', variant: 'primary' }]
   return open<void>({ ...options, kind: 'alert', buttons }, undefined, choice(0)).result
 }
 
@@ -110,20 +116,21 @@ export function confirm (input: string | Omit<ConfirmOptions, 'kind'>): Promise<
   const danger = options.tone === 'danger'
   const { onConfirm } = options
   const buttons: DialogButton<boolean>[] = [
-    { label: options.cancelLabel ?? 'Cancel', value: false },
+    { label: options.cancelLabel ?? runtime().defaults.labels?.cancel ?? 'Cancel', value: false },
     {
-      label: options.confirmLabel ?? 'Confirm',
+      label: options.confirmLabel ?? runtime().defaults.labels?.confirm ?? 'Confirm',
       value: true,
       variant: danger ? 'danger' : 'primary',
       onClick: onConfirm && (({ signal }) => onConfirm({ signal }))
     }
   ]
-  return open({ ...options, kind: 'confirm', buttons }, false, choice(danger ? 0 : 1)).result
+  return open({ ...options, kind: 'confirm', tone: options.tone, buttons }, false, choice(danger ? 0 : 1)).result
 }
 
 export function PromptBody ({ props, options }: { props: DialogRenderProps<string>, options: Omit<PromptOptions, 'kind'> }): ReactElement {
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
+  const slot = useSlot()
   const inputId = useId()
   const errorId = useId()
   // The submit is always prevented: method=dialog would close the dialog before validate runs.
@@ -147,25 +154,25 @@ export function PromptBody ({ props, options }: { props: DialogRenderProps<strin
   return (
     <form method='dialog' noValidate onSubmit={(e) => { void onSubmit(e) }}>
       <Body props={props}>
-        <div data-slot='field'>
-          {options.label && <label htmlFor={inputId} data-slot='label'>{options.label}</label>}
+        <div {...slot('field')}>
+          {options.label && <label htmlFor={inputId} {...slot('label')}>{options.label}</label>}
           <input
             id={inputId}
             name='value'
-            data-slot='input'
+            {...slot('input')}
             data-autofocus=''
             defaultValue={options.defaultValue}
             {...options.inputProps}
             aria-invalid={error ? true : undefined}
             aria-describedby={error ? errorId : undefined}
           />
-          {error && <p id={errorId} data-slot='error'>{error}</p>}
+          {error && <p id={errorId} {...slot('error')}>{error}</p>}
         </div>
-        <div className='react-confirm-alert-button-group' data-slot='actions'>
-          <button type='button' data-slot='button' data-variant='secondary' onClick={props.dismiss}>
+        <div {...slot('actions')}>
+          <button type='button' {...slot('button')} data-variant='secondary' onClick={props.dismiss}>
             {options.cancelLabel ?? 'Cancel'}
           </button>
-          <button type='submit' data-slot='button' data-variant='primary' aria-busy={busy || undefined} disabled={busy}>
+          <button type='submit' {...slot('button')} data-variant='primary' aria-busy={busy || undefined} disabled={busy}>
             {options.submitLabel ?? 'OK'}
           </button>
         </div>

@@ -1,15 +1,21 @@
 import { useLayoutEffect, useRef, type KeyboardEvent, type ReactNode, type SyntheticEvent, type ReactElement } from 'react'
 import { registerFrame, reopenClosedFrames } from './lifecycle'
 import { runtime, store, topmost } from './store'
-import type { DialogId, DialogKind } from './types'
+import type { DialogId, DialogKind, StyleOptions } from './types'
+import { SlotContext, slotsFor } from './classNames'
 
 export interface DialogFrameProps {
   id?: DialogId
   modal: boolean
   state: 'open' | 'closing'
   kind: DialogKind
-  className: string
-  panelClassName: string
+  /** style layers, widest first (see classNames.ts) */
+  layers: readonly StyleOptions[]
+  /** v3 overlayClassName, added to the dialog slot */
+  extraClass?: string | undefined
+  tone?: 'default' | 'danger' | undefined
+  depth?: number | undefined
+  topmost?: boolean | undefined
   label?: string | undefined
   labelledBy?: string | undefined
   describedBy?: string | undefined
@@ -107,8 +113,9 @@ export function DialogFrame (props: DialogFrameProps): ReactElement {
   }
 
   // Some browsers close a modal dialog on a repeated Escape even when cancel was prevented.
+  const slot = slotsFor(props.layers)
   const shared = {
-    className: props.className,
+    ...slot('dialog', props.extraClass),
     role: props.role,
     'aria-label': props.label,
     'aria-labelledby': props.labelledBy,
@@ -116,14 +123,16 @@ export function DialogFrame (props: DialogFrameProps): ReactElement {
     'data-rca': '',
     'data-state': props.state,
     'data-kind': props.kind,
-    'data-slot': 'dialog',
+    'data-tone': props.tone ?? 'default',
+    'data-depth': String(props.depth ?? 0),
+    'data-topmost': props.topmost ?? true ? '' : undefined,
     onPointerDown,
     onClick,
     onKeyDown
   }
   const content = (
-    <div ref={panel} className={props.panelClassName} data-slot='panel' tabIndex={-1}>
-      {props.children}
+    <div ref={panel} {...slot('panel')} tabIndex={-1}>
+      <SlotContext.Provider value={slot}>{props.children}</SlotContext.Provider>
     </div>
   )
 
