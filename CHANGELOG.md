@@ -1,6 +1,6 @@
 # react-confirm-alert
 
-## 3.1.0-next.0
+## 3.1.0
 
 ### Minor Changes
 
