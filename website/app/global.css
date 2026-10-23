@@ -22,3 +22,25 @@ html > body[data-scroll-locked] {
   margin-right: 0px !important;
   --removed-body-scroll-bar-size: 0px !important;
 }
+
+/* Live examples in the docs: the example files use plain <button> and <output>, styled here. */
+.example-preview > button {
+  cursor: pointer;
+  border-radius: var(--radius-lg);
+  background: var(--color-zinc-950);
+  color: white;
+  padding: var(--spacing-2) var(--spacing-4);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  transition: transform 150ms var(--ease-out-quint), background 150ms;
+}
+.example-preview > button:hover { background: var(--color-zinc-800); }
+.example-preview > button:active { transform: scale(0.97); }
+.dark .example-preview > button { background: white; color: var(--color-zinc-950); }
+.example-preview > output {
+  min-width: 10rem;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--color-fd-muted-foreground);
+}
+.example-code figure { margin: 0; border-width: 0; border-radius: 0; }

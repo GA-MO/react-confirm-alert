@@ -8,3 +8,4 @@ yarn.lock
 coverage
 .vitest
 /typings
+/style.css

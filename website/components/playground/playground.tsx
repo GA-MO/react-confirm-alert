@@ -2,6 +2,8 @@
 import { useRouter } from 'next/navigation'
 import { useEffect, useState, type ReactNode } from 'react'
 import { alert, closeAll, configureDialogs, confirm, confirmAlert, Dialog, openDialog, prompt } from 'react-confirm-alert'
+import { DynamicCodeBlock } from 'fumadocs-ui/components/dynamic-codeblock'
+import { snippet } from './snippet'
 
 type Log = { id: number, scenario: string, text: string }
 type Options = { title: string, message: string, danger: boolean, modal: boolean, closeOnEscape: boolean, closeOnClickOutside: boolean }
@@ -22,8 +24,8 @@ const scenarios: Scenario[] = [
   { id: 'route', group: 'Several dialogs', label: 'Close on navigation', code: "<DialogHost dismissKey={usePathname()} />", run: async (o, log, go) => { void confirm({ ...base(o), title: 'Navigating in 1.5 s' }).then((r) => log(`resolved ${r}`)); await wait(1500); go('/docs/recipes/next-app-router') } },
   { id: 'inline', group: 'In your tree', label: '<Dialog open> with state', code: "<Dialog open={open} onOpenChange={setOpen}><textarea value={note} onChange={...} /></Dialog>", inline: true },
   { id: 'custom', group: 'In your tree', label: 'openDialog() typed result', code: "const { result } = openDialog<string>({ render: ({ close }) => <button onClick={() => close('blue')}>Blue</button> })", run: async (o, log) => { const { result } = openDialog<string>({ ...base(o), render: ({ close }) => <Colors close={close} /> }); log(`resolved ${JSON.stringify(await result)}`) } },
-  { id: 'v3', group: 'v3 API', label: 'confirmAlert()', code: "confirmAlert({ title, message, buttons: [{ label: 'Yes', onClick }, { label: 'No' }] })", run: (o, log) => confirmAlert({ title: o.title, message: o.message, closeOnEscape: o.closeOnEscape, closeOnClickOutside: o.closeOnClickOutside, buttons: [{ label: 'Yes', onClick: () => log('Yes') }, { label: 'No', onClick: () => log('No') }] }) },
-  { id: 'customUI', group: 'v3 API', label: 'customUI', code: "confirmAlert({ customUI: ({ onClose }) => <div className='custom-ui'>…</div> })", run: (o, log) => confirmAlert({ customUI: ({ onClose }) => <div className="rounded-xl bg-fd-card p-6 shadow-xl"><h2 className="mb-4 text-lg font-semibold">Custom UI</h2><button className="rounded-md border px-3 py-1.5" onClick={() => { log('custom closed'); onClose() }}>Close</button></div> }) }
+  { id: 'v3', group: '3.0 API', label: 'confirmAlert()', code: "confirmAlert({ title, message, buttons: [{ label: 'Yes', onClick }, { label: 'No' }] })", run: (o, log) => confirmAlert({ title: o.title, message: o.message, closeOnEscape: o.closeOnEscape, closeOnClickOutside: o.closeOnClickOutside, buttons: [{ label: 'Yes', onClick: () => log('Yes') }, { label: 'No', onClick: () => log('No') }] }) },
+  { id: 'customUI', group: '3.0 API', label: 'customUI', code: "confirmAlert({ customUI: ({ onClose }) => <div className='custom-ui'>…</div> })", run: (o, log) => confirmAlert({ customUI: ({ onClose }) => <div className="rounded-xl bg-fd-card p-6 shadow-xl"><h2 className="mb-4 text-lg font-semibold">Custom UI</h2><button className="rounded-md border px-3 py-1.5" onClick={() => { log('custom closed'); onClose() }}>Close</button></div> }) }
 ]
 
 const styles = {
@@ -90,10 +92,11 @@ export function Playground () {
   const [style, setStyle] = useState<StyleKey>('default')
   const [width, setWidth] = useState(400)
   const [logs, setLogs] = useState<Log[]>([])
-  const [copied, setCopied] = useState(false)
   const [inlineOpen, setInlineOpen] = useState(false)
   const [note, setNote] = useState('')
   const scenario = scenarios.find((s) => s.id === active)!
+  // Rebuilt on every change, so the panel always shows a complete component for the current options.
+  const code = snippet(active, opts, style)
 
   useEffect(() => { styles[style].apply() }, [style])
   useEffect(() => () => configureDialogs({}), [])
@@ -138,12 +141,8 @@ export function Playground () {
           <h1 className="text-2xl font-bold">{scenario.label}</h1>
           <button onClick={run} className="cursor-pointer rounded-lg bg-fd-primary px-5 py-2.5 font-medium text-fd-primary-foreground shadow-sm transition duration-150 ease-out-quint hover:-translate-y-px hover:shadow-md active:translate-y-0 active:scale-97">Open dialog</button>
         </header>
-        <div className="relative rounded-xl border bg-fd-secondary/50 p-4 font-mono text-sm">
-          <pre className="overflow-x-auto whitespace-pre-wrap pr-16">{scenario.code}</pre>
-          <button onClick={async () => { await navigator.clipboard?.writeText(scenario.code); setCopied(true); setTimeout(() => setCopied(false), 1200) }}
-            className="absolute right-3 top-3 rounded-md border bg-fd-background px-2 py-1 text-xs transition active:scale-95">
-            {copied ? 'Copied' : 'Copy'}
-          </button>
+        <div className="min-w-0 [&_figure]:my-0">
+          <DynamicCodeBlock lang="tsx" code={code} options={{ themes: { light: 'vitesse-light', dark: 'vitesse-dark' } }} />
         </div>
         <div aria-live="polite" className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-zinc-950/5">
           <h2 className="mb-2 text-sm font-semibold">Results</h2>
@@ -174,7 +173,7 @@ export function Playground () {
             {style === 'variables' && (
               <Field label={`--rca-width: ${width}px`}><input type="range" min={280} max={640} value={width} onChange={(e) => setWidth(Number(e.target.value))} className="w-full accent-[var(--color-fd-primary)]" /></Field>
             )}
-            <p className="text-xs text-fd-muted-foreground">Styling applies to the Promise API and dialogs in your tree. confirmAlert keeps the v3 look unless configureDialogs sets confirmAlert defaults.</p>
+            <p className="text-xs text-fd-muted-foreground">Styling applies to the Promise API and dialogs in your tree. confirmAlert keeps the 3.0 look unless configureDialogs sets confirmAlert defaults.</p>
           </fieldset>
         </div>
       </section>
