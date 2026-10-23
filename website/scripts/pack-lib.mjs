@@ -15,6 +15,8 @@ const tarball = execFileSync('npm', ['pack', '--pack-destination', join(site, '.
 copyFileSync(join(site, '.pack', tarball), join(site, '.pack', 'react-confirm-alert.tgz'))
 rmSync(join(site, 'node_modules', 'react-confirm-alert'), { recursive: true, force: true })
 run(['install', '--no-audit', '--no-fund'], site)
+// The lockfile pins the tarball's old integrity, so install the fresh one explicitly.
+run(['install', '--no-save', '--no-audit', '--no-fund', './.pack/react-confirm-alert.tgz'], site)
 
 // The home page shows these numbers, so they always come from this build.
 const sizes = JSON.parse(execFileSync('npx', ['size-limit', '--json'], { cwd: root }).toString())

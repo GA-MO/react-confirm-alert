@@ -110,13 +110,23 @@ export function Playground () {
 
   return (
     <main className="mx-auto grid w-full max-w-6xl flex-1 gap-6 px-4 py-8 md:grid-cols-[220px_1fr] md:px-6">
-      <nav aria-label="Scenarios" className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 md:mx-0 md:flex-col md:overflow-visible md:px-0">
+      <label className="flex flex-col gap-1.5 text-sm font-medium md:hidden">
+        Scenario
+        <select value={active} onChange={(e) => setActive(e.target.value)} className="h-11 w-full cursor-pointer rounded-lg border bg-fd-background px-3 text-base shadow-sm transition focus:border-fd-primary focus:outline-none">
+          {groups.map((g) => (
+            <optgroup key={g} label={g}>
+              {scenarios.filter((s) => s.group === g).map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
+            </optgroup>
+          ))}
+        </select>
+      </label>
+      <nav aria-label="Scenarios" className="hidden flex-col md:flex">
         {groups.map((g) => (
-          <div key={g} className="contents md:block">
-            <p className="hidden px-2 pb-1 pt-3 text-xs font-semibold uppercase tracking-wide text-fd-muted-foreground md:block">{g}</p>
+          <div key={g}>
+            <p className="px-2 pb-1 pt-3 text-xs font-semibold uppercase tracking-wide text-fd-muted-foreground">{g}</p>
             {scenarios.filter((s) => s.group === g).map((s) => (
               <button key={s.id} onClick={() => setActive(s.id)} aria-current={s.id === active}
-                className="shrink-0 rounded-lg px-3 py-1.5 text-left text-sm transition-colors hover:bg-fd-accent aria-[current=true]:bg-fd-primary/10 aria-[current=true]:font-medium aria-[current=true]:text-fd-primary md:block md:w-full">
+                className="block w-full cursor-pointer rounded-lg px-3 py-1.5 text-left text-sm transition-colors duration-150 hover:bg-fd-accent aria-[current=true]:bg-fd-primary/10 aria-[current=true]:font-medium aria-[current=true]:text-fd-primary">
                 {s.label}
               </button>
             ))}
@@ -126,7 +136,7 @@ export function Playground () {
       <section className="flex min-w-0 flex-col gap-5">
         <header className="flex flex-wrap items-center justify-between gap-3">
           <h1 className="text-2xl font-bold">{scenario.label}</h1>
-          <button onClick={run} className="rounded-lg bg-fd-primary px-5 py-2.5 font-medium text-fd-primary-foreground shadow-sm transition hover:opacity-90 active:scale-[0.97]">Open dialog</button>
+          <button onClick={run} className="cursor-pointer rounded-lg bg-fd-primary px-5 py-2.5 font-medium text-fd-primary-foreground shadow-sm transition duration-150 ease-out-quint hover:-translate-y-px hover:shadow-md active:translate-y-0 active:scale-97">Open dialog</button>
         </header>
         <div className="relative rounded-xl border bg-fd-secondary/50 p-4 font-mono text-sm">
           <pre className="overflow-x-auto whitespace-pre-wrap pr-16">{scenario.code}</pre>
@@ -150,7 +160,7 @@ export function Playground () {
             <div role="radiogroup" className="grid grid-cols-2 gap-2">
               {(Object.keys(styles) as StyleKey[]).map((k) => (
                 <button key={k} role="radio" aria-checked={style === k} onClick={() => setStyle(k)}
-                  className="rounded-lg border px-2 py-1.5 text-sm transition hover:bg-fd-accent active:scale-[0.97] aria-checked:border-fd-primary aria-checked:bg-fd-primary/10">
+                  className="rounded-lg border px-2 py-1.5 text-sm transition hover:bg-fd-accent active:scale-97 aria-checked:border-fd-primary aria-checked:bg-fd-primary/10">
                   {styles[k].label}
                 </button>
               ))}
