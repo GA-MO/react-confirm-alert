@@ -1,45 +1,54 @@
 'use client'
 import { useRouter } from 'next/navigation'
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
-import { alert, closeAll, configureDialogs, confirm, confirmAlert, openDialog, prompt } from 'react-confirm-alert'
+import { alert, closeAll, configureDialogs, confirm, confirmAlert, openDialog, prompt, type DialogDefaults } from 'react-confirm-alert'
 import { DynamicCodeBlock } from 'fumadocs-ui/components/dynamic-codeblock'
 import type { ShikiTransformer } from 'shiki'
 import { codeThemes } from '@/lib/code-themes'
 import { Colors, Nested, NoteDialog } from './dialogs'
 import { snippet } from './snippet'
 import { apis, examples, type Api } from '../custom-ui'
+import { customUIExamples } from '../custom-ui/gallery'
+import { DialogThumbnail, type Picture } from '../gallery'
 
 type Log = { id: number, scenario: string, text: string }
 type Options = { title: string, message: string, danger: boolean, modal: boolean, closeOnEscape: boolean, closeOnClickOutside: boolean }
 type Run = (o: Options, log: (text: string) => void, go: (path: string) => void) => void | Promise<void>
-interface Scenario { id: string, label: string, group: string, run?: Run, inline?: true, custom?: true }
+// picture draws the dialog the scenario opens, from the current options, so a change shows before you open it.
+interface Scenario { id: string, label: string, group: string, run?: Run, inline?: true, custom?: true, picture?: (o: Options) => Picture }
 
 const wait = (ms: number) => new Promise<void>((r) => setTimeout(r, ms))
+const cancel = { label: 'Cancel' }
+const confirmPicture = (o: Options, title = o.title, label = 'Confirm'): Picture => ({
+  kind: 'confirm', tone: o.danger ? 'danger' : undefined, title, message: o.message,
+  buttons: [cancel, { label, variant: o.danger ? 'danger' : 'primary' }]
+})
+const field = (label: string, control: ReactNode) => <div data-slot="field"><label data-slot="label">{label}</label>{control}</div>
 const base = (o: Options) => ({ title: o.title, message: o.message, modal: o.modal, closeOnEscape: o.closeOnEscape, closeOnClickOutside: o.closeOnClickOutside })
 
 const scenarios: Scenario[] = [
-  ...examples.map((e): Scenario => ({ id: e.id, group: 'Custom UI', label: e.label, custom: true })),
-  { id: 'confirm', group: 'Promise API', label: 'await confirm()', run: async (o, log) => log(`resolved ${await confirm({ ...base(o), tone: o.danger ? 'danger' : 'default' })}`) },
-  { id: 'alert', group: 'Promise API', label: 'alert()', run: async (o, log) => { await alert(base(o)); log('resolved') } },
-  { id: 'prompt', group: 'Promise API', label: 'prompt() with validate', run: async (o, log) => log(`resolved ${JSON.stringify(await prompt({ ...base(o), title: 'Your name', label: 'Name', validate: (v) => (v.trim() ? null : 'Required') }))}`) },
-  { id: 'async', group: 'Promise API', label: 'Async button', run: async (o, log) => log(`resolved ${await confirm({ ...base(o), title: 'Save changes?', confirmLabel: 'Save', onConfirm: () => wait(1500) })}`) },
-  { id: 'stack', group: 'Several dialogs', label: 'Nested (stack)', run: (o, log) => { openDialog({ ...base(o), title: undefined, render: ({ dismiss }) => <Nested dismiss={dismiss} log={log} /> }) } },
-  { id: 'queue', group: 'Several dialogs', label: 'Queue', run: async (o, log) => { for (const t of ['One', 'Two', 'Three']) void alert({ ...base(o), title: t, message: 'Opens after the one before closes.', strategy: 'queue' }).then(() => log(`${t} closed`)) } },
-  { id: 'closeAll', group: 'Several dialogs', label: 'closeAll()', run: async (o, log) => { void confirm({ ...base(o), title: 'Closing in 1.5 s' }).then((r) => log(`resolved ${r}`)); await wait(1500); closeAll() } },
-  { id: 'route', group: 'Several dialogs', label: 'Close on navigation', run: async (o, log, go) => { void confirm({ ...base(o), title: 'Navigating in 1.5 s' }).then((r) => log(`resolved ${r}`)); await wait(1500); go('/docs/recipes/next-app-router') } },
-  { id: 'inline', group: 'In your tree', label: '<Dialog open> with state', inline: true },
-  { id: 'custom', group: 'In your tree', label: 'openDialog() typed result', run: async (o, log) => { const { result } = openDialog<string>({ ...base(o), render: ({ close }) => <Colors close={close} /> }); log(`resolved ${JSON.stringify(await result)}`) } },
-  { id: 'v3', group: '3.0 API', label: 'confirmAlert()', run: (o, log) => confirmAlert({ title: o.title, message: o.message, closeOnEscape: o.closeOnEscape, closeOnClickOutside: o.closeOnClickOutside, buttons: [{ label: 'Yes', onClick: () => log('Yes') }, { label: 'No', onClick: () => log('No') }] }) },
+  ...examples.map((e): Scenario => ({ id: e.id, group: 'Custom UI', label: e.label, custom: true, picture: () => customUIExamples.find((c) => c.id === e.card)!.picture })),
+  { id: 'confirm', group: 'Promise API', label: 'await confirm()', picture: (o) => confirmPicture(o), run: async (o, log) => log(`resolved ${await confirm({ ...base(o), tone: o.danger ? 'danger' : 'default' })}`) },
+  { id: 'alert', group: 'Promise API', label: 'alert()', picture: (o) => ({ kind: 'alert', title: o.title, message: o.message, buttons: [{ label: 'OK', variant: 'primary' }] }), run: async (o, log) => { await alert(base(o)); log('resolved') } },
+  { id: 'prompt', group: 'Promise API', label: 'prompt() with validate', picture: (o) => ({ kind: 'prompt', title: 'Your name', message: o.message, content: field('Name', <input data-slot="input" />), buttons: [cancel, { label: 'OK', variant: 'primary' }] }), run: async (o, log) => log(`resolved ${JSON.stringify(await prompt({ ...base(o), title: 'Your name', label: 'Name', validate: (v) => (v.trim() ? null : 'Required') }))}`) },
+  { id: 'async', group: 'Promise API', label: 'Async button', picture: (o) => confirmPicture({ ...o, danger: false }, 'Save changes?', 'Save'), run: async (o, log) => log(`resolved ${await confirm({ ...base(o), title: 'Save changes?', confirmLabel: 'Save', onConfirm: () => wait(1500) })}`) },
+  { id: 'stack', group: 'Several dialogs', label: 'Nested (stack)', picture: () => ({ kind: 'custom', title: 'Level 1', message: 'Open a second dialog on top. Escape closes the top one first.', buttons: [{ label: 'Open level 2', variant: 'primary' }, { label: 'Close' }] }), run: (o, log) => { openDialog({ ...base(o), title: undefined, render: ({ dismiss }) => <Nested dismiss={dismiss} log={log} /> }) } },
+  { id: 'queue', group: 'Several dialogs', label: 'Queue', picture: () => ({ kind: 'alert', title: 'One', message: 'Opens after the one before closes.', buttons: [{ label: 'OK', variant: 'primary' }] }), run: async (o, log) => { for (const t of ['One', 'Two', 'Three']) void alert({ ...base(o), title: t, message: 'Opens after the one before closes.', strategy: 'queue' }).then(() => log(`${t} closed`)) } },
+  { id: 'closeAll', group: 'Several dialogs', label: 'closeAll()', picture: (o) => confirmPicture({ ...o, danger: false }, 'Closing in 1.5 s'), run: async (o, log) => { void confirm({ ...base(o), title: 'Closing in 1.5 s' }).then((r) => log(`resolved ${r}`)); await wait(1500); closeAll() } },
+  { id: 'route', group: 'Several dialogs', label: 'Close on navigation', picture: (o) => confirmPicture({ ...o, danger: false }, 'Navigating in 1.5 s'), run: async (o, log, go) => { void confirm({ ...base(o), title: 'Navigating in 1.5 s' }).then((r) => log(`resolved ${r}`)); await wait(1500); go('/docs/recipes/next-app-router') } },
+  { id: 'inline', group: 'In your tree', label: '<Dialog open> with state', inline: true, picture: () => ({ kind: 'custom', title: 'Edit note', content: field('Note', <textarea data-slot="input" />), buttons: [cancel, { label: 'Save', variant: 'primary' }] }) },
+  { id: 'custom', group: 'In your tree', label: 'openDialog() typed result', picture: () => ({ kind: 'custom', title: 'Pick a colour', content: field('Colour', <select data-slot="input"><option>blue</option></select>), buttons: [{ label: 'Pick', variant: 'primary' }] }), run: async (o, log) => { const { result } = openDialog<string>({ ...base(o), render: ({ close }) => <Colors close={close} /> }); log(`resolved ${JSON.stringify(await result)}`) } },
+  { id: 'v3', group: '3.0 API', label: 'confirmAlert()', picture: (o) => ({ kind: 'custom', legacy: true, title: o.title, message: o.message, buttons: [{ label: 'Yes' }, { label: 'No' }] }), run: (o, log) => confirmAlert({ title: o.title, message: o.message, closeOnEscape: o.closeOnEscape, closeOnClickOutside: o.closeOnClickOutside, buttons: [{ label: 'Yes', onClick: () => log('Yes') }, { label: 'No', onClick: () => log('No') }] }) },
   { id: 'customUI', group: '3.0 API', label: 'customUI', run: (o, log) => confirmAlert({ customUI: ({ onClose }) => <div className="rounded-xl bg-fd-card p-6 shadow-xl"><h2 className="mb-4 text-lg font-semibold">Custom UI</h2><button className="rounded-md border px-3 py-1.5" onClick={() => { log('custom closed'); onClose() }}>Close</button></div> }) }
 ]
 
 const styles = {
-  default: { label: 'Default CSS', apply: () => configureDialogs({}) },
-  variables: { label: 'CSS variables', apply: () => configureDialogs({}) },
-  mixed: { label: 'Tailwind + default', apply: () => configureDialogs({ classNames: { button: 'rounded-full transition active:scale-95 data-[variant=primary]:bg-fd-primary data-[variant=primary]:text-fd-primary-foreground' } }) },
+  default: { label: 'Default CSS', options: {} },
+  variables: { label: 'CSS variables', options: {} },
+  mixed: { label: 'Tailwind + default', options: { classNames: { button: 'rounded-full transition active:scale-95 data-[variant=primary]:bg-fd-primary data-[variant=primary]:text-fd-primary-foreground' } } },
   tailwind: {
     label: 'Tailwind only',
-    apply: () => configureDialogs({
+    options: {
       unstyled: true,
       classNames: {
         dialog: 'fixed inset-0 m-0 open:grid size-full max-h-none max-w-none place-items-center bg-transparent p-4 backdrop:bg-black/40 backdrop:backdrop-blur-sm',
@@ -49,9 +58,9 @@ const styles = {
         actions: 'mt-6 flex justify-end gap-2',
         button: 'rounded-md border px-3 py-1.5 text-sm font-medium transition active:scale-95 data-[variant=primary]:border-transparent data-[variant=primary]:bg-fd-primary data-[variant=primary]:text-fd-primary-foreground data-[variant=danger]:bg-red-600 data-[variant=danger]:text-white disabled:opacity-60 aria-busy:animate-pulse'
       }
-    })
+    }
   }
-} as const
+} satisfies Record<string, { label: string, options: DialogDefaults }>
 type StyleKey = keyof typeof styles
 
 function Toggle ({ label, checked, onChange }: { label: string, checked: boolean, onChange: (v: boolean) => void }) {
@@ -89,7 +98,7 @@ export function Playground ({ sources }: { sources: Record<string, string> }) {
   }
   const codeOptions = useMemo(() => ({ themes: codeThemes, transformers: [markLines(shown.changed)] }), [shown])
 
-  useEffect(() => { styles[style].apply() }, [style])
+  useEffect(() => { configureDialogs(styles[style].options) }, [style])
   useEffect(() => () => configureDialogs({}), [])
   useEffect(() => {
     const root = document.documentElement.style
@@ -101,6 +110,9 @@ export function Playground ({ sources }: { sources: Record<string, string> }) {
   const run = () => (scenario.inline ? setInlineOpen(true) : void scenario.run?.(opts, log, (p) => router.push(p)))
   const set = <K extends keyof Options>(k: K) => (v: Options[K]) => setOpts((o) => ({ ...o, [k]: v }))
   const groups = [...new Set(scenarios.map((s) => s.group))]
+  // confirmAlert keeps its 3.0 look, so the Styling choice only changes the other pictures.
+  const drawn = scenario.picture?.(opts)
+  const picture = drawn && (drawn.legacy ? drawn : { ...drawn, ...styles[style].options })
 
   return (
     <main className="mx-auto grid w-full max-w-7xl flex-1 items-start gap-6 px-4 py-8 md:grid-cols-[200px_minmax(0,1fr)] md:px-6 lg:grid-cols-[180px_minmax(0,22rem)_minmax(0,1fr)]">
@@ -132,6 +144,7 @@ export function Playground ({ sources }: { sources: Record<string, string> }) {
           <h1 className="text-2xl font-bold">{scenario.label}</h1>
           {!example && <button onClick={run} className="cursor-pointer rounded-lg bg-fd-primary px-5 py-2.5 font-medium text-fd-primary-foreground shadow-sm transition duration-150 ease-out-quint hover:-translate-y-px hover:shadow-md active:translate-y-0 active:scale-97">Open dialog</button>}
         </header>
+        {picture && <DialogThumbnail {...picture} />}
         {example && Variant && (
           <>
             <div role="radiogroup" aria-label="Written with" className="grid grid-cols-4 gap-1 rounded-xl bg-fd-muted p-1">

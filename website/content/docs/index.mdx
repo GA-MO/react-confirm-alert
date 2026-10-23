@@ -3,42 +3,57 @@ title: Getting started
 description: Confirm, alert and prompt dialogs for React 18 and 19. Code written for 3.0 keeps working.
 ---
 
-import { Example } from '@/components/example'
-import { DeleteButton } from '@/components/examples/delete-button'
+import { StartGallery } from '@/components/api/gallery'
+
+Each call opens a dialog and returns a Promise of the answer. Press a button to see what it returns.
+
+<StartGallery />
+
+## Install
 
 ```bash
 npm install react-confirm-alert
 ```
 
-Import the CSS once, for example in your root layout:
+Import the CSS once, in your root layout. The path needs 3.1.1 or later.
 
 ```tsx title="app/layout.tsx"
 import 'react-confirm-alert/style.css'
 ```
 
-`style.css` needs 3.1.1 or later. The older path, `react-confirm-alert/src/react-confirm-alert.css`, still works.
+## Ask and wait
 
-Then ask a question and wait for the answer. Press the button:
+`confirm()` resolves `true` from the confirm button. Cancel, Escape, a click outside and `closeAll()` resolve `false`.
 
-<Example preview={<DeleteButton />}>
-<include meta='title="delete-button.tsx"'>../../components/examples/delete-button.tsx</include>
-</Example>
+```tsx
+import { confirm } from 'react-confirm-alert'
 
-`confirm()` resolves `true` or `false`. Escape, a click outside, `closeAll()` and a route change all resolve it with `false`.
-
-## Already on 3.0
-
-`confirmAlert(options)` works as it did in 3.0. See [What's new in 3.1](/docs/whats-new-in-3-1) for what you can adopt, one step at a time.
+async function onDelete() {
+  const ok = await confirm({
+    title: 'Delete “Q3 report.pdf”?',
+    tone: 'danger',
+  })
+  if (ok) await moveToTrash('Q3 report.pdf')
+}
+```
 
 ## Dialogs that read your providers
 
-Place `<DialogHost />` inside your providers once. Every dialog then renders there and sees Redux, Intl, SWR and theme context.
+Place `<DialogHost />` once, inside your providers. Every dialog then renders there and reads your context, such as Redux, Intl or a theme.
 
 ```tsx title="app/providers.tsx"
 <IntlProvider locale="th">
-  <App />
+  {children}
   <DialogHost />
 </IntlProvider>
 ```
 
-Try every option in the [playground](/playground).
+The [Next.js recipe](/docs/recipes/next-app-router) adds `dismissKey`, so dialogs close on navigation.
+
+## Next
+
+- [API](/docs/api) has every export with a live example.
+- [Custom UI](/docs/custom-ui) puts your own form in a dialog.
+- [Styling](/docs/styling) changes colours, corners and size.
+- [What's new](/docs/whats-new) lists what 3.1 to 3.3 add. Code written for 3.0 keeps working.
+- The [playground](/playground) has every option.

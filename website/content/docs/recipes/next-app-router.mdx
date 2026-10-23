@@ -3,8 +3,14 @@ title: Next.js app router
 description: A client host in the root layout that closes dialogs on navigation.
 ---
 
-```tsx
-// app/dialogs.tsx
+import { Example } from '@/components/example'
+import { NavigateAway } from '@/components/recipes/navigate'
+
+This site uses the host below. Press the button. The page changes while the dialog is open, and the dialog closes with it.
+
+<Example preview={<NavigateAway />}>
+
+```tsx title="app/dialogs.tsx"
 'use client'
 import { usePathname } from 'next/navigation'
 import { DialogHost } from 'react-confirm-alert'
@@ -14,14 +20,24 @@ export function Dialogs() {
 }
 ```
 
-```tsx
-// app/layout.tsx (a server component)
+</Example>
+
+Render it once in the root layout, a server component:
+
+```tsx title="app/layout.tsx"
 import 'react-confirm-alert/style.css'
 import { Dialogs } from './dialogs'
 
-export default function RootLayout({ children }) {
-  return <html><body>{children}<Dialogs /></body></html>
+export default function RootLayout({ children }: LayoutProps<'/'>) {
+  return (
+    <html lang="en">
+      <body>
+        {children}
+        <Dialogs />
+      </body>
+    </html>
+  )
 }
 ```
 
-The package starts with `'use client'`, so server components can import it. Call `confirm()` from client code: on the server it rejects.
+The package starts with `'use client'`, so server components can import it. Call `confirm()` from client code. On the server it rejects.

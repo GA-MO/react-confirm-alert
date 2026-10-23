@@ -2,8 +2,16 @@
 import Link from 'next/link'
 import { useState } from 'react'
 import { confirm, prompt } from 'react-confirm-alert'
+import { cardFrom, Gallery } from './gallery'
+import { stylingExamples } from './styling/gallery'
 
 const starter = ['Q3 report.pdf', 'Brand guidelines.fig', 'Launch notes.md']
+
+const showcase = [
+  cardFrom(stylingExamples, 'a-form-in-your-own-content', { href: '/docs/custom-ui', label: 'Your own form', change: 'Plain HTML, no class names' }),
+  cardFrom(stylingExamples, 'dark-mode', { href: '/docs/styling#dark-mode', label: 'Dark mode', change: 'A class on <html>' }),
+  cardFrom(stylingExamples, 'tailwind-only', { href: '/docs/recipes/tailwind', label: 'Tailwind only', change: 'unstyled + classNames' }),
+]
 
 type Entry = { id: number, call: string, value: string }
 
@@ -36,23 +44,23 @@ export function Home () {
     <main className="mx-auto grid w-full max-w-5xl flex-1 content-start items-start gap-12 lg:content-center px-6 py-12 md:grid-cols-2 md:gap-10 md:py-24">
       <section>
         <p className="text-sm font-medium text-indigo-600">For React 18 and 19</p>
-        <h1 className="mt-3 text-balance text-4xl font-semibold tracking-tight text-zinc-950 sm:text-5xl">Ask, then wait for the answer.</h1>
-        <p className="mt-4 text-pretty text-lg text-zinc-600"><code className="rounded bg-zinc-100 px-1.5 py-0.5 text-base">await confirm()</code> gives you true or false. Focus moves in and back, Escape works, and your 3.0 calls keep working.</p>
+        <h1 className="mt-3 text-balance text-4xl font-semibold tracking-tight text-zinc-950 sm:text-5xl dark:text-zinc-50">Ask, then wait for the answer.</h1>
+        <p className="mt-4 text-pretty text-lg text-zinc-600 dark:text-zinc-400"><code className="rounded bg-zinc-100 px-1.5 py-0.5 text-base dark:bg-zinc-800 dark:text-zinc-200">await confirm()</code> gives you true or false. Focus moves in and back, Escape works, and your 3.0 calls keep working.</p>
         <div className="mt-8 flex flex-wrap gap-3">
-          <Link href="/docs" className="cursor-pointer rounded-lg bg-zinc-950 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition duration-150 hover:-translate-y-px hover:shadow-md active:translate-y-0 active:scale-98">Get started</Link>
-          <Link href="/playground" className="cursor-pointer rounded-lg px-4 py-2.5 text-sm font-medium text-zinc-700 ring-1 ring-zinc-200 transition duration-150 hover:bg-zinc-50 active:scale-98">Playground</Link>
+          <Link href="/docs" className="cursor-pointer rounded-lg bg-zinc-950 px-4 py-2.5 text-sm font-medium text-white shadow-sm dark:bg-white dark:text-zinc-950 transition duration-150 hover:-translate-y-px hover:shadow-md active:translate-y-0 active:scale-98">Get started</Link>
+          <Link href="/playground" className="cursor-pointer rounded-lg px-4 py-2.5 text-sm font-medium text-zinc-700 ring-1 ring-zinc-200 transition duration-150 hover:bg-zinc-50 active:scale-98 dark:text-zinc-200 dark:ring-zinc-700 dark:hover:bg-zinc-800">Playground</Link>
         </div>
       </section>
-      <section aria-label="Try it" className="overflow-hidden rounded-2xl bg-white shadow-xl ring-1 ring-zinc-950/5">
+      <section aria-label="Try it" className="overflow-hidden rounded-2xl bg-white shadow-xl ring-1 ring-zinc-950/5 dark:bg-zinc-900 dark:ring-white/10">
         <ul className="p-2">
           {files.map((f) => (
             <li key={f}
               onTransitionEnd={(e) => { if (leaving === f && e.propertyName === 'max-height') { setFiles((l) => l.filter((x) => x !== f)); setLeaving(null) } }}
-              className={`flex items-center justify-between gap-2 overflow-hidden rounded-xl px-4 transition-all duration-200 ease-out-quint hover:bg-zinc-50 motion-reduce:transition-none ${leaving === f ? 'max-h-0 -translate-x-2 py-0 opacity-0' : 'max-h-16 py-3'}`}>
-              <span className="truncate text-sm text-zinc-800">{f}</span>
+              className={`flex items-center justify-between gap-2 overflow-hidden rounded-xl px-4 transition-all duration-200 ease-out-quint hover:bg-zinc-50 motion-reduce:transition-none dark:hover:bg-white/5 ${leaving === f ? 'max-h-0 -translate-x-2 py-0 opacity-0' : 'max-h-16 py-3'}`}>
+              <span className="truncate text-sm text-zinc-800 dark:text-zinc-100">{f}</span>
               <span className="flex shrink-0 gap-1">
-                <button onClick={() => rename(f)} className="cursor-pointer rounded-md px-2.5 py-1 text-sm text-zinc-600 ring-1 ring-zinc-200 transition duration-150 hover:bg-zinc-100 hover:ring-zinc-300 hover:text-zinc-900 active:scale-97 focus-visible:outline-2 focus-visible:outline-indigo-500">Rename</button>
-                <button onClick={() => remove(f)} className="cursor-pointer rounded-md px-2.5 py-1 text-sm text-zinc-600 ring-1 ring-zinc-200 transition duration-150 hover:bg-red-50 hover:ring-red-200 hover:text-red-600 active:scale-97 focus-visible:outline-2 focus-visible:outline-indigo-500">Delete</button>
+                <button onClick={() => rename(f)} className="cursor-pointer rounded-md px-2.5 py-1 text-sm text-zinc-600 ring-1 ring-zinc-200 transition duration-150 hover:bg-zinc-100 hover:ring-zinc-300 hover:text-zinc-900 active:scale-97 focus-visible:outline-2 focus-visible:outline-indigo-500 dark:text-zinc-300 dark:ring-white/15 dark:hover:bg-white/5 dark:hover:text-white">Rename</button>
+                <button onClick={() => remove(f)} className="cursor-pointer rounded-md px-2.5 py-1 text-sm text-zinc-600 ring-1 ring-zinc-200 transition duration-150 hover:bg-red-50 hover:ring-red-200 hover:text-red-600 active:scale-97 focus-visible:outline-2 focus-visible:outline-indigo-500 dark:text-zinc-300 dark:ring-white/15 dark:hover:bg-red-500/10 dark:hover:text-red-400">Delete</button>
               </span>
             </li>
           ))}
@@ -63,7 +71,7 @@ export function Home () {
             </li>
           )}
         </ul>
-        <div aria-live="polite" className="border-t border-zinc-100 bg-zinc-50/60 px-6 py-4">
+        <div aria-live="polite" className="border-t border-zinc-100 bg-zinc-50/60 px-6 py-4 dark:border-white/10 dark:bg-white/5">
           <p className="text-xs font-medium uppercase tracking-wide text-zinc-400">What the Promise returned</p>
           {results.length === 0
             ? <p className="mt-2 text-sm text-zinc-500">Rename or delete a file to see the value.</p>
@@ -73,12 +81,16 @@ export function Home () {
                   <li key={r.id} className={`flex items-baseline gap-2 transition-opacity duration-300 ${i === 0 ? 'animate-rise' : 'opacity-70'}`}>
                     <span className="text-zinc-500">{r.call}</span>
                     <span aria-hidden className="text-zinc-300">→</span>
-                    <code className="rounded bg-white px-1.5 py-0.5 text-zinc-900 ring-1 ring-zinc-200">{r.value}</code>
+                    <code className="rounded bg-white px-1.5 py-0.5 text-zinc-900 ring-1 ring-zinc-200 dark:bg-zinc-800 dark:text-zinc-100 dark:ring-white/10">{r.value}</code>
                   </li>
                 ))}
               </ul>
               )}
         </div>
+      </section>
+      <section aria-labelledby="showcase" className="md:col-span-2">
+        <h2 id="showcase" className="text-sm font-medium text-zinc-500">Forms, dark mode and Tailwind, from the same calls</h2>
+        <Gallery items={showcase} />
       </section>
     </main>
   )

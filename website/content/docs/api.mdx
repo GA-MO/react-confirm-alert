@@ -1,90 +1,328 @@
 ---
 title: API
-description: Every export, with a live example.
+description: Every export, with a live example and its options.
 ---
 
 import { Example } from '@/components/example'
-import { DeleteButton } from '@/components/examples/delete-button'
-import { SavedAlert } from '@/components/examples/saved-alert'
-import { RenamePrompt } from '@/components/examples/rename-prompt'
-import { PublishButton } from '@/components/examples/save-async'
-import { EditNote } from '@/components/examples/edit-note'
+import { Try } from '@/components/try'
+import { ApiGallery, askInThaiOnce } from '@/components/api/gallery'
+import { deleteFile } from '@/components/api/confirm'
+import { showSaved } from '@/components/api/alert'
+import { renameFile } from '@/components/api/prompt'
+import { publish } from '@/components/api/publish'
+import { pickPlan } from '@/components/api/open-dialog'
+import { askThenClose } from '@/components/api/close-all'
+import { EditNote } from '@/components/api/dialog'
+import { LeavePage } from '@/components/api/confirm-dialog'
+import { renameWorkspace } from '@/components/api/dialog-layout'
+import { ShowTheme } from '@/components/api/dialog-host'
+import { SubmitOrder } from '@/components/api/confirm-alert'
+import { ShowTerms } from '@/components/api/custom-ui'
+
+Press a button to open the dialog and see what it returns. Each section ends with its options.
+
+<ApiGallery />
 
 ## confirm
 
-Resolves `true` from the confirm button, `false` otherwise. `tone: 'danger'` paints the confirm button red and focuses Cancel.
+Resolves `true` from the confirm button and `false` otherwise. `tone: 'danger'` makes the button red and focuses Cancel.
 
-<Example preview={<DeleteButton />}>
-<include meta='title="delete-button.tsx"'>../../components/examples/delete-button.tsx</include>
+<Example preview={<Try run={deleteFile}>Delete</Try>}>
+<include meta='title="confirm.tsx"'>../../components/api/confirm.tsx</include>
 </Example>
+
+### A button that waits
+
+When `onConfirm` returns a Promise, the button shows a spinner and the dialog stays open until it settles.
+
+<Example preview={<Try run={publish}>Publish</Try>}>
+<include meta='title="publish.tsx"'>../../components/api/publish.tsx</include>
+</Example>
+
+<div className="var-table api-table">
+
+| Option | Type | What it does |
+| --- | --- | --- |
+| `confirmLabel` | `ReactNode` | Confirm button text. Default `'Confirm'`. |
+| `cancelLabel` | `ReactNode` | Cancel button text. Default `'Cancel'`. |
+| `tone` | `'default' \| 'danger'` | `'danger'` paints the button red and focuses Cancel. |
+| `onConfirm` | `(ctx) => void \| Promise` | Runs on confirm. A Promise keeps the dialog open. `ctx.signal` aborts if it closes another way. |
+
+</div>
+
+`confirm('Delete?')` takes a title as a string. Every call also takes the [shared options](#options-every-dialog-takes).
 
 ## alert
 
-<Example preview={<SavedAlert />}>
-<include meta='title="saved-alert.tsx"'>../../components/examples/saved-alert.tsx</include>
+Resolves when the dialog closes, from the button, Escape or a click outside.
+
+<Example preview={<Try run={showSaved}>Save</Try>}>
+<include meta='title="alert.tsx"'>../../components/api/alert.tsx</include>
 </Example>
+
+<div className="var-table api-table">
+
+| Option | Type | What it does |
+| --- | --- | --- |
+| `okLabel` | `ReactNode` | Button text. Default `'OK'`. |
+
+</div>
 
 ## prompt
 
-Resolves the text, or `null`. Return a message from `validate` to keep the dialog open.
+Resolves the text, or `null` on Cancel, Escape and a click outside. Return a message from `validate` to keep the dialog open.
 
-<Example preview={<RenamePrompt />}>
-<include meta='title="rename-prompt.tsx"'>../../components/examples/rename-prompt.tsx</include>
+<Example preview={<Try run={renameFile}>Rename</Try>}>
+<include meta='title="prompt.tsx"'>../../components/api/prompt.tsx</include>
 </Example>
 
-## Buttons that wait
+<div className="var-table api-table">
 
-When `onConfirm` (or a button's `onClick`) returns a Promise, the button shows `aria-busy` and the dialog stays open until it settles.
+| Option | Type | What it does |
+| --- | --- | --- |
+| `label` | `ReactNode` | Label above the input. |
+| `defaultValue` | `string` | Text the input starts with. |
+| `validate` | `(value) => string \| null` | A message keeps the dialog open and shows under the input. Can be async. |
+| `inputProps` | input attributes | Such as `type`, `placeholder` or `maxLength`. |
+| `submitLabel` | `ReactNode` | Submit button text. Default `'OK'`. |
+| `cancelLabel` | `ReactNode` | Cancel button text. Default `'Cancel'`. |
 
-<Example preview={<PublishButton />}>
-<include meta='title="publish-button.tsx"'>../../components/examples/save-async.tsx</include>
+</div>
+
+## openDialog
+
+Renders your component in a dialog. `result` resolves what you pass to `close()`, or `undefined` on Escape and outside clicks.
+
+<Example preview={<Try run={pickPlan}>Pick a plan</Try>}>
+<include meta='title="open-dialog.tsx"'>../../components/api/open-dialog.tsx</include>
 </Example>
+
+<div className="var-table api-table">
+
+| Option | Type | What it does |
+| --- | --- | --- |
+| `render` | `(props) => ReactNode` | Your content. `props.close(value)` resolves it, `props.dismiss()` resolves `undefined`. |
+| `buttons` | `DialogButton[]` | Passed to `render`, for a layout of your own. |
+
+</div>
+
+`openDialog()` returns a handle:
+
+<div className="var-table api-table">
+
+| Field | Type | What it does |
+| --- | --- | --- |
+| `result` | `Promise<R \| undefined>` | Resolves when the dialog closes. |
+| `close` | `(value: R) => void` | Closes with a value. |
+| `dismiss` | `() => void` | Closes with `undefined`. |
+| `update` | `(patch) => void` | Changes options of the open dialog. |
+| `id` | `DialogId` | For `closeDialog(id)`. |
+
+</div>
+
+## closeDialog and closeAll
+
+`closeAll()` dismisses every dialog, queued ones too. A `confirm` resolves `false`.
+
+<Example preview={<Try run={askThenClose}>Open</Try>}>
+<include meta='title="close-all.tsx"'>../../components/api/close-all.tsx</include>
+</Example>
+
+<div className="var-table api-table">
+
+| Function | What it does |
+| --- | --- |
+| `closeAll()` | Dismisses every open and queued dialog. |
+| `closeDialog(id)` | Dismisses one dialog, by the `id` of its handle. |
+
+</div>
 
 ## Dialog
 
-Renders in place, driven by `open`, so its content reads your state. Add `data-slot` attributes to your content to get the default look. See [Styling](/docs/styling#your-own-content).
+Renders in place and opens while `open` is true, so its content reads your component's state. Plain HTML inside gets the default look.
 
 <Example preview={<EditNote />}>
-<include meta='title="edit-note.tsx"'>../../components/examples/edit-note.tsx</include>
+<include meta='title="dialog.tsx"'>../../components/api/dialog.tsx</include>
 </Example>
+
+<div className="var-table api-table">
+
+| Prop | Type | What it does |
+| --- | --- | --- |
+| `open` | `boolean` | Shows the dialog. |
+| `onOpenChange` | `(open) => void` | Called with `false` on Escape and outside clicks. |
+| `children` | `ReactNode` | Your content. [DialogLayout](#dialoglayout) lays it out. |
+| `aria-label` | `string` | Names the dialog when there is no `DialogLayout` title. |
+| `aria-labelledby` | `string` | The id of your own title. |
+
+</div>
+
+It also takes `modal`, `closeOnEscape`, `closeOnClickOutside`, `onKeyDown`, `unstyled` and `classNames` from the [shared options](#options-every-dialog-takes).
+
+## ConfirmDialog
+
+`confirm`, `alert` or `prompt`, rendered in place. Pick one with `kind`.
+
+<Example preview={<LeavePage />}>
+<include meta='title="confirm-dialog.tsx"'>../../components/api/confirm-dialog.tsx</include>
+</Example>
+
+<div className="var-table api-table">
+
+| Prop | Type | What it does |
+| --- | --- | --- |
+| `kind` | `'confirm' \| 'alert' \| 'prompt'` | Which dialog it is. |
+| `open` | `boolean` | Shows the dialog. |
+| `onOpenChange` | `(open) => void` | Called with `false` when any button or key closes it. |
+| `onSubmit` | `(value) => void \| Promise` | Prompt only. The text, on submit. |
+
+</div>
+
+Every option of that kind works as a prop, such as `onConfirm`, `tone` or `validate`.
 
 ## DialogLayout
 
-`<DialogLayout title message actions>{children}</DialogLayout>` renders the default layout around your content: title, message, children, then a row of buttons. Use it in `openDialog` render, in `<Dialog>` and in `customUI`. An action takes `label`, `variant` (`'primary'`, `'secondary'` or `'danger'`), `onClick` and any button attribute such as `type` or `disabled`. When `onClick` returns a Promise, the button is busy until it settles, and the dialog stays open. A `DialogLayout` title names the dialog when it has no `aria-label`.
+Lays out a title, a message, your content and a row of buttons. An action whose `onClick` returns a Promise is busy until it settles. Use it in `openDialog`, `<Dialog>` and `customUI`.
 
-```tsx
-openDialog<string>({
-  render: ({ close, dismiss }) => (
-    <DialogLayout
-      title="Pick a colour"
-      actions={[{ label: 'Cancel', onClick: dismiss }, { label: 'Blue', variant: 'primary', onClick: () => close('blue') }]}
-    />
-  ),
-})
+<Example preview={<Try run={renameWorkspace}>Rename workspace</Try>}>
+<include meta='title="dialog-layout.tsx"'>../../components/api/dialog-layout.tsx</include>
+</Example>
+
+<div className="var-table api-table">
+
+| Prop | Type | What it does |
+| --- | --- | --- |
+| `title` | `ReactNode` | Heading. It names the dialog when there is no `aria-label`. |
+| `message` | `ReactNode` | Text under the title. |
+| `actions` | `DialogAction[]` | The buttons, left to right. |
+| `children` | `ReactNode` | Your content, between the message and the buttons. |
+
+</div>
+
+Each action takes:
+
+<div className="var-table api-table">
+
+| Field | Type | What it does |
+| --- | --- | --- |
+| `label` | `ReactNode` | Button text. |
+| `variant` | `'primary' \| 'secondary' \| 'danger'` | Button colour. Default `'secondary'`. |
+| `onClick` | `(event) => void \| Promise` | A Promise makes the button busy until it settles. |
+
+</div>
+
+Any other button attribute, such as `type="submit"` or `disabled`, goes on the button.
+
+## DialogHost and useDialog
+
+Dialogs render where you place `<DialogHost />`, so they read the context above it. This site places one inside its theme provider, so the dialog below reads the theme. Switch the theme and open it again.
+
+<Example preview={<ShowTheme />}>
+<include meta='title="dialog-host.tsx"'>../../components/api/dialog-host.tsx</include>
+</Example>
+
+```tsx title="app/providers.tsx"
+<ThemeProvider>
+  {children}
+  <DialogHost dismissKey={usePathname()} />
+</ThemeProvider>
 ```
 
-## Options every dialog takes
+<div className="var-table api-table">
 
-`title`, `message` (text or JSX), `content`, `closeOnEscape`, `closeOnClickOutside`, `strategy` (`'stack'` or `'queue'`), `modal`, `signal`, `onKeyDown`, `afterClose`, `unstyled` and `classNames`.
+| Prop | Type | What it does |
+| --- | --- | --- |
+| `dismissKey` | `unknown` | When it changes, every dialog closes. Pass the pathname. |
 
-## openDialog, closeDialog, closeAll
+</div>
 
-`openDialog<R>({ render })` returns `{ id, result, close, dismiss, update }`. `closeAll()` dismisses every dialog, including queued ones.
-
-## DialogHost, useDialog, ConfirmDialog
-
-`<DialogHost dismissKey={pathname} />` renders dialogs inside your tree and closes them when `dismissKey` changes. `<ConfirmDialog kind="confirm" open onOpenChange />` is `confirm` rendered in place.
-
-`content` renders your own JSX between the message and the buttons of `confirm`, `alert` and `prompt`. In `prompt` it sits above the input, and `validate` works as before.
-
-## confirmAlert (3.0 API)
-
-`confirmAlert(options): void` takes every 3.0 option, plus `modal`, `strategy`, `unstyled`, `classNames` and `skin`. Its defaults keep 3.0 behavior.
-
-## customUI (3.0)
-
-`customUI: ({ title, message, buttons, onClose }) => ReactNode` replaces the whole dialog content. It still works as in 3.0. With `skin: true`, the content sits in the new dialog body and plain HTML gets the default look. See [Custom UI](/docs/custom-ui).
+Place one host. Without one, dialogs render in a root of their own and miss your context. The [Next.js recipe](/docs/recipes/next-app-router) shows where. `useDialog()` returns `confirm`, `alert`, `prompt`, `openDialog` and `closeAll`, for code that prefers a hook.
 
 ## configureDialogs
 
-Sets app-wide defaults: `modal`, `strategy`, `closeOnEscape`, `closeOnClickOutside`, `lockScroll`, `labels`, `unstyled`, `classNames`, and separate `confirmAlert` defaults, including `skin`.
+Sets defaults for every dialog. Call it once, where your app starts.
+
+<Example preview={<Try run={askInThaiOnce}>ลบไฟล์</Try>}>
+<include meta='title="configure-dialogs.tsx"'>../../components/api/configure-dialogs.tsx</include>
+</Example>
+
+<div className="var-table api-table">
+
+| Option | Type | What it does |
+| --- | --- | --- |
+| `labels` | `{ ok, confirm, cancel, submit }` | Default button text. |
+| `modal` | `boolean` | Native modal `<dialog>`. Default `true`. |
+| `strategy` | `'stack' \| 'queue' \| 'replace'` | What a new dialog does when one is open. Default `'stack'`. |
+| `closeOnEscape` | `boolean` | Default `true`. |
+| `closeOnClickOutside` | `boolean` | Default `true`. |
+| `lockScroll` | `boolean` | Stops the page from scrolling behind a dialog. Default `true`. |
+| `unstyled` | `boolean` | Drops the default CSS classes. |
+| `classNames` | `DialogClassNames` | A class per slot. See [Styling](/docs/styling#slots). |
+| `confirmAlert` | `object` | Separate `skin`, `modal`, `strategy`, `unstyled` and `classNames` for `confirmAlert`. |
+
+</div>
+
+## Options every dialog takes
+
+`confirm`, `alert`, `prompt` and `openDialog` take these.
+
+<div className="var-table api-table">
+
+| Option | Type | What it does |
+| --- | --- | --- |
+| `title` | `ReactNode` | Heading. |
+| `message` | `ReactNode` | Text under the title. A string keeps its line breaks. |
+| `content` | `ReactNode` | Your JSX between the message and the buttons. |
+| `closeOnEscape` | `boolean` | Default `true`. |
+| `closeOnClickOutside` | `boolean` | Default `true`. |
+| `strategy` | `'stack' \| 'queue' \| 'replace'` | `stack` opens on top, the default. `queue` waits its turn. `replace` closes the open one. |
+| `modal` | `boolean` | `false` renders a plain overlay instead of a top-layer `<dialog>`. |
+| `signal` | `AbortSignal` | Aborting it dismisses the dialog. |
+| `onKeyDown` | `(event, close) => void` | Your own keys. `close()` dismisses. |
+| `afterClose` | `() => void` | Runs once the dialog has closed. |
+| `unstyled` | `boolean` | Drops the default CSS classes. |
+| `classNames` | `DialogClassNames` | A class per slot. See [Styling](/docs/styling#slots). |
+
+</div>
+
+## confirmAlert
+
+The 3.0 API, with its 3.0 look and timing. It returns nothing; each button runs its own `onClick`.
+
+<Example preview={<SubmitOrder />}>
+<include meta='title="confirm-alert.tsx"'>../../components/api/confirm-alert.tsx</include>
+</Example>
+
+### customUI
+
+`customUI` replaces the whole dialog with your content. `skin: true` puts it in the new dialog body, where plain HTML gets the default look. [Custom UI](/docs/custom-ui) has more.
+
+<Example preview={<ShowTerms />}>
+<include meta='title="custom-ui.tsx"'>../../components/api/custom-ui.tsx</include>
+</Example>
+
+<div className="var-table api-table">
+
+| Option | Type | What it does |
+| --- | --- | --- |
+| `title` | `string` | Heading. |
+| `message` | `string` | Text under the title. |
+| `buttons` | `object[]` | Each has `label`, `onClick` and `className`. Every button closes the dialog. Default Cancel and Confirm. |
+| `customUI` | `(props) => ReactNode` | Replaces the dialog content. `props.onClose()` closes it. |
+| `skin` | `boolean` | The new look, with `customUI` too. Default `false`. |
+| `childrenElement` | `() => ReactNode` | Renders under the message. |
+| `closeOnEscape` | `boolean` | Default `true`. |
+| `closeOnClickOutside` | `boolean` | Default `true`. |
+| `onClickOutside` | `() => void` | Runs on a click outside. |
+| `onKeypressEscape` | `(event) => void` | Runs on Escape. |
+| `onkeyPress` | `(event, close) => void` | Runs on any key. |
+| `willUnmount` | `() => void` | Runs before the dialog unmounts. |
+| `afterClose` | `() => void` | Runs after it closes. |
+| `overlayClassName` | `string` | A class on the overlay. |
+| `targetId` | `string` | Renders into the element with this id. |
+| `modal` | `boolean` | Native modal `<dialog>`. Default `false`. |
+| `strategy` | `'replace' \| 'stack' \| 'queue'` | Default `'replace'`: a new dialog closes the open one. |
+| `unstyled` | `boolean` | Drops the 3.0 classes. |
+| `classNames` | `DialogClassNames` | A class per slot. |
+
+</div>

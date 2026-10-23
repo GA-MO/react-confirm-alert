@@ -4,18 +4,21 @@ description: Put your own form, list or warning in a dialog. Plain HTML already 
 ---
 
 import { Example } from '@/components/example'
+import { CustomUIGallery } from '@/components/custom-ui/gallery'
 import { RenameOpenDialog } from '@/components/custom-ui/rename-open-dialog'
 import { AssignOpenDialog } from '@/components/custom-ui/assign-open-dialog'
 import { DeleteOpenDialog } from '@/components/custom-ui/delete-open-dialog'
 import { InviteCustomUI } from '@/components/custom-ui/invite-custom-ui'
 
-A dialog often needs more than a title and two buttons: a field to fill, a list to pick from, a name to type before a delete. Write that content as plain HTML. Inside a dialog with the default CSS, `h1` to `h3`, `p`, `label`, `input`, `textarea`, `select` and `button` get the default look with no class names. Tailwind v4 preflight does not remove it, and any class you add wins over it.
+Write the content as plain HTML. Inside a dialog it gets the default look with no class names.
 
-Every example on this page is in the [playground](/playground), where you can switch how it is written: `openDialog`, `<Dialog>`, `confirm` with `content`, or 3.0 `customUI`.
+<CustomUIGallery />
+
+The [playground](/playground) has each example written four ways: `openDialog`, `<Dialog>`, `confirm` with `content`, and 3.0 `customUI`.
 
 ## A form with validation
 
-`openDialog<R>()` returns a Promise of whatever your content passes to `close()`. `DialogLayout` lays out the title, the message, your content and a row of buttons.
+`openDialog<R>()` resolves what your content passes to `close()`. `DialogLayout` lays out the title, your fields and the buttons.
 
 <Example preview={<RenameOpenDialog />}>
 <include meta='title="rename-open-dialog.tsx"'>../../components/custom-ui/rename-open-dialog.tsx</include>
@@ -23,13 +26,15 @@ Every example on this page is in the [playground](/playground), where you can sw
 
 ## Pick from a list
 
+Plain radios take the accent colour of the main button.
+
 <Example preview={<AssignOpenDialog />}>
 <include meta='title="assign-open-dialog.tsx"'>../../components/custom-ui/assign-open-dialog.tsx</include>
 </Example>
 
 ## Type the name to delete
 
-A button whose `onClick` returns a Promise shows a spinner, and the dialog stays open until the Promise settles. Escape and outside clicks wait too.
+An action whose `onClick` returns a Promise shows a spinner. The dialog stays open until it settles, and Escape waits too.
 
 <Example preview={<DeleteOpenDialog />}>
 <include meta='title="delete-open-dialog.tsx"'>../../components/custom-ui/delete-open-dialog.tsx</include>
@@ -37,19 +42,29 @@ A button whose `onClick` returns a Promise shows a spinner, and the dialog stays
 
 ## customUI from 3.0
 
-`customUI` keeps its 3.0 look by default. Add `skin: true` and your content sits in the new dialog body with the same default look. `configureDialogs({ confirmAlert: { skin: true } })` turns it on for every `confirmAlert` call.
+`customUI` keeps its 3.0 look. Add `skin: true` and your content gets the new look. `configureDialogs({ confirmAlert: { skin: true } })` turns it on for every call.
 
 <Example preview={<InviteCustomUI />}>
 <include meta='title="invite-custom-ui.tsx"'>../../components/custom-ui/invite-custom-ui.tsx</include>
 </Example>
 
-## Which API to use
+## Reference
 
-| You want | Use |
+### Which API to use
+
+<div className="var-table api-table">
+
+| Use | When you want |
 | --- | --- |
-| A value back from your content | `openDialog<R>({ render })` |
-| Content that reads your component's state | `<Dialog open onOpenChange>` |
-| A confirm, alert or prompt with something extra under the message | `confirm({ content })`, `alert({ content })`, `prompt({ content })` |
-| The 3.0 API | `confirmAlert({ skin: true, customUI })` |
+| `openDialog<R>({ render })` | A value back from your content. |
+| `<Dialog open onOpenChange>` | Content that reads your component's state. |
+| `confirm({ content })` | A confirm with something extra under the message. `alert` and `prompt` take `content` too. |
+| `confirmAlert({ skin, customUI })` | The 3.0 API with the new look. |
 
-To style the content yourself, add classes, use `data-slot` attributes (see [Styling](/docs/styling#your-own-content)), or turn the default look off with `unstyled: true`.
+</div>
+
+### Elements with the default look
+
+`h1` to `h3`, `p`, `label`, `input`, `textarea`, `select` and `button`. The rules sit under `:where()`, so any class you add wins. Tailwind v4 preflight does not remove them.
+
+To style the content yourself, add classes, mark it up with [`data-slot`](/docs/styling#your-own-content), or drop the default look with `unstyled: true`.

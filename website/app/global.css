@@ -27,35 +27,40 @@ html > body[data-scroll-locked] {
 }
 
 /* Live examples in the docs: the example files use a plain .row, <button> and <output>, styled here like app UI. */
-.example-preview .row {
+:is(.example-preview, .gallery-tile) .row {
   @apply flex w-full max-w-sm items-center justify-between gap-3 rounded-xl bg-white px-4 py-3 shadow-sm ring-1 ring-zinc-950/5;
 }
-.example-preview .row > span { @apply truncate text-sm text-zinc-800; }
-.example-preview .row > button {
+:is(.example-preview, .gallery-tile) .row > span { @apply truncate text-sm text-zinc-800; }
+:is(.example-preview, .gallery-tile) .row > button {
   @apply shrink-0 cursor-pointer rounded-md px-2.5 py-1 text-sm text-zinc-700 ring-1 ring-zinc-200 transition duration-150 ease-out-quint hover:bg-zinc-100 hover:text-zinc-950 active:scale-97 focus-visible:outline-2 focus-visible:outline-indigo-500;
 }
-.example-preview output { @apply font-mono text-xs text-zinc-700; }
-.example-preview output:not(:empty) { @apply animate-rise rounded-md bg-white px-2 py-1 ring-1 ring-zinc-200; }
-.example-preview output:empty::before { content: 'Press the button to see what it returns'; @apply font-sans text-zinc-500; }
-.dark .example-preview .row { @apply bg-zinc-900 ring-white/10; }
-.dark .example-preview .row > span { @apply text-zinc-100; }
-.dark .example-preview .row > button { @apply text-zinc-300 ring-white/15 hover:bg-white/5 hover:text-white; }
-.dark .example-preview output { @apply text-zinc-200; }
-.dark .example-preview output:not(:empty) { @apply bg-zinc-900 ring-white/10; }
-.dark .example-preview output:empty::before { @apply text-zinc-400; }
+:is(.example-preview, .gallery-tile) output { @apply font-mono text-xs text-zinc-700; }
+:is(.example-preview, .gallery-tile) output:not(:empty) { @apply animate-rise rounded-md bg-white px-2 py-1 ring-1 ring-zinc-200; }
+.example-preview .try output:empty::before { content: 'Press the button to see what it returns'; @apply font-sans text-zinc-500; }
+.dark :is(.example-preview, .gallery-tile) .row { @apply bg-zinc-900 ring-white/10; }
+.dark :is(.example-preview, .gallery-tile) .row > span { @apply text-zinc-100; }
+.dark :is(.example-preview, .gallery-tile) .row > button { @apply text-zinc-300 ring-white/15 hover:bg-white/5 hover:text-white; }
+.dark :is(.example-preview, .gallery-tile) output { @apply text-zinc-200; }
+.dark :is(.example-preview, .gallery-tile) output:not(:empty) { @apply bg-zinc-900 ring-white/10; }
+.dark .example-preview .try output:empty::before { @apply text-zinc-400; }
 /* Styling examples render a bare trigger <button>, or one inside a data-theme wrapper. */
-:is(.example-preview, .gallery-tile) > button, :is(.example-preview, .gallery-tile) > [data-theme] > button {
+/* A Try trigger: its output sits under the button in a preview and beside it in a gallery card. */
+.try { @apply flex flex-col items-center gap-3; }
+.gallery-tile .try { @apply flex-row flex-wrap gap-2; }
+:is(.example-preview, .gallery-tile, .try) > button, :is(.example-preview, .gallery-tile) > [data-theme] > button {
   @apply shrink-0 cursor-pointer whitespace-nowrap rounded-md bg-white px-2.5 py-1 text-sm text-zinc-700 ring-1 ring-zinc-200 transition duration-150 ease-out-quint hover:bg-zinc-100 hover:text-zinc-950 active:scale-97 focus-visible:outline-2 focus-visible:outline-indigo-500;
 }
-.dark :is(.example-preview, .gallery-tile) > button, .dark :is(.example-preview, .gallery-tile) > [data-theme] > button { @apply bg-zinc-900 text-zinc-300 ring-white/15 hover:bg-white/5 hover:text-white; }
+.dark :is(.example-preview, .gallery-tile, .try) > button, .dark :is(.example-preview, .gallery-tile) > [data-theme] > button { @apply bg-zinc-900 text-zinc-300 ring-white/15 hover:bg-white/5 hover:text-white; }
 .example-code figure { margin: 0; border-width: 0; border-radius: 0; }
-/* A Styling gallery card draws its dialog at 40%. The transform also holds the dialog's position: fixed,
+/* A gallery card draws its dialog at 40%. The transform also holds the dialog's position: fixed,
    so its backdrop fills the thumbnail instead of the page. */
 .dialog-thumbnail { @apply h-40 overflow-hidden rounded-lg border bg-fd-background select-none; }
 .dialog-thumbnail > div { width: calc(100% / 0.4); height: calc(100% / 0.4); transform: scale(0.4); transform-origin: 0 0; }
 /* Reference tables: a variable name stays on one line, and a narrow screen scrolls the table in its frame. */
 .var-table td:first-child { white-space: nowrap; }
 @media (max-width: 640px) { .var-table table { min-width: 40rem; } }
+/* API tables keep each type on one line too; the last column wraps. */
+.api-table td:not(:last-child) code { white-space: nowrap; }
 
 /* Code sits apart from the grey page: white in light, a raised grey in dark (bg in lib/code-themes.json). */
 figure.shiki { background: var(--shiki-light-bg); }
