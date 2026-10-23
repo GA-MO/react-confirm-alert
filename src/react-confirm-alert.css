@@ -89,7 +89,20 @@ dialog.react-confirm-alert-overlay::backdrop {
   background: transparent;
 }
 
+.react-confirm-alert-button-group > [data-variant='danger'] {
+  background: var(--rca-danger, #c62828);
+  color: #fff;
+}
+
+[data-rca]:not([data-kind='custom']) [data-slot='title'] {
+  margin: 0 0 8px;
+  font-size: 1.25em;
+  font-weight: 600;
+  color: var(--rca-title, #222);
+}
+
 .react-confirm-alert [data-slot='message'] {
+  margin: 0;
   white-space: pre-line;
 }
 

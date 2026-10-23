@@ -62,7 +62,7 @@ Importing the CSS into `layer(components)` lets Tailwind utilities win without `
 |---|---|
 | `import { confirmAlert }` | 3,571 B |
 | `import { confirm }` | 3,851 B |
-| CSS | 999 B |
+| CSS | 1,095 B |
 
 Measured on 2026-10-23 with size-limit 14.3.0 (`npx size-limit`, config in `.size-limit.json`): the ESM build bundled and minified with React and React DOM excluded, then gzipped. v3.0.6 measured the same way is 2,396 B, including `prop-types`. The extra bytes are the native modal, focus handling, stacked and queued dialogs, and dialogs that render inside your providers.
 
