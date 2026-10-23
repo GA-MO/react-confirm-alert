@@ -19,7 +19,10 @@ export function PublishButton() {
 
   return (
     <>
-      <button onClick={onClick}>Publish</button>
+      <div className="row">
+        <span>Draft post</span>
+        <button onClick={onClick}>Publish</button>
+      </div>
       <output>{result}</output>
     </>
   )

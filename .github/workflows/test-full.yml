@@ -8,6 +8,11 @@ jobs:
   browsers:
     runs-on: ubuntu-latest
     timeout-minutes: 25
+    # The official image ships the browsers and their system libraries, so no apt step can hang.
+    # Keep its tag equal to playwright in package-lock.json; the first step fails when they drift.
+    container:
+      image: mcr.microsoft.com/playwright:v1.64.1-noble
+      options: --user 1001
     strategy:
       fail-fast: false
       matrix:
@@ -16,20 +21,10 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: 22, cache: npm }
+      - run: |
+          lock=$(node -p "require('./package-lock.json').packages['node_modules/playwright'].version")
+          test "$lock" = 1.64.1 || { echo "package-lock has playwright $lock; update the container image tag"; exit 1; }
       - run: npm ci
-      - id: pw
-        run: echo "version=$(node -p "require('./package-lock.json').packages['node_modules/playwright'].version")" >> "$GITHUB_OUTPUT"
-      - id: pw-cache
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ steps.pw.outputs.version }}-${{ matrix.browser }}
-      - if: steps.pw-cache.outputs.cache-hit != 'true'
-        run: npx playwright install ${{ matrix.browser }}
-        timeout-minutes: 5
-      # System libraries are not cached; a stuck apt mirror fails here in minutes, not after the job limit.
-      - run: npx playwright install-deps ${{ matrix.browser }}
-        timeout-minutes: 6
       - run: npm test
         env: { VITEST_BROWSERS: '${{ matrix.browser }}' }
         timeout-minutes: 8

@@ -15,7 +15,10 @@ export function SavedAlert() {
 
   return (
     <>
-      <button onClick={onClick}>Save</button>
+      <div className="row">
+        <span>Profile changes</span>
+        <button onClick={onClick}>Save</button>
+      </div>
       <output>{result}</output>
     </>
   )

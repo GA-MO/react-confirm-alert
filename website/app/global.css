@@ -4,6 +4,9 @@
 /* The library CSS goes under Tailwind's utilities, so classNames can override it (recipe: Tailwind). */
 @import 'react-confirm-alert/src/react-confirm-alert.css' layer(components);
 
+/* dark: follows the site's theme switch (the .dark class), not the OS setting. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   /* Motion tokens: a quick settle for app UI, a small overshoot for the playful variant. */
   --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
@@ -23,24 +26,42 @@ html > body[data-scroll-locked] {
   --removed-body-scroll-bar-size: 0px !important;
 }
 
-/* Live examples in the docs: the example files use plain <button> and <output>, styled here. */
-.example-preview > button {
-  cursor: pointer;
-  border-radius: var(--radius-lg);
-  background: var(--color-zinc-950);
-  color: white;
-  padding: var(--spacing-2) var(--spacing-4);
-  font-size: var(--text-sm);
-  font-weight: 500;
-  transition: transform 150ms var(--ease-out-quint), background 150ms;
+/* Live examples in the docs: the example files use a plain .row, <button> and <output>, styled here like app UI. */
+.example-preview .row {
+  @apply flex w-full max-w-sm items-center justify-between gap-3 rounded-xl bg-white px-4 py-3 shadow-sm ring-1 ring-zinc-950/5;
 }
-.example-preview > button:hover { background: var(--color-zinc-800); }
-.example-preview > button:active { transform: scale(0.97); }
-.dark .example-preview > button { background: white; color: var(--color-zinc-950); }
-.example-preview > output {
-  min-width: 10rem;
-  font-family: var(--font-mono);
-  font-size: var(--text-sm);
-  color: var(--color-fd-muted-foreground);
+.example-preview .row > span { @apply truncate text-sm text-zinc-800; }
+.example-preview .row > button {
+  @apply shrink-0 cursor-pointer rounded-md px-2.5 py-1 text-sm text-zinc-700 ring-1 ring-zinc-200 transition duration-150 ease-out-quint hover:bg-zinc-100 hover:text-zinc-950 active:scale-97 focus-visible:outline-2 focus-visible:outline-indigo-500;
 }
+.example-preview output { @apply font-mono text-xs text-zinc-700; }
+.example-preview output:not(:empty) { @apply animate-rise rounded-md bg-white px-2 py-1 ring-1 ring-zinc-200; }
+.example-preview output:empty::before { content: 'Press the button to see what it returns'; @apply font-sans text-zinc-500; }
+.dark .example-preview .row { @apply bg-zinc-900 ring-white/10; }
+.dark .example-preview .row > span { @apply text-zinc-100; }
+.dark .example-preview .row > button { @apply text-zinc-300 ring-white/15 hover:bg-white/5 hover:text-white; }
+.dark .example-preview output { @apply text-zinc-200; }
+.dark .example-preview output:not(:empty) { @apply bg-zinc-900 ring-white/10; }
+.dark .example-preview output:empty::before { @apply text-zinc-400; }
 .example-code figure { margin: 0; border-width: 0; border-radius: 0; }
+
+/* Code sits apart from the grey page: white in light, a raised grey in dark (bg in lib/code-themes.json). */
+figure.shiki { background: var(--shiki-light-bg); }
+.dark figure.shiki { background: var(--shiki-dark-bg); border-color: var(--color-zinc-800); }
+/* The file's trailing newline would render as an extra blank line at the bottom. */
+figure.shiki .line:last-child:empty { display: none; }
+/* An inline code chip that wraps keeps its border on both lines. */
+:not(pre) > code { box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+figure.shiki .line.highlighted { background: color-mix(in oklab, var(--color-indigo-500) 6%, transparent); }
+figure.shiki .line.highlighted::after { border-left: 2px solid color-mix(in oklab, var(--color-indigo-500) 40%, transparent); }
+.dark figure.shiki .line.highlighted { background: color-mix(in oklab, var(--color-indigo-300) 6%, transparent); }
+.dark figure.shiki .line.highlighted::after { border-left-color: color-mix(in oklab, var(--color-indigo-400) 80%, transparent); }
+
+/* Playground: a line the last option change added glows briefly, so you see what changed. */
+@keyframes just-changed {
+  from { background: color-mix(in oklab, var(--color-amber-400) 28%, transparent); }
+}
+figure.shiki .line.just-changed { animation: just-changed 1.4s var(--ease-out-quint); }
+@media (prefers-reduced-motion: reduce) {
+  figure.shiki .line.just-changed { animation: none; background: color-mix(in oklab, var(--color-amber-400) 16%, transparent); }
+}

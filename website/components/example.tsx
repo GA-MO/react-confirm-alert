@@ -4,7 +4,7 @@ import type { ReactNode } from 'react'
 export function Example ({ preview, children }: { preview: ReactNode, children: ReactNode }) {
   return (
     <div className="example not-prose my-6 overflow-hidden rounded-xl border bg-fd-card">
-      <div className="example-preview flex min-h-32 flex-wrap items-center justify-center gap-4 border-b p-8">
+      <div className="example-preview flex min-h-40 flex-col items-center justify-center gap-3 border-b px-6 py-10">
         {preview}
       </div>
       <div className="example-code">{children}</div>

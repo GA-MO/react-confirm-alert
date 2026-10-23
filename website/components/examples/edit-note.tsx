@@ -8,8 +8,10 @@ export function EditNote() {
 
   return (
     <>
-      <button onClick={() => setOpen(true)}>Edit note</button>
-      <output>{note || 'No note yet'}</output>
+      <div className="row">
+        <span>{note || 'No note yet'}</span>
+        <button onClick={() => setOpen(true)}>Edit note</button>
+      </div>
       <Dialog
         open={open}
         onOpenChange={setOpen}

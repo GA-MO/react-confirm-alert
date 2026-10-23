@@ -4,13 +4,12 @@ import { applyMdxPreset } from 'fumadocs-mdx/config'
 import { metaSchema, pageSchema } from 'fumadocs-core/source/schema'
 import { docsRoute } from './shared'
 
-export const codeThemes = { light: 'vitesse-light', dark: 'vitesse-dark' } as const
+import { codeThemes } from './code-themes'
 
 const docs = defineDocs({
   dir: 'content/docs',
   docs: {
     schema: pageSchema,
-    // vitesse: muted colours and dimmed punctuation, calm in light and dark (see the theme comparison).
     mdxOptions: applyMdxPreset({ rehypeCodeOptions: { themes: codeThemes } })
   },
   meta: { schema: metaSchema }

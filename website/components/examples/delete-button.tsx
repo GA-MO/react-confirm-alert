@@ -17,7 +17,10 @@ export function DeleteButton() {
 
   return (
     <>
-      <button onClick={onClick}>Delete file</button>
+      <div className="row">
+        <span>Q3 report.pdf</span>
+        <button onClick={onClick}>Delete</button>
+      </div>
       <output>{result}</output>
     </>
   )

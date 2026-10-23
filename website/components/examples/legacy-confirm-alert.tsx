@@ -18,7 +18,10 @@ export function LegacyConfirm() {
 
   return (
     <>
-      <button onClick={onClick}>Submit</button>
+      <div className="row">
+        <span>Order #1042</span>
+        <button onClick={onClick}>Submit</button>
+      </div>
       <output>{result}</output>
     </>
   )
