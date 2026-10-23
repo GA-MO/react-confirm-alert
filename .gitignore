@@ -2,8 +2,9 @@ node_modules
 *.log
 yarn.lock
 .DS_Store
-dist
-lib
+# Build output at the root only; website/lib holds source.
+/dist
+/lib
 coverage
 .vitest
-typings
+/typings
