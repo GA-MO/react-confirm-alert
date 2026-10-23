@@ -38,7 +38,7 @@ function open<R> (options: Omit<EntryOptions, 'render'>, dismissValue: R, body: 
   return { id, result }
 }
 
-function Body ({ props, children }: { props: DialogRenderProps<any>, children: ReactNode }) {
+export function Body ({ props, children }: { props: DialogRenderProps<any>, children: ReactNode }) {
   return (
     <div className='react-confirm-alert-body' data-slot='body'>
       {props.title && <h1 id={props.titleId} data-slot='title'>{props.title}</h1>}
@@ -48,7 +48,7 @@ function Body ({ props, children }: { props: DialogRenderProps<any>, children: R
   )
 }
 
-function Buttons<R> ({ props, signal, focus }: { props: DialogRenderProps<R>, signal: AbortSignal, focus: number }) {
+export function Buttons<R> ({ props, signal, focus }: { props: DialogRenderProps<R>, signal: AbortSignal, focus: number }) {
   const [busy, setBusy] = useState<number | null>(null)
   const press = async (button: DialogButton<R>, index: number) => {
     let waiting = false
@@ -120,7 +120,7 @@ export function confirm (input: string | Omit<ConfirmOptions, 'kind'>): Promise<
   return open({ ...options, kind: 'confirm', buttons }, false, choice(danger ? 0 : 1)).result
 }
 
-function PromptBody ({ props, options }: { props: DialogRenderProps<string>, options: Omit<PromptOptions, 'kind'> }) {
+export function PromptBody ({ props, options }: { props: DialogRenderProps<string>, options: Omit<PromptOptions, 'kind'> }) {
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
   const inputId = useId()

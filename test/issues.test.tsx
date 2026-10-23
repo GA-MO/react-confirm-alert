@@ -85,7 +85,7 @@ test('#46 #47 a dialog opened from inside another stacks on top of it', async ()
   expect(document.body.textContent).toContain('Open child')
 })
 
-test.fails('#63 #66 a dialog reads the latest parent state', async () => {
+test('#63 #66 a dialog reads the latest parent state', async () => {
   expect(lib.Dialog).toBeTypeOf('function')
   function Editor() {
     const [note, setNote] = useState('')
@@ -145,7 +145,7 @@ test('#92 pressing inside and releasing outside does not close', async () => {
   expect(overlay()).not.toBeNull()
 })
 
-test.fails('#93 changing dismissKey closes open dialogs', async () => {
+test('#93 changing dismissKey closes open dialogs', async () => {
   expect(lib.DialogHost).toBeTypeOf('function')
   function App() {
     const [path, setPath] = useState('/a')
@@ -159,11 +159,12 @@ test.fails('#93 changing dismissKey closes open dialogs', async () => {
   render(<App />)
   lib.confirmAlert({ title: 'Route' })
   await waitForOverlay()
-  await userEvent.click(buttonByText('Navigate'))
+  // A direct click: a real one would land on the overlay, which covers the page.
+  buttonByText('Navigate').click()
   await vi.waitFor(() => expect(overlay()).toBeNull())
 })
 
-test.fails('#94 #23 #35 #28 a dialog reads context from providers around DialogHost', async () => {
+test('#94 #23 #35 #28 a dialog reads context from providers around DialogHost', async () => {
   expect(lib.DialogHost).toBeTypeOf('function')
   const Store = createContext('missing')
   function Reader() {
