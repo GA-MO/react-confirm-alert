@@ -86,12 +86,16 @@ export function DialogFrame (props: DialogFrameProps) {
   }
 
   // The browser closed the dialog itself: a repeated Escape, or a group of dialogs opened from code.
-  const onClose = () => {
+  const onClose = (e: SyntheticEvent) => {
+    const dialog = e.currentTarget as HTMLDialogElement
+    // StrictMode closes and reopens the dialog on mount; the late close event finds it open again.
+    if (dialog.open) return
     const keep = stay.current ?? mustStay()
     stay.current = null
     if (props.state !== 'open') return
-    if (keep) reopenClosedFrames()
-    else props.onDismiss()
+    if (!keep) props.onDismiss()
+    else if (props.id && store.get().entries.some((x) => x.id === props.id)) reopenClosedFrames()
+    else dialog.showModal()
   }
 
   const isBusy = () => !!props.id && runtime().busy.has(props.id)

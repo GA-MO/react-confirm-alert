@@ -74,3 +74,34 @@ test('useDialog returns the module functions', () => {
   }
   render(<Probe />)
 })
+
+test('under StrictMode a host keeps confirm() open, and an in-place Dialog stays open', async () => {
+  const onOpenChange = vi.fn()
+  const { StrictMode } = React
+  render(
+    <StrictMode>
+      <span id="mounted" />
+      <lib.DialogHost dismissKey="/a" />
+      <lib.Dialog open onOpenChange={onOpenChange} aria-label="Inline"><p>inline</p></lib.Dialog>
+    </StrictMode>
+  )
+  await vi.waitFor(() => expect(document.getElementById('mounted')).not.toBeNull())
+  const result = vi.fn()
+  lib.confirm({ title: 'Strict' }).then(result)
+  await new Promise((r) => setTimeout(r, 100))
+  expect(document.body.textContent).toContain('Strict')
+  expect(onOpenChange).not.toHaveBeenCalled()
+  expect(result).not.toHaveBeenCalled()
+})
+
+test('a dialog shown by a host moves to its own root when the host unmounts', async () => {
+  const root = createRoot(document.getElementById('app')!.appendChild(document.createElement('div')))
+  root.render(<><span id="mounted" /><lib.DialogHost /></>)
+  await vi.waitFor(() => expect(document.getElementById('mounted')).not.toBeNull())
+  const result = lib.confirm({ title: 'Moves' })
+  await vi.waitFor(() => expect(document.body.textContent).toContain('Moves'))
+  root.unmount()
+  await vi.waitFor(() => expect(document.getElementById('react-confirm-alert')?.textContent).toContain('Moves'))
+  buttonByText('Confirm').click()
+  await expect(result).resolves.toBe(true)
+})

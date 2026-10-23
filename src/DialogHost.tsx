@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { alert, closeAll, confirm, openDialog, prompt } from './api'
 import { DialogStack } from './DialogStack'
+import { ensureContainer } from './fallbackRoot'
 import { installPageEffects } from './page'
 import { addHost, removeHost, store } from './store'
 
@@ -16,13 +17,19 @@ export function DialogHost ({ dismissKey }: DialogHostProps) {
   useLayoutEffect(() => {
     installPageEffects()
     store.set(addHost(store.get(), host))
-    return () => store.set(removeHost(store.get(), host))
+    return () => {
+      store.set(removeHost(store.get(), host))
+      // Dialogs this host was showing move to their own root instead of vanishing.
+      if (store.get().hosts.length === 0 && store.get().entries.some((e) => e.target === null)) ensureContainer(null)
+    }
   }, [])
 
-  const first = useRef(true)
+  // Compares values, so StrictMode's second effect run with the same key closes nothing.
+  const previous = useRef(dismissKey)
   useEffect(() => {
-    if (first.current) first.current = false
-    else closeAll()
+    if (Object.is(previous.current, dismissKey)) return
+    previous.current = dismissKey
+    closeAll()
   }, [dismissKey])
 
   return <DialogStack target={null} host={host} />

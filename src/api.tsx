@@ -48,9 +48,10 @@ export function Body ({ props, children }: { props: DialogRenderProps<any>, chil
   )
 }
 
-export function Buttons<R> ({ props, signal, focus }: { props: DialogRenderProps<R>, signal: AbortSignal, focus: number }) {
+export function Buttons<R> ({ props, signal: getSignal, focus }: { props: DialogRenderProps<R>, signal: () => AbortSignal, focus: number }) {
   const [busy, setBusy] = useState<number | null>(null)
   const press = async (button: DialogButton<R>, index: number) => {
+    const signal = getSignal()
     let waiting = false
     try {
       const outcome = button.onClick?.({ close: props.close, dismiss: props.dismiss, signal })
@@ -93,7 +94,7 @@ export function Buttons<R> ({ props, signal, focus }: { props: DialogRenderProps
 }
 
 const choice = (focus: number): Body => (props, signal) => (
-  <Body props={props}><Buttons props={props} signal={signal} focus={focus} /></Body>
+  <Body props={props}><Buttons props={props} signal={() => signal} focus={focus} /></Body>
 )
 
 const normalize = <O,>(input: string | O): O => (typeof input === 'string' ? { title: input } as O : input)

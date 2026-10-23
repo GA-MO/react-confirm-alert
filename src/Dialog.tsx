@@ -1,4 +1,4 @@
-import { useId, useLayoutEffect, useMemo, useSyncExternalStore, type KeyboardEvent, type ReactNode } from 'react'
+import { useId, useLayoutEffect, useRef, useSyncExternalStore, type KeyboardEvent, type ReactNode } from 'react'
 import { Body, Buttons, PromptBody } from './api'
 import { DialogFrame } from './DialogFrame'
 import { syncPage } from './page'
@@ -83,9 +83,15 @@ export function ConfirmDialog (props: ConfirmDialogProps) {
   const titleId = useId()
   const descriptionId = useId()
   const hydrated = useHydrated()
-  // A fresh signal per opening, aborted when the dialog closes while a button waits.
-  const controller = useMemo(() => new AbortController(), [props.open])
-  useLayoutEffect(() => () => controller.abort(), [controller])
+  // A fresh signal per opening, aborted when the dialog closes while a button waits. Made in the
+  // effect, so StrictMode's extra cleanup aborts a controller that the second run replaces.
+  const controller = useRef<AbortController>(new AbortController())
+  useLayoutEffect(() => {
+    if (!props.open) return
+    const current = new AbortController()
+    controller.current = current
+    return () => current.abort()
+  }, [props.open])
   useScrollLock(props.open && hydrated)
   if (!hydrated || !props.open) return null
 
@@ -114,7 +120,7 @@ export function ConfirmDialog (props: ConfirmDialogProps) {
           { label: props.confirmLabel ?? 'Confirm', value: true, variant: danger ? 'danger' : 'primary', onClick: props.onConfirm && ((ctx) => props.onConfirm!({ signal: ctx.signal })) }
         ]
     const renderProps = { ...base, buttons, close: hide }
-    body = <Body props={renderProps}><Buttons props={renderProps} signal={controller.signal} focus={props.kind === 'alert' || danger ? 0 : 1} /></Body>
+    body = <Body props={renderProps}><Buttons props={renderProps} signal={() => controller.current.signal} focus={props.kind === 'alert' || danger ? 0 : 1} /></Body>
   }
   return (
     <DialogFrame
