@@ -62,10 +62,10 @@ export function DialogThumbnail({ kind, tone, dark, legacy, title, message, cont
   )
 }
 
-// Four cards sit two by two; a third column would leave one alone on the last row.
+// Three columns only when every row fills; two or four cards sit two by two.
 export function Gallery({ items }: { items: readonly GalleryItem[] }) {
   return (
-    <div className={`not-prose my-6 grid gap-3 sm:grid-cols-2 ${items.length === 4 ? '' : 'lg:grid-cols-3'}`}>
+    <div className={`not-prose my-6 grid gap-3 sm:grid-cols-2 ${items.length % 3 === 0 ? 'lg:grid-cols-3' : ''}`}>
       {items.map(({ id, href = `#${id}`, label, change, Demo, picture }) => (
         <div key={id} className="flex flex-col gap-3 rounded-xl border bg-fd-card p-3">
           <DialogThumbnail {...picture} />

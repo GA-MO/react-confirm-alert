@@ -3,33 +3,34 @@ title: Tailwind CSS v4
 description: Import the CSS into a layer so utilities win, or go unstyled.
 ---
 
+import { Example } from '@/components/example'
+import { TailwindGallery } from '@/components/recipes/gallery'
+import { RoundButtons } from '@/components/recipes/round-buttons'
+import { TailwindOnly } from '@/components/styling/tailwind-only'
+
+<TailwindGallery />
+
 ## Default CSS plus utilities
 
-Import the library CSS with `layer(components)` in your main CSS file. Tailwind's `utilities` layer then beats it without `!important`:
+Import the library CSS into the `components` layer, in your main CSS file. Tailwind's `utilities` layer then wins without `!important`.
 
-```css
+```css title="app/globals.css"
 @import 'tailwindcss';
 @import 'react-confirm-alert/style.css' layer(components);
 ```
 
-```tsx
-confirm({ title: 'Publish?', classNames: { button: 'rounded-full bg-red-500' } })
-```
+Import it from CSS, not from JavaScript. A CSS file loaded after Tailwind's layer order would beat the utilities.
 
-Import it from CSS, not from JavaScript: a CSS file loaded after Tailwind's layer order would win over the utilities.
+<Example preview={<RoundButtons />}>
+<include meta='title="round-buttons.tsx"'>../../../components/recipes/round-buttons.tsx</include>
+</Example>
 
 ## Tailwind only
 
-```tsx
-configureDialogs({
-  unstyled: true,
-  classNames: {
-    dialog: 'fixed inset-0 m-0 open:grid size-full max-h-none max-w-none place-items-center bg-transparent p-4 backdrop:bg-black/40',
-    panel: 'w-full max-w-md rounded-xl bg-white p-6 shadow-xl transition data-[state=closing]:opacity-0',
-    actions: 'mt-6 flex justify-end gap-2',
-    button: 'rounded-md px-3 py-1.5 data-[variant=primary]:bg-zinc-900 data-[variant=primary]:text-white'
-  }
-})
-```
+`unstyled: true` drops the default CSS, and `classNames` styles each slot. Pass the same options to `configureDialogs` to use them for every dialog.
 
-Use `open:grid`, not `grid`: an author `display` beats the browser's rule that hides a closed dialog.
+<Example preview={<TailwindOnly />}>
+<include meta='title="tailwind-only.tsx"'>../../../components/styling/tailwind-only.tsx</include>
+</Example>
+
+Use `open:grid`, not `grid`. A `display` class beats the browser rule that hides a closed dialog.
