@@ -14,7 +14,17 @@ export function AssignCustomUI() {
           <h1>Assign to</h1>
           <p>They get an email with a link to the task.</p>
           <div className="react-confirm-alert-button-group">
-            {members.map((m) => <button key={m} onClick={() => { setOwner(m); onClose() }}>{m}</button>)}
+            {members.map((m) => (
+              <button
+                key={m}
+                onClick={() => {
+                  setOwner(m)
+                  onClose()
+                }}
+              >
+                {m}
+              </button>
+            ))}
           </div>
         </>
       ),

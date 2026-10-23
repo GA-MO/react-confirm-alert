@@ -37,7 +37,12 @@ export const SlotContext = createContext<SlotProps>(slotsFor([]))
 export const useSlot = () => useContext(SlotContext)
 
 // What DialogLayout needs from the frame around it: the id to mark busy and the id its title takes.
-export const FrameContext = createContext<{ id?: DialogId | undefined, titleId?: string | undefined, inBody?: boolean }>({})
+export const FrameContext = createContext<{
+  id?: DialogId | undefined
+  titleId?: string | undefined
+  inBody?: boolean
+  countTitle?: (change: (count: number) => number) => void
+}>({})
 
 export function configureDialogs (defaults: DialogDefaults): void {
   runtime().defaults = defaults

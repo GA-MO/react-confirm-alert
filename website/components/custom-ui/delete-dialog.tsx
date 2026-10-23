@@ -9,27 +9,44 @@ export function DeleteDialog() {
   const [status, setStatus] = useState('Active')
   const [open, setOpen] = useState(false)
   const [typed, setTyped] = useState('')
-  const start = () => { setTyped(''); setOpen(true) }
+  const start = () => {
+    setTyped('')
+    setOpen(true)
+  }
   return (
     <div className="row">
-      <span>{project}: {status}</span>
+      <span>
+        {project}: {status}
+      </span>
       <button onClick={start}>Delete</button>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogLayout
           title={`Delete ${project}?`}
-          message="This deletes the project and its deploys. It cannot be undone."
+          message="This deletes the project and its deploys."
           actions={[
             { label: 'Cancel', onClick: () => setOpen(false) },
             {
               label: 'Delete',
               variant: 'danger',
               disabled: typed !== project,
-              onClick: async () => { await deleteProject(); setStatus('Deleted'); setOpen(false) },
+              onClick: async () => {
+                await deleteProject()
+                setStatus('Deleted')
+                setOpen(false)
+              },
             },
           ]}
         >
-          <label htmlFor="delete-name">Type {project} to confirm</label>
-          <input id="delete-name" data-autofocus autoComplete="off" value={typed} onChange={(e) => setTyped(e.target.value)} />
+          <label htmlFor="delete-name">
+            Type {project} to confirm
+          </label>
+          <input
+            id="delete-name"
+            data-autofocus
+            autoComplete="off"
+            value={typed}
+            onChange={(e) => setTyped(e.target.value)}
+          />
         </DialogLayout>
       </Dialog>
     </div>

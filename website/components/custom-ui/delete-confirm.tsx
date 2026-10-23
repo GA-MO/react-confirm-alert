@@ -10,10 +10,11 @@ export function DeleteConfirm() {
   async function remove() {
     const typed = await prompt({
       title: `Delete ${project}?`,
-      message: 'This deletes the project and its deploys. It cannot be undone.',
+      message:
+        'This deletes the project and its deploys.',
       label: `Type ${project} to confirm`,
       inputProps: { autoComplete: 'off' },
-      // validate can wait: the dialog stays open and busy until it resolves.
+      // validate can wait: the dialog stays busy until it resolves.
       validate: async (value) => {
         if (value !== project) return `Type ${project} exactly`
         await deleteProject()
@@ -25,7 +26,9 @@ export function DeleteConfirm() {
   }
   return (
     <div className="row">
-      <span>{project}: {status}</span>
+      <span>
+        {project}: {status}
+      </span>
       <button onClick={remove}>Delete</button>
     </div>
   )

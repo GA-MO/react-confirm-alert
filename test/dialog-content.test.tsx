@@ -176,6 +176,23 @@ describe('your classes win over the automatic styles', () => {
     expect(getComputedStyle(dialog.querySelector('h1')!).fontSize).toBe('11px')
   })
 
+  test('a DialogLayout title names the dialog and follows it', async () => {
+    const Named = ({ title }: { title?: string }) => <Dialog open onOpenChange={() => {}}><DialogLayout title={title} /></Dialog>
+    mount(<Named />)
+    const dialog = (await waitForDialog())!
+    expect(dialog.getAttribute('aria-labelledby')).toBeNull()
+    act(() => root!.render(<Named title='Loaded' />))
+    expect(document.getElementById(dialog.getAttribute('aria-labelledby')!)?.textContent).toBe('Loaded')
+    act(() => root!.render(<Named />))
+    expect(dialog.getAttribute('aria-labelledby')).toBeNull()
+  })
+
+  test('radios and checkboxes take the skin accent colour', async () => {
+    void openDialog({ render: () => <><input type='radio' aria-label='A' /><input type='checkbox' aria-label='B' /></> }).result
+    const dialog = (await waitForDialog())!
+    for (const input of Array.from(dialog.querySelectorAll('input'))) expect(getComputedStyle(input).accentColor).toBe('rgb(24, 24, 27)')
+  })
+
   test('unstyled turns the automatic styles off', async () => {
     void openDialog({ unstyled: true, render: () => <><h1>Bare</h1><input aria-label='Bare' /></> }).result
     const dialog = (await waitForDialog())!

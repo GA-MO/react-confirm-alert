@@ -1,4 +1,4 @@
-import { Fragment, useContext, type ReactElement } from 'react'
+import { Fragment, useContext, useLayoutEffect, type ReactElement } from 'react'
 import { useBusy } from './api'
 import { FrameContext, useSlot } from './classNames'
 import type { DialogLayoutProps } from './types'
@@ -8,6 +8,13 @@ export function DialogLayout ({ title, message, actions, children }: DialogLayou
   const slot = useSlot()
   const frame = useContext(FrameContext)
   const [busy, setBusy] = useBusy(frame.id)
+  const hasTitle = title != null
+  const { countTitle } = frame
+  useLayoutEffect(() => {
+    if (!hasTitle || !countTitle) return
+    countTitle((n) => n + 1)
+    return () => countTitle((n) => n - 1)
+  }, [hasTitle, countTitle])
   // Inside a skinned customUI the body is already there.
   const Body = frame.inBody ? Fragment : 'div'
   return (

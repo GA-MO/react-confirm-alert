@@ -36,7 +36,7 @@
     "path": "src/react-confirm-alert.css",
     "gzip": true,
     "rolldown": false,
-    "limit": "2.85 kB"
+    "limit": "2.95 kB"
   },
   {
     "name": "v3.0.6 baseline: import { confirmAlert } (CJS, includes prop-types)",

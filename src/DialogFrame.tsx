@@ -1,4 +1,4 @@
-import { useId, useLayoutEffect, useRef, type KeyboardEvent, type ReactNode, type SyntheticEvent, type ReactElement } from 'react'
+import { useId, useLayoutEffect, useRef, useState, type KeyboardEvent, type ReactNode, type SyntheticEvent, type ReactElement } from 'react'
 import { registerFrame, reopenClosedFrames } from './lifecycle'
 import { runtime, store, topmost } from './store'
 import type { DialogId, DialogKind, StyleOptions } from './types'
@@ -42,11 +42,12 @@ export function DialogFrame (props: DialogFrameProps): ReactElement {
   const stay = useRef<boolean | null>(null)
   const native = props.modal && canShowModal()
   const layoutTitleId = useId()
+  // How many DialogLayout titles are mounted; one of them names a dialog that has no name of its own.
+  const [layoutTitles, setLayoutTitles] = useState(0)
+  const labelledBy = props.labelledBy ?? (props.label || layoutTitles === 0 ? undefined : layoutTitleId)
 
   useLayoutEffect(() => {
     const element = frame.current!
-    // A DialogLayout title names a dialog that has no name of its own.
-    if (!props.label && !props.labelledBy && document.getElementById(layoutTitleId)) element.setAttribute('aria-labelledby', layoutTitleId)
     const previous = document.activeElement
     if (props.id) registerFrame(props.id, element, panel.current)
     if (native) {
@@ -127,7 +128,7 @@ export function DialogFrame (props: DialogFrameProps): ReactElement {
     ...slot('dialog', props.extraClass),
     role: props.role,
     'aria-label': props.label,
-    'aria-labelledby': props.labelledBy,
+    'aria-labelledby': labelledBy,
     'aria-describedby': props.describedBy,
     'data-rca': '',
     'data-state': props.state,
@@ -144,7 +145,7 @@ export function DialogFrame (props: DialogFrameProps): ReactElement {
   const content = (
     <div ref={panel} {...slot('panel')} tabIndex={-1}>
       <SlotContext.Provider value={slot}>
-        <FrameContext.Provider value={{ id: props.id, titleId: props.labelledBy ?? layoutTitleId }}>{props.children}</FrameContext.Provider>
+        <FrameContext.Provider value={{ id: props.id, titleId: props.labelledBy ?? layoutTitleId, countTitle: setLayoutTitles }}>{props.children}</FrameContext.Provider>
       </SlotContext.Provider>
     </div>
   )

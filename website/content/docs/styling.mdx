@@ -61,6 +61,10 @@ A `data-slot="input"` control fills the width of the dialog and has a border. A 
 
 A `data-slot` rule is more specific than the plain element rules, so use it when your own CSS would otherwise win.
 
+The plain element rules are built to beat Tailwind v4 preflight. Tailwind v3 preflight and `@tailwindcss/forms` use attribute selectors such as `[type='button']`, which win over them: there, a plain `<button type="button">` loses its background. Use `data-slot` and `data-variant`, `DialogLayout`, or classes in those setups.
+
+Radios and checkboxes take `--rca-button-bg` as their accent colour.
+
 ## Data attributes
 
 The frame has `data-rca`, `data-state` (`open` or `closing`), `data-kind`, `data-tone`, `data-depth`, `data-topmost` and, while a button waits, `data-busy`. Every slot has `data-slot`; buttons have `data-variant`.

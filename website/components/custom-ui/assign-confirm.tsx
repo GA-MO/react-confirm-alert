@@ -13,7 +13,15 @@ export function AssignConfirm() {
       message: 'They get an email with a link to the task.',
       content: members.map((m) => (
         <label key={m}>
-          <input type="radio" name="member" defaultChecked={m === picked} onChange={() => { picked = m }} /> {m}
+          <input
+            type="radio"
+            name="member"
+            defaultChecked={m === picked}
+            onChange={() => {
+              picked = m
+            }}
+          />{' '}
+          {m}
         </label>
       )),
       confirmLabel: 'Assign',

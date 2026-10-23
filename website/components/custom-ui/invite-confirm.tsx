@@ -12,9 +12,22 @@ export function InviteConfirm() {
       content: (
         <>
           <label htmlFor="invite-email">Email</label>
-          <input id="invite-email" type="email" data-autofocus onChange={(e) => { form.email = e.target.value }} />
+          <input
+            id="invite-email"
+            type="email"
+            data-autofocus
+            onChange={(e) => {
+              form.email = e.target.value
+            }}
+          />
           <label htmlFor="invite-role">Role</label>
-          <select id="invite-role" defaultValue="Viewer" onChange={(e) => { form.role = e.target.value }}>
+          <select
+            id="invite-role"
+            defaultValue="Viewer"
+            onChange={(e) => {
+              form.role = e.target.value
+            }}
+          >
             <option>Viewer</option>
             <option>Editor</option>
             <option>Admin</option>

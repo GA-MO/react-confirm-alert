@@ -11,16 +11,34 @@ function DeleteForm({ done }: { done: (deleted: boolean) => void }) {
   return (
     <>
       <h1>Delete {project}?</h1>
-      <p>This deletes the project and its deploys. It cannot be undone.</p>
+      <p>
+        This deletes the project and its deploys.
+      </p>
       <label htmlFor="delete-name">Type {project} to confirm</label>
-      <input id="delete-name" autoComplete="off" value={typed} onChange={(e) => setTyped(e.target.value)} />
+      <input
+        id="delete-name"
+        autoComplete="off"
+        value={typed}
+        onChange={(e) => setTyped(e.target.value)}
+      />
       <div className="react-confirm-alert-button-group">
-        <button onClick={() => done(false)} disabled={busy}>Cancel</button>
+        <button onClick={() => done(false)} disabled={busy}>
+          Cancel
+        </button>
         <button
           data-variant="danger"
           aria-busy={busy}
           disabled={typed !== project || busy}
-          onClick={async () => { setBusy(true); await deleteProject(); done(true) }}
+          onClick={async () => {
+            setBusy(true)
+            // Leave the dialog usable if the delete fails.
+            try {
+              await deleteProject()
+              done(true)
+            } finally {
+              setBusy(false)
+            }
+          }}
         >
           Delete
         </button>
@@ -34,11 +52,20 @@ export function DeleteCustomUI() {
   const remove = () =>
     confirmAlert({
       skin: true,
-      customUI: ({ onClose }) => <DeleteForm done={(deleted) => { if (deleted) setStatus('Deleted'); onClose() }} />,
+      customUI: ({ onClose }) => (
+        <DeleteForm
+          done={(deleted) => {
+            if (deleted) setStatus('Deleted')
+            onClose()
+          }}
+        />
+      ),
     })
   return (
     <div className="row">
-      <span>{project}: {status}</span>
+      <span>
+        {project}: {status}
+      </span>
       <button onClick={remove}>Delete</button>
     </div>
   )

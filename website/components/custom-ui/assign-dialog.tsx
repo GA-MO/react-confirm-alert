@@ -4,10 +4,23 @@ import { Dialog, DialogLayout } from 'react-confirm-alert'
 
 const members = ['Ana Silva', 'Ben Ito', 'Chai Wong']
 
-function Members({ value, onChange }: { value: string, onChange: (name: string) => void }) {
+function Members({
+  value,
+  onChange,
+}: {
+  value: string
+  onChange: (name: string) => void
+}) {
   return members.map((m) => (
     <label key={m}>
-      <input type="radio" name="member" value={m} checked={m === value} onChange={() => onChange(m)} /> {m}
+      <input
+        type="radio"
+        name="member"
+        value={m}
+        checked={m === value}
+        onChange={() => onChange(m)}
+      />{' '}
+      {m}
     </label>
   ))
 }
@@ -26,7 +39,14 @@ export function AssignDialog() {
           message="They get an email with a link to the task."
           actions={[
             { label: 'Cancel', onClick: () => setOpen(false) },
-            { label: 'Assign', variant: 'primary', onClick: () => { setOwner(picked); setOpen(false) } },
+            {
+              label: 'Assign',
+              variant: 'primary',
+              onClick: () => {
+                setOwner(picked)
+                setOpen(false)
+              },
+            },
           ]}
         >
           <Members value={picked} onChange={setPicked} />

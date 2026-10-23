@@ -242,6 +242,9 @@ dialog.react-confirm-alert-overlay::backdrop {
 :where(.react-confirm-alert-overlay[data-skin]) div p {
   margin: 0;
 }
+:where(.react-confirm-alert-overlay[data-skin]) div input:where([type=checkbox], [type=radio]) {
+  accent-color: var(--rca-button-bg, var(--_primary));
+}
 :where(.react-confirm-alert-overlay[data-skin]) div * + :is(p, label, input, textarea, select) {
   margin-top: 12px;
 }
