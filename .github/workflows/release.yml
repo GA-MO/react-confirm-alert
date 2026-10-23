@@ -46,25 +46,39 @@ jobs:
       - run: npm install -g npm@latest && npm --version # trusted publishing needs npm 11.5.1+
       - run: npm ci
       - run: npm ci --prefix fixtures/v3-baseline
-      - run: npm run release # changeset publish skips versions already on the registry
-      # changeset publish makes a lightweight tag, which git push --follow-tags skips, so 3.1.0 never
-      # reached GitHub. This step tags the commit that set the published version (annotated), pushes it
-      # by name and creates the GitHub Release from that version's CHANGELOG section. It does nothing
-      # for a version npm does not have, and skips a tag or release that already exists.
+      # changeset publish skips versions already on the registry. CHANGESETS_OUTPUT makes it write one
+      # JSON line per release it tags ({"type":"git-tag","tag":"v3.2.0",...}); the next step reads that
+      # instead of asking npm, which answers 404 while a new version is still validating.
+      - run: npm run release
+        env: { CHANGESETS_OUTPUT: '${{ runner.temp }}/changesets-publish.ndjson' }
+      # changeset publish makes a lightweight tag that never reaches GitHub. For each release it reported,
+      # tag the commit that set that version (annotated), push the tag by name and create the GitHub
+      # Release from the version's CHANGELOG section. An existing tag or release is skipped; anything
+      # else that goes wrong fails the job.
       - name: Tag and GitHub Release
-        env: { GH_TOKEN: '${{ secrets.GITHUB_TOKEN }}' }
+        env:
+          GH_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+          REPORT: '${{ runner.temp }}/changesets-publish.ndjson'
         run: |
-          version=$(node -p "require('./package.json').version")
-          tag="v$version"
-          npm view "react-confirm-alert@$version" version >/dev/null || { echo "$version is not on npm"; exit 0; }
-          if ! git ls-remote --exit-code --tags origin "refs/tags/$tag" >/dev/null; then
-            commit=$(git log -1 --format=%H -S"\"version\": \"$version\"" -- package.json)
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git tag -f -a "$tag" "$commit" -m "$tag"
-            git push origin "refs/tags/$tag"
-          fi
-          if ! gh release view "$tag" >/dev/null 2>&1; then
-            awk -v v="$version" '$0 == "## " v { on = 1; next } /^## / && on { exit } on' CHANGELOG.md > release-notes.md
-            gh release create "$tag" --title "$tag" --notes-file release-notes.md --verify-tag
-          fi
+          set -euo pipefail
+          if [ ! -s "$REPORT" ]; then echo "::notice::changeset publish released nothing"; exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for tag in $(node -e "for (const l of require('fs').readFileSync(process.env.REPORT, 'utf8').split('\n').filter(Boolean)) { const e = JSON.parse(l); if (e.type === 'git-tag') console.log(e.tag) }"); do
+            version="${tag#v}"
+            if git ls-remote --exit-code --tags origin "refs/tags/$tag" >/dev/null; then
+              echo "$tag already on GitHub"
+            else
+              commit=$(git log -1 --format=%H -S"\"version\": \"$version\"" -- package.json)
+              [ -n "$commit" ] || { echo "::error::no commit sets version $version in package.json"; exit 1; }
+              git tag -f -a "$tag" "$commit" -m "$tag"
+              git push origin "refs/tags/$tag"
+            fi
+            if gh release view "$tag" >/dev/null 2>&1; then
+              echo "release $tag already exists"
+            else
+              awk -v v="$version" '$0 == "## " v { on = 1; next } /^## / && on { exit } on' CHANGELOG.md > release-notes.md
+              [ -s release-notes.md ] || { echo "::error::CHANGELOG.md has no section for $version"; exit 1; }
+              gh release create "$tag" --title "$tag" --notes-file release-notes.md --verify-tag
+            fi
+          done
