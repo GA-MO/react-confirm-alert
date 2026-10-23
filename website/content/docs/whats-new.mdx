@@ -15,16 +15,7 @@ Every release since 3.0 is a minor or patch release. Upgrade and your 3.0 code k
 
 Inside a dialog, plain `h1` to `h3`, `p`, `label`, `input`, `textarea`, `select` and `button` are styled with no class names. Any class you add wins. Tailwind v4 preflight does not remove them.
 
-```tsx
-openDialog({
-  render: () => (
-    <form>
-      <label htmlFor="topic">Topic</label>
-      <select id="topic">…</select>
-    </form>
-  ),
-})
-```
+<include meta='title="plain-html.tsx"'>../../components/whats-new/plain-html.tsx</include>
 
 ### DialogLayout
 
@@ -33,9 +24,10 @@ Lays out a title, a message, your content and a row of buttons. An action that r
 ```tsx
 <DialogLayout
   title="Rename workspace"
+  message="Everyone in it sees the new name."
   actions={[{ label: 'Save', variant: 'primary', onClick: save }]}
 >
-  <input aria-label="Name" />
+  <input aria-label="Name" defaultValue="Acme" />
 </DialogLayout>
 ```
 
@@ -43,12 +35,7 @@ Lays out a title, a message, your content and a row of buttons. An action that r
 
 `confirm`, `alert` and `prompt` take `content`, your JSX between the message and the buttons. `message` can be JSX too.
 
-```tsx
-confirm({
-  title: 'Archive “Launch” board?',
-  content: <p>12 cards move to the archive with it.</p>,
-})
-```
+<include meta='title="content.tsx"'>../../components/whats-new/content.tsx</include>
 
 ### skin for confirmAlert
 
@@ -58,7 +45,10 @@ confirm({
 configureDialogs({ confirmAlert: { skin: true } })
 ```
 
-**Fixed.** A `textarea` with `data-slot="input"` fills the width and resizes vertically. In dark mode, a `select`'s option list is dark too.
+### Fixed in 3.3
+
+- A `textarea` with `data-slot="input"` fills the width and resizes vertically.
+- In dark mode, a `select`'s option list is dark too.
 
 ## 3.2
 
@@ -89,7 +79,11 @@ From 3.2.1, the main and danger buttons get 15% darker on hover. Set your own wi
 }
 ```
 
-**Fixed.** Closing a dialog with Enter no longer opens it again in Chromium ([#84](https://github.com/GA-MO/react-confirm-alert/issues/84)). `confirmAlert({ message: 'a\nb' })` keeps the line break ([#38](https://github.com/GA-MO/react-confirm-alert/issues/38)). From 3.2.1, a disabled button keeps readable text.
+### Fixed in 3.2
+
+- Closing a dialog with Enter no longer opens it again in Chromium ([#84](https://github.com/GA-MO/react-confirm-alert/issues/84)).
+- `confirmAlert({ message: 'a\nb' })` keeps the line break ([#38](https://github.com/GA-MO/react-confirm-alert/issues/38)).
+- From 3.2.1, a disabled button keeps readable text.
 
 ## 3.1
 
@@ -100,7 +94,7 @@ From 3.2.1, the main and danger buttons get 15% darker on hover. Set your own wi
 `confirm`, `alert`, `prompt` and `openDialog` return a Promise, so the code reads top to bottom.
 
 ```tsx
-if (await confirm('Delete this file?')) await trash(file)
+if (await confirm('Delete this file?')) await moveToTrash(file)
 ```
 
 ### Dialogs in your tree
@@ -108,9 +102,12 @@ if (await confirm('Delete this file?')) await trash(file)
 `<DialogHost />` renders dialogs inside your providers. `<Dialog open>` and `<ConfirmDialog open>` render in place and read your state.
 
 ```tsx
-<Dialog open={open} onOpenChange={setOpen}>
-  <DialogLayout title="Edit note">…</DialogLayout>
-</Dialog>
+<ConfirmDialog
+  kind="confirm"
+  open={open}
+  onOpenChange={setOpen}
+  title="Leave without saving?"
+/>
 ```
 
 ### Queue and stack
@@ -137,4 +134,11 @@ import 'react-confirm-alert/style.css'
 
 The 3.0 path, `react-confirm-alert/src/react-confirm-alert.css`, still works.
 
-**Fixed.** The blur shows on every open ([#77](https://github.com/GA-MO/react-confirm-alert/issues/77)). A press that starts inside and ends outside no longer closes the dialog ([#92](https://github.com/GA-MO/react-confirm-alert/issues/92)). Focus moves into the dialog and back ([#29](https://github.com/GA-MO/react-confirm-alert/issues/29)). Opening a dialog while one is open no longer logs a `createRoot` error ([#82](https://github.com/GA-MO/react-confirm-alert/issues/82)). `modal: true` sits above any z-index ([#31](https://github.com/GA-MO/react-confirm-alert/issues/31)). Vite no longer needs `prop-types` ([#85](https://github.com/GA-MO/react-confirm-alert/issues/85)).
+### Fixed in 3.1
+
+- The blur shows on every open ([#77](https://github.com/GA-MO/react-confirm-alert/issues/77)).
+- A press that starts inside and ends outside no longer closes the dialog ([#92](https://github.com/GA-MO/react-confirm-alert/issues/92)).
+- Focus moves into the dialog and back ([#29](https://github.com/GA-MO/react-confirm-alert/issues/29)).
+- Opening a dialog while one is open no longer logs a `createRoot` error ([#82](https://github.com/GA-MO/react-confirm-alert/issues/82)).
+- `modal: true` sits above any z-index ([#31](https://github.com/GA-MO/react-confirm-alert/issues/31)).
+- Vite no longer needs `prop-types` ([#85](https://github.com/GA-MO/react-confirm-alert/issues/85)).
