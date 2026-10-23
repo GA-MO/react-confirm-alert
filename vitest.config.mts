@@ -29,6 +29,12 @@ export default defineConfig({
       enabled: true,
       headless: true,
       provider: playwright(),
+      commands: {
+        // Playwright's media emulation, for prefers-reduced-motion.
+        emulateReducedMotion: async (ctx: any, value: 'reduce' | 'no-preference') => {
+          await ctx.page.emulateMedia({ reducedMotion: value })
+        }
+      },
       instances: browsers.map((browser) => ({ browser: browser as 'chromium' | 'firefox' | 'webkit' }))
     }
   }

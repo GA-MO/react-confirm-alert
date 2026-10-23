@@ -1,6 +1,8 @@
 import React from 'react'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import 'react-confirm-alert/src/react-confirm-alert.css'
+import { createRoot } from 'react-dom/client'
+import { commands } from 'vitest/browser'
 import { classFor } from '../src/classNames'
 import { buttonByText, cleanupPage, loadV3, setupPage, waitForOverlay } from './v3'
 
@@ -131,5 +133,53 @@ describe('review fixes', () => {
     const [a, b] = Array.from(document.querySelectorAll<HTMLElement>('[data-rca]'))
     expect([a!.dataset.depth, b!.dataset.depth]).toEqual(['0', '1'])
     expect(b!.hasAttribute('data-topmost')).toBe(true)
+  })
+})
+
+describe('P5 leftovers', () => {
+  let lib: any
+  beforeEach(async () => {
+    setupPage()
+    lib = await loadV3()
+  })
+  afterEach(async () => {
+    lib.configureDialogs({})
+    lib.closeAll()
+    cleanupPage()
+    await (commands as any).emulateReducedMotion('no-preference')
+  })
+
+  test('prefers-reduced-motion turns the v3 fade-in off and shows the overlay at once', async () => {
+    await (commands as any).emulateReducedMotion('reduce')
+    lib.confirmAlert({ title: 'Still' })
+    const overlay = await waitForOverlay()
+    expect(getComputedStyle(overlay).animationName).toBe('none')
+    expect(getComputedStyle(overlay).opacity).toBe('1')
+    buttonByText('Cancel').click()
+  })
+
+  test('without reduced motion the v3 fade-in still runs', async () => {
+    lib.confirmAlert({ title: 'Moving' })
+    const overlay = await waitForOverlay()
+    expect(getComputedStyle(overlay).animationName).toBe('react-confirm-alert-fadeIn')
+    buttonByText('Cancel').click()
+  })
+
+  test('Dialog and ConfirmDialog read configureDialogs', async () => {
+    lib.configureDialogs({ modal: false, labels: { ok: 'Okay!' }, classNames: { panel: 'app-panel' } })
+    const host = document.createElement('div')
+    document.getElementById('app')!.append(host)
+    const root = createRoot(host)
+    root.render(
+      <>
+        <lib.ConfirmDialog kind="alert" open onOpenChange={() => {}} title="Inline alert" />
+        <lib.Dialog open onOpenChange={() => {}} aria-label="Inline"><p>inline</p></lib.Dialog>
+      </>
+    )
+    await vi.waitFor(() => buttonByText('Okay!'))
+    const frames = Array.from(host.querySelectorAll<HTMLElement>('[data-rca]'))
+    expect(frames.map((f) => f.tagName)).toEqual(['DIV', 'DIV'])
+    expect(frames.every((f) => f.querySelector('[data-slot="panel"]')!.classList.contains('app-panel'))).toBe(true)
+    root.unmount()
   })
 })
