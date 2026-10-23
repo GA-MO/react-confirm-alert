@@ -49,7 +49,6 @@ export const customUIExamples: GalleryItem[] = [
     Demo: DeleteOpenDialog,
     picture: {
       kind: 'custom',
-      tone: 'danger',
       title: 'Delete acme-web?',
       message: 'This deletes the project and its deploys.',
       content: (
