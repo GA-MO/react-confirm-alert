@@ -1,7 +1,11 @@
 // Builds the library at the repo root and installs its packed tarball here, the way users get it.
 // A workspace link would load the root's React 18 next to this site's React 19.
+//
+// The library is not a dependency in package.json, so package-lock.json never records a tarball
+// integrity: a tarball packed on another machine (CI) has a different hash, and a recorded one
+// either fails with EINTEGRITY or installs a stale copy. It is installed with --no-save instead.
 import { execFileSync } from 'node:child_process'
-import { copyFileSync, mkdirSync, rmSync, writeFileSync } from 'node:fs'
+import { copyFileSync, mkdirSync } from 'node:fs'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -13,11 +17,5 @@ run(['run', 'build'], root)
 mkdirSync(join(site, '.pack'), { recursive: true })
 const tarball = execFileSync('npm', ['pack', '--pack-destination', join(site, '.pack')], { cwd: root }).toString().trim().split('\n').pop()
 copyFileSync(join(site, '.pack', tarball), join(site, '.pack', 'react-confirm-alert.tgz'))
-rmSync(join(site, 'node_modules', 'react-confirm-alert'), { recursive: true, force: true })
 run(['install', '--no-audit', '--no-fund'], site)
-// The lockfile pins the tarball's old integrity, so install the fresh one explicitly.
 run(['install', '--no-save', '--no-audit', '--no-fund', './.pack/react-confirm-alert.tgz'], site)
-
-// The home page shows these numbers, so they always come from this build.
-const sizes = JSON.parse(execFileSync('npx', ['size-limit', '--json'], { cwd: root }).toString())
-writeFileSync(join(site, 'size.json'), JSON.stringify(sizes.map(({ name, size }) => ({ name, size })), null, 2))

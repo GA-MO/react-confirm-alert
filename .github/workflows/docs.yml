@@ -21,8 +21,6 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: 22, cache: npm }
       - run: npm ci
-      # size-limit also measures the v3.0.6 baseline from this fixture.
-      - run: npm ci --prefix fixtures/v3-baseline
       # prebuild builds the library, packs it into website/.pack and installs it there.
       - run: npm run build --prefix website
       - run: npm run check-links --prefix website
