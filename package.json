@@ -61,6 +61,7 @@
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
     "size-limit": "^14.3.0",
+    "tailwindcss": "^4.3.3",
     "typescript": "^7.0.2",
     "vite": "^8.3.5",
     "vitest": "^5.0.5"

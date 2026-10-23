@@ -158,6 +158,7 @@ dialog.react-confirm-alert-overlay::backdrop {
   --_primary-fg: #18181b;
   --_ring: #71717a;
   --_error: #f87171;
+  color-scheme: dark;
   background: var(--rca-backdrop, rgba(0, 0, 0, 0.7));
 }
 .react-confirm-alert-overlay[data-skin] .react-confirm-alert {
@@ -214,6 +215,13 @@ dialog.react-confirm-alert-overlay::backdrop {
   font: inherit;
   outline: none;
   transition: border-color 150ms, box-shadow 150ms;
+}
+.react-confirm-alert-overlay[data-skin] textarea[data-slot=input] {
+  display: block;
+  height: auto;
+  min-height: 80px;
+  padding: 8px 12px;
+  resize: vertical;
 }
 .react-confirm-alert-overlay[data-skin] [data-slot=input]:focus {
   border-color: var(--rca-ring, var(--_ring));

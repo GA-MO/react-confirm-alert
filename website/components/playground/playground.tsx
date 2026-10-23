@@ -1,10 +1,11 @@
 'use client'
 import { useRouter } from 'next/navigation'
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
-import { alert, closeAll, configureDialogs, confirm, confirmAlert, Dialog, openDialog, prompt } from 'react-confirm-alert'
+import { alert, closeAll, configureDialogs, confirm, confirmAlert, openDialog, prompt } from 'react-confirm-alert'
 import { DynamicCodeBlock } from 'fumadocs-ui/components/dynamic-codeblock'
 import type { ShikiTransformer } from 'shiki'
 import { codeThemes } from '@/lib/code-themes'
+import { Colors, Nested, NoteDialog } from './dialogs'
 import { snippet } from './snippet'
 
 type Log = { id: number, scenario: string, text: string }
@@ -20,7 +21,7 @@ const scenarios: Scenario[] = [
   { id: 'alert', group: 'Promise API', label: 'alert()', run: async (o, log) => { await alert(base(o)); log('resolved') } },
   { id: 'prompt', group: 'Promise API', label: 'prompt() with validate', run: async (o, log) => log(`resolved ${JSON.stringify(await prompt({ ...base(o), title: 'Your name', label: 'Name', validate: (v) => (v.trim() ? null : 'Required') }))}`) },
   { id: 'async', group: 'Promise API', label: 'Async button', run: async (o, log) => log(`resolved ${await confirm({ ...base(o), title: 'Save changes?', confirmLabel: 'Save', onConfirm: () => wait(1500) })}`) },
-  { id: 'stack', group: 'Several dialogs', label: 'Nested (stack)', run: (o, log) => { openDialog({ ...base(o), title: undefined, render: ({ dismiss }) => <Inner dismiss={dismiss} log={log} /> }) } },
+  { id: 'stack', group: 'Several dialogs', label: 'Nested (stack)', run: (o, log) => { openDialog({ ...base(o), title: undefined, render: ({ dismiss }) => <Nested dismiss={dismiss} log={log} /> }) } },
   { id: 'queue', group: 'Several dialogs', label: 'Queue', run: async (o, log) => { for (const t of ['One', 'Two', 'Three']) void alert({ ...base(o), title: t, message: 'Opens after the one before closes.', strategy: 'queue' }).then(() => log(`${t} closed`)) } },
   { id: 'closeAll', group: 'Several dialogs', label: 'closeAll()', run: async (o, log) => { void confirm({ ...base(o), title: 'Closing in 1.5 s' }).then((r) => log(`resolved ${r}`)); await wait(1500); closeAll() } },
   { id: 'route', group: 'Several dialogs', label: 'Close on navigation', run: async (o, log, go) => { void confirm({ ...base(o), title: 'Navigating in 1.5 s' }).then((r) => log(`resolved ${r}`)); await wait(1500); go('/docs/recipes/next-app-router') } },
@@ -51,30 +52,6 @@ const styles = {
 } as const
 type StyleKey = keyof typeof styles
 
-function Inner ({ dismiss, log }: { dismiss: () => void, log: (t: string) => void }) {
-  return (
-    <div className="react-confirm-alert-body">
-      <h1>Level 1</h1>
-      <p>Open a second dialog on top. Escape closes the top one first.</p>
-      <div className="react-confirm-alert-button-group">
-        <button onClick={async () => log(`level 2 resolved ${await confirm('Level 2')}`)}>Open level 2</button>
-        <button onClick={dismiss}>Close</button>
-      </div>
-    </div>
-  )
-}
-
-function Colors ({ close }: { close: (v: string) => void }) {
-  return (
-    <div className="react-confirm-alert-body">
-      <h1>Pick a colour</h1>
-      <div className="react-confirm-alert-button-group">
-        {['red', 'green', 'blue'].map((c) => <button key={c} onClick={() => close(c)}>{c}</button>)}
-      </div>
-    </div>
-  )
-}
-
 function Toggle ({ label, checked, onChange }: { label: string, checked: boolean, onChange: (v: boolean) => void }) {
   return (
     <label className="flex cursor-pointer items-center justify-between gap-3 text-sm">
@@ -95,7 +72,6 @@ export function Playground () {
   const [width, setWidth] = useState(400)
   const [logs, setLogs] = useState<Log[]>([])
   const [inlineOpen, setInlineOpen] = useState(false)
-  const [note, setNote] = useState('')
   const scenario = scenarios.find((s) => s.id === active)!
   // Rebuilt on every change, so the panel always shows a complete component for the current options.
   const code = snippet(active, opts, style, width)
@@ -184,16 +160,7 @@ export function Playground () {
       <div className="min-w-0 md:col-start-2 lg:sticky lg:top-20 lg:col-start-3 lg:self-start [&_figure]:my-0">
         <DynamicCodeBlock lang="tsx" code={shown.code} options={codeOptions} codeblock={{ title: 'example.tsx', className: 'playground-code' }} />
       </div>
-      <Dialog open={inlineOpen} onOpenChange={setInlineOpen} aria-label="Edit note">
-        <div className="react-confirm-alert-body">
-          <h1>Edit note</h1>
-          <textarea value={note} onChange={(e) => setNote(e.target.value)} rows={3} className="w-full rounded-md border p-2" placeholder="Type, and the Save button follows the parent state" />
-          <div className="react-confirm-alert-button-group">
-            <button disabled={!note.trim()} onClick={() => { log(`saved "${note}"`); setInlineOpen(false) }}>Save</button>
-            <button onClick={() => setInlineOpen(false)}>Cancel</button>
-          </div>
-        </div>
-      </Dialog>
+      <NoteDialog open={inlineOpen} onOpenChange={setInlineOpen} onSave={(note) => log(`saved "${note}"`)} />
     </main>
   )
 }

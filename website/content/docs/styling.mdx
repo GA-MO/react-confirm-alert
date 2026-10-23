@@ -27,6 +27,40 @@ To follow the OS setting instead, set the class from `prefers-color-scheme` in y
 
 `classNames` takes a class per slot: `dialog`, `panel`, `body`, `title`, `message`, `actions`, `button`, `field`, `label`, `input`, `error`. Classes add up in this order: the 3.0 class (unless `unstyled`), `configureDialogs`, the call, then a 3.0 button `className`.
 
+## Your own content
+
+`<Dialog>` and `openDialog({ render })` render what you give them. To get the default look, use the same markup as `prompt`:
+
+| Element | Markup |
+| --- | --- |
+| Body | `className="react-confirm-alert-body"` |
+| Heading (`h1`, `h2` or `h3`) | `data-slot="title"` |
+| Label and control wrapper | `data-slot="field"` |
+| Label | `data-slot="label"` |
+| `input`, `textarea` or `select` | `data-slot="input"` |
+| Error text | `data-slot="error"` |
+| Button row | `className="react-confirm-alert-button-group"` and `data-slot="actions"` |
+| Main button | `data-variant="primary"` or `data-variant="danger"` |
+
+A `data-slot="input"` control fills the width of the dialog and has a border. A `textarea` is at least 80px tall and resizes vertically. These rules come from the library CSS, so a CSS reset such as Tailwind preflight does not remove them.
+
+```tsx
+<Dialog open={open} onOpenChange={setOpen} aria-labelledby="note-title">
+  <div className="react-confirm-alert-body">
+    <h1 id="note-title" data-slot="title">Edit note</h1>
+    <div data-slot="field">
+      <label htmlFor="note" data-slot="label">Note</label>
+      <textarea id="note" data-slot="input" value={note} onChange={(e) => setNote(e.target.value)} />
+    </div>
+    <div className="react-confirm-alert-button-group" data-slot="actions">
+      <button data-variant="primary" onClick={() => setOpen(false)}>Done</button>
+    </div>
+  </div>
+</Dialog>
+```
+
+A bare `<h1>` or `<textarea>` gets no style from the library. With Tailwind preflight it has no border and no heading size.
+
 ## Data attributes
 
 The frame has `data-rca`, `data-state` (`open` or `closing`), `data-kind`, `data-tone`, `data-depth`, `data-topmost` and, while a button waits, `data-busy`. Every slot has `data-slot`; buttons have `data-variant`.
