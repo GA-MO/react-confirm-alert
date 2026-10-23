@@ -48,6 +48,22 @@ export function closeDialog (id: DialogId, { sync = true } = {}) {
   Promise.all(exits.map((a) => a.finished)).finally(() => store.set(remove(store.get(), id)))
 }
 
+// Chrome and Safari group modal dialogs opened without a user gesture in between, and a repeated
+// Escape closes the whole group with uncancelable cancel events. Frames that must stay open are
+// shown again here, in store order, so the stacking order in the top layer does not change.
+let reopenQueued = false
+export function reopenClosedFrames () {
+  if (reopenQueued) return
+  reopenQueued = true
+  queueMicrotask(() => {
+    reopenQueued = false
+    for (const entry of store.get().entries) {
+      const frame = runtime().frames.get(entry.id)?.frame
+      if (entry.phase === 'open' && frame instanceof HTMLDialogElement && !frame.open) frame.showModal()
+    }
+  })
+}
+
 // Only animations on the frame, its ::backdrop and the panel count. Children can run endless
 // animations (a spinner) that would keep the dialog open forever.
 function animationsOf ({ frame, panel }: Mounted): Animation[] {

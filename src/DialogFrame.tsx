@@ -1,6 +1,6 @@
 import { useLayoutEffect, useRef, type KeyboardEvent, type ReactNode, type SyntheticEvent } from 'react'
-import { registerFrame } from './lifecycle'
-import { runtime } from './store'
+import { registerFrame, reopenClosedFrames } from './lifecycle'
+import { runtime, store, topmost } from './store'
 import type { DialogId, DialogKind } from './types'
 
 export interface DialogFrameProps {
@@ -30,6 +30,7 @@ export function DialogFrame (props: DialogFrameProps) {
   const frame = useRef<HTMLElement | null>(null)
   const panel = useRef<HTMLDivElement | null>(null)
   const pressedOn = useRef<EventTarget | null>(null)
+  const stay = useRef<boolean | null>(null)
   const native = props.modal && canShowModal()
 
   useLayoutEffect(() => {
@@ -72,9 +73,23 @@ export function DialogFrame (props: DialogFrameProps) {
     e.stopPropagation()
   }
 
+  const isTop = () => !props.id || topmost(store.get())?.id === props.id
+  // Decided at cancel time: once the top dialog starts closing, the next one would look like the top.
+  const mustStay = () => !isTop() || !props.closeOnEscape || isBusy()
+
   const onCancel = (e: SyntheticEvent) => {
     e.preventDefault()
-    if (!props.legacy && props.closeOnEscape && !isBusy()) props.onDismiss()
+    stay.current = mustStay()
+    if (!stay.current && !props.legacy) props.onDismiss()
+  }
+
+  // The browser closed the dialog itself: a repeated Escape, or a group of dialogs opened from code.
+  const onClose = () => {
+    const keep = stay.current ?? mustStay()
+    stay.current = null
+    if (props.state !== 'open') return
+    if (keep) reopenClosedFrames()
+    else props.onDismiss()
   }
 
   const isBusy = () => !!props.id && runtime().busy.has(props.id)
@@ -86,14 +101,6 @@ export function DialogFrame (props: DialogFrameProps) {
   }
 
   // Some browsers close a modal dialog on a repeated Escape even when cancel was prevented.
-  // Escape is blocked by closeOnEscape: false or a busy button, so the dialog opens again.
-  const onClose = () => {
-    if (props.state !== 'open') return
-    const blocked = !props.closeOnEscape || isBusy()
-    if (blocked) (frame.current as HTMLDialogElement).showModal()
-    else props.onDismiss()
-  }
-
   const shared = {
     className: props.className,
     role: props.role,
