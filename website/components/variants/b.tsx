@@ -8,7 +8,7 @@ import { VariantShell } from './shell'
 const springy = {
   unstyled: true,
   classNames: {
-    dialog: 'fixed inset-0 m-0 open:grid size-full max-h-none max-w-none place-items-center bg-transparent p-4 backdrop:bg-orange-950/20 backdrop:transition-opacity backdrop:duration-300 starting:backdrop:opacity-0 data-[state=closing]:backdrop:opacity-0',
+    dialog: 'fixed inset-0 m-0 open:grid size-full max-h-none max-w-none place-items-center bg-transparent p-4 backdrop:bg-stone-900/30 backdrop:backdrop-blur-sm backdrop:transition-all backdrop:duration-300 starting:backdrop:opacity-0 data-[state=closing]:backdrop:opacity-0',
     panel: 'w-full max-w-sm rounded-3xl bg-white p-7 text-center shadow-2xl shadow-orange-900/10 transition duration-300 ease-spring outline-none starting:translate-y-4 starting:scale-90 starting:opacity-0 in-data-[state=closing]:scale-95 in-data-[state=closing]:opacity-0 in-data-[state=closing]:duration-150 in-data-[state=closing]:ease-out motion-reduce:transition-none',
     title: 'text-xl font-bold text-stone-900',
     message: 'mt-2 text-stone-500',
@@ -28,7 +28,7 @@ export function VariantB () {
   ]
   return (
     <VariantShell id="b">
-      <main className="relative flex flex-1 flex-col items-center overflow-hidden px-6 pb-44 pt-20 text-center">
+      <main className="relative flex flex-1 flex-col items-center overflow-x-clip px-6 pb-32 pt-20 text-center">
         <div aria-hidden className="pointer-events-none absolute -top-40 left-1/2 size-144 -translate-x-1/2 rounded-full bg-orange-200/50 blur-3xl" />
         <h1 className="relative w-full text-balance text-4xl font-bold tracking-tight text-stone-900 sm:text-6xl">
           {name ? <span key={name} className="inline-block animate-rise">Hi, {name}.</span> : 'Dialogs, but friendly.'}
@@ -39,7 +39,7 @@ export function VariantB () {
             <button key={c.label} onClick={c.run} className="cursor-pointer rounded-full bg-white px-5 py-3 font-mono text-sm font-medium text-stone-800 shadow-md ring-1 ring-stone-200 transition duration-200 ease-spring hover:-translate-y-1 hover:shadow-lg active:translate-y-0 active:scale-95">{c.label}</button>
           ))}
         </div>
-        <p aria-live="polite" className="relative mt-6 h-6 font-mono text-sm text-stone-500"><span key={last} className="inline-block animate-rise">{last}</span></p>
+        <p aria-live="polite" className="relative mt-6 min-h-6 text-sm text-stone-500"><span key={last} className="inline-block animate-rise">{last}</span></p>
         <Link href="/docs" className="relative mt-10 cursor-pointer rounded-full bg-stone-900 px-6 py-3 font-semibold text-white shadow-lg transition duration-200 ease-spring hover:-translate-y-0.5 active:scale-95">Read the docs</Link>
       </main>
     </VariantShell>

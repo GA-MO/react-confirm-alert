@@ -33,7 +33,7 @@ export function VariantC () {
   }
   return (
     <VariantShell id="c">
-      <main className="mx-auto w-full max-w-5xl flex-1 px-6 pb-44 pt-14">
+      <main className="mx-auto w-full max-w-5xl flex-1 px-6 pb-32 pt-14">
         <h1 className="text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">Dialogs that return values.</h1>
         <p className="mt-3 max-w-2xl text-slate-600">One function call, one Promise. Run it and read what came back.</p>
         <div className="mt-8 grid overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm lg:grid-cols-2">
@@ -48,8 +48,8 @@ export function VariantC () {
               <button onClick={run} className="cursor-pointer rounded-md bg-slate-900 px-4 py-2 font-mono text-sm text-white transition duration-100 hover:bg-slate-700 active:scale-97">Run ▸</button>
             </div>
           </div>
-          <div aria-live="polite" className="min-h-48 bg-slate-950 p-5 font-mono text-sm leading-6 text-slate-300">
-            {log.length === 0 ? <p className="text-slate-500">// results appear here</p> : log.map((l, i) => <p key={`${log.length}-${i}`} className={`${i === 0 ? 'animate-rise' : ''} ${l.startsWith('←') ? 'text-emerald-400' : ''}`}>{l}</p>)}
+          <div aria-live="polite" className={`min-h-40 p-5 font-mono text-sm leading-6 transition-colors duration-300 ${log.length ? 'bg-slate-950 text-slate-300' : 'bg-slate-50 text-slate-500'}`}>
+            {log.length === 0 ? <p>// press Run to see what comes back<span className="ml-0.5 animate-pulse">▍</span></p> : log.map((l, i) => <p key={`${log.length}-${i}`} className={`${i === 0 ? 'animate-rise' : ''} ${l.startsWith('←') ? 'text-emerald-400' : ''}`}>{l}</p>)}
           </div>
         </div>
         <div className="mt-8 flex gap-3">

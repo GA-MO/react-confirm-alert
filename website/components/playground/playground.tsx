@@ -126,7 +126,7 @@ export function Playground () {
             <p className="px-2 pb-1 pt-3 text-xs font-semibold uppercase tracking-wide text-fd-muted-foreground">{g}</p>
             {scenarios.filter((s) => s.group === g).map((s) => (
               <button key={s.id} onClick={() => setActive(s.id)} aria-current={s.id === active}
-                className="block w-full cursor-pointer rounded-lg px-3 py-1.5 text-left text-sm transition-colors duration-150 hover:bg-fd-accent aria-[current=true]:bg-fd-primary/10 aria-[current=true]:font-medium aria-[current=true]:text-fd-primary">
+                className="block w-full cursor-pointer rounded-lg px-3 py-1.5 text-left text-sm transition-colors duration-150 hover:bg-fd-accent aria-[current=true]:bg-fd-card aria-[current=true]:font-medium aria-[current=true]:shadow-sm aria-[current=true]:ring-1 aria-[current=true]:ring-black/5">
                 {s.label}
               </button>
             ))}
@@ -146,8 +146,8 @@ export function Playground () {
           </button>
         </div>
         <div className="grid gap-5 lg:grid-cols-2">
-          <fieldset className="flex flex-col gap-3 rounded-xl border p-4">
-            <legend className="px-1 text-sm font-semibold">Options</legend>
+          <fieldset className="flex flex-col gap-3 rounded-2xl bg-fd-card p-6 shadow-sm ring-1 ring-black/5">
+            <legend className="float-left mb-1 w-full text-sm font-semibold">Options</legend>
             <Field label="Title"><input value={opts.title} onChange={(e) => set('title')(e.target.value)} className="w-full rounded-md border bg-transparent px-2 py-1.5 text-sm" /></Field>
             <Field label="Message"><input value={opts.message} onChange={(e) => set('message')(e.target.value)} className="w-full rounded-md border bg-transparent px-2 py-1.5 text-sm" /></Field>
             <Toggle label="tone: danger" checked={opts.danger} onChange={set('danger')} />
@@ -155,8 +155,8 @@ export function Playground () {
             <Toggle label="closeOnEscape" checked={opts.closeOnEscape} onChange={set('closeOnEscape')} />
             <Toggle label="closeOnClickOutside" checked={opts.closeOnClickOutside} onChange={set('closeOnClickOutside')} />
           </fieldset>
-          <fieldset className="flex flex-col gap-3 rounded-xl border p-4">
-            <legend className="px-1 text-sm font-semibold">Styling</legend>
+          <fieldset className="flex flex-col gap-3 rounded-2xl bg-fd-card p-6 shadow-sm ring-1 ring-black/5">
+            <legend className="float-left mb-1 w-full text-sm font-semibold">Styling</legend>
             <div role="radiogroup" className="grid grid-cols-2 gap-2">
               {(Object.keys(styles) as StyleKey[]).map((k) => (
                 <button key={k} role="radio" aria-checked={style === k} onClick={() => setStyle(k)}
@@ -171,7 +171,7 @@ export function Playground () {
             <p className="text-xs text-fd-muted-foreground">Styling applies to the Promise API and dialogs in your tree. confirmAlert keeps the v3 look unless configureDialogs sets confirmAlert defaults.</p>
           </fieldset>
         </div>
-        <div aria-live="polite" className="rounded-xl border p-4">
+        <div aria-live="polite" className="rounded-2xl bg-fd-card p-6 shadow-sm ring-1 ring-black/5">
           <h2 className="mb-2 text-sm font-semibold">Results</h2>
           {logs.length === 0
             ? <p className="text-sm text-fd-muted-foreground">Open a dialog. What it resolves with shows up here.</p>

@@ -14,7 +14,7 @@ export function VariantShell ({ id, children }: { id: keyof typeof personalities
   return (
     <>
       {children}
-      <aside className="fixed inset-x-3 bottom-3 z-40 mx-auto flex max-w-xl flex-col gap-2 rounded-2xl border bg-white/90 p-3 text-sm shadow-lg backdrop-blur sm:flex-row sm:items-center sm:gap-4">
+      <aside className="fixed inset-x-3 bottom-3 z-40 mx-auto flex max-w-xl flex-col items-center gap-2 rounded-2xl sm:flex-row  border bg-white/90 p-3 text-sm shadow-lg backdrop-blur sm:gap-4">
         <div className="flex gap-1">
           {(['a', 'b', 'c'] as const).map((v) => (
             <Link key={v} href={`/variants/${v}`} aria-current={path.includes(`/variants/${v}`) || (v === id && !path.includes('/variants/'))}
@@ -23,7 +23,7 @@ export function VariantShell ({ id, children }: { id: keyof typeof personalities
             </Link>
           ))}
         </div>
-        <p className="text-zinc-600"><span className="font-semibold text-zinc-900">{personalities[id].name}.</span> {personalities[id].note}</p>
+        <p className="hidden text-zinc-600 sm:block"><span className="font-semibold text-zinc-900">{personalities[id].name}.</span> {personalities[id].note}</p>
       </aside>
     </>
   )
