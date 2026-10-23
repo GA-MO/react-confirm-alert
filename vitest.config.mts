@@ -33,7 +33,7 @@ export default defineConfig({
     ]
   },
   optimizeDeps: {
-    include: ['react', 'react-dom', 'react-dom/client', 'prop-types']
+    include: ['react', 'react/jsx-dev-runtime', 'react/jsx-runtime', 'react-dom', 'react-dom/client', 'prop-types']
   },
   test: {
     include: ['test/**/*.test.{ts,tsx}'],
