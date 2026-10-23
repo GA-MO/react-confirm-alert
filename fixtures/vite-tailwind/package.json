@@ -1,0 +1,17 @@
+{
+  "name": "fixture-vite-tailwind",
+  "private": true,
+  "scripts": {
+    "check": "vite build && node ../open-dialog.mjs dist Mixed 'Mixed dialog' style '[data-slot=\"button\"][data-variant=\"primary\"]' background-color 0.637 && node ../open-dialog.mjs dist Pure 'Pure dialog' style '[data-slot=\"panel\"]' background-color 0.546"
+  },
+  "dependencies": {
+    "react-confirm-alert": "file:../.pack/react-confirm-alert.tgz",
+    "react": "^19",
+    "react-dom": "^19"
+  },
+  "devDependencies": {
+    "vite": "^8",
+    "tailwindcss": "^4",
+    "@tailwindcss/vite": "^4"
+  }
+}
