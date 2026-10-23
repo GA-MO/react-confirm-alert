@@ -36,6 +36,11 @@ export default defineConfig({
         // Playwright's media emulation, for prefers-reduced-motion.
         emulateReducedMotion: async (ctx: any, value: 'reduce' | 'no-preference') => {
           await ctx.page.emulateMedia({ reducedMotion: value })
+        },
+        // A real mouse, for :hover and :active.
+        pointer: async (ctx: any, action: 'hover' | 'down' | 'up', selector?: string) => {
+          if (action === 'hover') await ctx.iframe.locator(selector!).hover()
+          else await ctx.page.mouse[action]()
         }
       },
       instances: browsers.map((browser) => ({ browser: browser as 'chromium' | 'firefox' | 'webkit' }))
