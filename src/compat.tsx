@@ -72,7 +72,13 @@ function LegacyContent ({ props, titleId, close, id }: LegacyContentProps) {
   useLayoutEffect(() => {
     const keyboard = (event: KeyboardEvent) => {
       if (id && topmost(store.get())?.id !== id) return
-      const { props, close } = latest.current
+      const { props } = latest.current
+      // A key that closes the dialog stops there: focus returns to the opener before the key's
+      // default action, so Enter would otherwise click the opener and reopen the dialog (#84).
+      const close = () => {
+        event.preventDefault()
+        latest.current.close()
+      }
       const keyCode = event.keyCode
       if ((props.keyCodeForClose ?? []).includes(keyCode)) close()
       if ((props.closeOnEscape ?? true) && keyCode === 27) {
