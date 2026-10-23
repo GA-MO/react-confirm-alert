@@ -145,8 +145,14 @@ export function Playground () {
             {copied ? 'Copied' : 'Copy'}
           </button>
         </div>
+        <div aria-live="polite" className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-zinc-950/5">
+          <h2 className="mb-2 text-sm font-semibold">Results</h2>
+          {logs.length === 0
+            ? <p className="text-sm text-fd-muted-foreground">Open a dialog. What it resolves with shows up here.</p>
+            : <ul className="flex flex-col gap-1 font-mono text-sm">{logs.map((l) => <li key={l.id} className="transition duration-300 starting:-translate-y-1 starting:opacity-0"><span className="text-fd-muted-foreground">{l.scenario}:</span> {l.text}</li>)}</ul>}
+        </div>
         <div className="grid gap-5 lg:grid-cols-2">
-          <fieldset className="flex flex-col gap-3 rounded-2xl bg-fd-card p-6 shadow-sm ring-1 ring-black/5">
+          <fieldset className="flex flex-col gap-3 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-zinc-950/5">
             <legend className="float-left mb-1 w-full text-sm font-semibold">Options</legend>
             <Field label="Title"><input value={opts.title} onChange={(e) => set('title')(e.target.value)} className="w-full rounded-md border bg-transparent px-2 py-1.5 text-sm" /></Field>
             <Field label="Message"><input value={opts.message} onChange={(e) => set('message')(e.target.value)} className="w-full rounded-md border bg-transparent px-2 py-1.5 text-sm" /></Field>
@@ -155,7 +161,7 @@ export function Playground () {
             <Toggle label="closeOnEscape" checked={opts.closeOnEscape} onChange={set('closeOnEscape')} />
             <Toggle label="closeOnClickOutside" checked={opts.closeOnClickOutside} onChange={set('closeOnClickOutside')} />
           </fieldset>
-          <fieldset className="flex flex-col gap-3 rounded-2xl bg-fd-card p-6 shadow-sm ring-1 ring-black/5">
+          <fieldset className="flex flex-col gap-3 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-zinc-950/5">
             <legend className="float-left mb-1 w-full text-sm font-semibold">Styling</legend>
             <div role="radiogroup" className="grid grid-cols-2 gap-2">
               {(Object.keys(styles) as StyleKey[]).map((k) => (
@@ -170,12 +176,6 @@ export function Playground () {
             )}
             <p className="text-xs text-fd-muted-foreground">Styling applies to the Promise API and dialogs in your tree. confirmAlert keeps the v3 look unless configureDialogs sets confirmAlert defaults.</p>
           </fieldset>
-        </div>
-        <div aria-live="polite" className="rounded-2xl bg-fd-card p-6 shadow-sm ring-1 ring-black/5">
-          <h2 className="mb-2 text-sm font-semibold">Results</h2>
-          {logs.length === 0
-            ? <p className="text-sm text-fd-muted-foreground">Open a dialog. What it resolves with shows up here.</p>
-            : <ul className="flex flex-col gap-1 font-mono text-sm">{logs.map((l) => <li key={l.id} className="transition duration-300 starting:-translate-y-1 starting:opacity-0"><span className="text-fd-muted-foreground">{l.scenario}:</span> {l.text}</li>)}</ul>}
         </div>
       </section>
       <Dialog open={inlineOpen} onOpenChange={setInlineOpen} aria-label="Edit note">

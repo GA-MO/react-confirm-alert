@@ -24,13 +24,17 @@ type Entry = { id: number, call: string, value: string }
 export function Home () {
   const [files, setFiles] = useState(starter)
   const [results, setResults] = useState<Entry[]>([])
+  const [leaving, setLeaving] = useState<string | null>(null)
   const record = (call: string, value: unknown) =>
-    setResults((r) => [{ id: Date.now(), call, value: JSON.stringify(value) }, ...r].slice(0, 4))
+    setResults((r) => [{ id: Date.now(), call, value: JSON.stringify(value) }, ...r].slice(0, 3))
 
   const remove = async (name: string) => {
     const ok = await confirm({ ...calm, title: `Delete “${name}”?`, message: 'It moves to the trash for 30 days.', tone: 'danger', confirmLabel: 'Delete' })
     record('confirm()', ok)
-    if (ok) setFiles((f) => f.filter((x) => x !== name))
+    if (!ok) return
+    // Let the row slide out before it leaves the list, so the card does not jump.
+    setLeaving(name)
+    setTimeout(() => { setFiles((f) => f.filter((x) => x !== name)); setLeaving(null) }, 200)
   }
   const rename = async (name: string) => {
     const next = await prompt({ ...calm, title: 'Rename file', defaultValue: name, submitLabel: 'Rename', validate: (v) => (v.trim() ? null : 'Give it a name') })
@@ -39,7 +43,7 @@ export function Home () {
   }
 
   return (
-    <main className="mx-auto grid w-full max-w-5xl flex-1 items-center gap-12 px-6 py-16 lg:grid-cols-2">
+    <main className="mx-auto grid w-full max-w-5xl flex-1 content-start items-center gap-12 lg:content-center px-6 py-12 md:grid-cols-2 md:gap-10 md:py-24">
       <section>
         <p className="text-sm font-medium text-indigo-600">For React 18 and 19</p>
         <h1 className="mt-3 text-balance text-4xl font-semibold tracking-tight text-zinc-950 sm:text-5xl">Ask, then wait for the answer.</h1>
@@ -52,11 +56,11 @@ export function Home () {
       <section aria-label="Try it" className="overflow-hidden rounded-2xl bg-white shadow-xl ring-1 ring-zinc-950/5">
         <ul className="p-2">
           {files.map((f) => (
-            <li key={f} className="flex items-center justify-between gap-2 rounded-xl px-4 py-3 transition-colors duration-150 hover:bg-zinc-50">
+            <li key={f} className={`flex items-center justify-between gap-2 rounded-xl px-4 py-3 transition duration-200 ease-out-quint hover:bg-zinc-50 ${leaving === f ? '-translate-x-2 opacity-0' : ''}`}>
               <span className="truncate text-sm text-zinc-800">{f}</span>
               <span className="flex shrink-0 gap-1">
-                <button onClick={() => rename(f)} className="cursor-pointer rounded-md px-2.5 py-1 text-sm text-zinc-500 transition-colors duration-150 hover:bg-zinc-100 hover:text-zinc-900 active:scale-97 focus-visible:outline-2 focus-visible:outline-indigo-500">Rename</button>
-                <button onClick={() => remove(f)} className="cursor-pointer rounded-md px-2.5 py-1 text-sm text-zinc-500 transition-colors duration-150 hover:bg-red-50 hover:text-red-600 active:scale-97 focus-visible:outline-2 focus-visible:outline-indigo-500">Delete</button>
+                <button onClick={() => rename(f)} className="cursor-pointer rounded-md px-2.5 py-1 text-sm text-zinc-600 ring-1 ring-zinc-200 transition duration-150 hover:bg-zinc-100 hover:ring-zinc-300 hover:text-zinc-900 active:scale-97 focus-visible:outline-2 focus-visible:outline-indigo-500">Rename</button>
+                <button onClick={() => remove(f)} className="cursor-pointer rounded-md px-2.5 py-1 text-sm text-zinc-600 ring-1 ring-zinc-200 transition duration-150 hover:bg-red-50 hover:ring-red-200 hover:text-red-600 active:scale-97 focus-visible:outline-2 focus-visible:outline-indigo-500">Delete</button>
               </span>
             </li>
           ))}
@@ -74,7 +78,7 @@ export function Home () {
             : (
               <ul className="mt-2 flex flex-col gap-1 text-sm">
                 {results.map((r, i) => (
-                  <li key={r.id} className={`flex items-baseline gap-2 transition-opacity duration-300 ${i === 0 ? 'animate-rise' : 'opacity-50'}`}>
+                  <li key={r.id} className={`flex items-baseline gap-2 transition-opacity duration-300 ${i === 0 ? 'animate-rise' : 'opacity-70'}`}>
                     <span className="text-zinc-500">{r.call}</span>
                     <span aria-hidden className="text-zinc-300">→</span>
                     <code className="rounded bg-white px-1.5 py-0.5 text-zinc-900 ring-1 ring-zinc-200">{r.value}</code>
