@@ -5,20 +5,6 @@ import { confirm, prompt } from 'react-confirm-alert'
 
 const starter = ['Q3 report.pdf', 'Brand guidelines.fig', 'Launch notes.md']
 
-// Calm: 200 ms ease-out-quint, a soft scale from 98%, a backdrop that fades and blurs with it.
-const calm = {
-  unstyled: true,
-  classNames: {
-    dialog: 'fixed inset-0 m-0 open:grid size-full max-h-none max-w-none place-items-center bg-transparent p-4 backdrop:bg-zinc-950/30 backdrop:backdrop-blur-xs backdrop:transition-all backdrop:duration-200 starting:backdrop:opacity-0 data-[state=closing]:backdrop:opacity-0',
-    panel: 'w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl ring-1 ring-zinc-950/5 transition duration-200 ease-out-quint outline-none starting:scale-98 starting:opacity-0 in-data-[state=closing]:scale-98 in-data-[state=closing]:opacity-0 motion-reduce:transition-none',
-    title: 'text-base font-semibold text-zinc-950',
-    message: 'mt-1.5 text-sm text-zinc-500',
-    field: 'mt-4', input: 'h-10 w-full rounded-lg px-3 text-sm ring-1 ring-zinc-200 outline-none transition focus:ring-2 focus:ring-indigo-500 aria-invalid:ring-red-500', error: 'mt-1.5 text-sm text-red-600',
-    actions: 'mt-6 grid grid-cols-2 gap-2',
-    button: 'h-10 cursor-pointer rounded-lg text-sm font-medium ring-1 ring-zinc-200 transition duration-150 hover:bg-zinc-50 active:scale-98 focus-visible:outline-2 focus-visible:outline-indigo-500 disabled:cursor-progress disabled:opacity-60 data-[variant=primary]:bg-zinc-950 data-[variant=primary]:text-white data-[variant=primary]:ring-0 data-[variant=primary]:hover:bg-zinc-800 data-[variant=danger]:bg-red-600 data-[variant=danger]:text-white data-[variant=danger]:ring-0 data-[variant=danger]:hover:bg-red-500'
-  }
-}
-
 type Entry = { id: number, call: string, value: string }
 
 export function Home () {
@@ -29,7 +15,7 @@ export function Home () {
     setResults((r) => [{ id: Date.now(), call, value: JSON.stringify(value) }, ...r].slice(0, 3))
 
   const remove = async (name: string) => {
-    const ok = await confirm({ ...calm, title: `Delete “${name}”?`, message: 'It moves to the trash for 30 days.', tone: 'danger', confirmLabel: 'Delete' })
+    const ok = await confirm({ title: `Delete “${name}”?`, message: 'It moves to the trash for 30 days.', tone: 'danger', confirmLabel: 'Delete' })
     record('confirm()', ok)
     if (!ok) return
     // Reduced motion has no transition, so no transitionend: remove the row at once.
@@ -41,7 +27,7 @@ export function Home () {
     setLeaving(name)
   }
   const rename = async (name: string) => {
-    const next = await prompt({ ...calm, title: 'Rename file', defaultValue: name, submitLabel: 'Rename', validate: (v) => (v.trim() ? null : 'Give it a name') })
+    const next = await prompt({ title: 'Rename file', defaultValue: name, submitLabel: 'Rename', validate: (v) => (v.trim() ? null : 'Give it a name') })
     record('prompt()', next)
     if (next) setFiles((f) => f.map((x) => (x === name ? next.trim() : x)))
   }

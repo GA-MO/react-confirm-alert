@@ -108,7 +108,11 @@ export function DialogFrame (props: DialogFrameProps): ReactElement {
 
   // A native modal reports Escape as cancel. Without showModal the frame reads the key itself.
   const onKeyDown = (e: KeyboardEvent<HTMLElement>) => {
-    props.onKeyDown?.(e, props.onDismiss)
+    // Closing from a key stops the key: Enter would otherwise click the opener that gets focus back (#84).
+    props.onKeyDown?.(e, () => {
+      e.preventDefault()
+      props.onDismiss()
+    })
     if (!native && !props.legacy && e.key === 'Escape' && props.closeOnEscape && !isBusy()) props.onDismiss()
   }
 
@@ -123,6 +127,8 @@ export function DialogFrame (props: DialogFrameProps): ReactElement {
     'data-rca': '',
     'data-state': props.state,
     'data-kind': props.kind,
+    // Every dialog but confirmAlert gets the new default look; confirmAlert keeps the 3.0 one.
+    'data-skin': props.legacy ? undefined : '',
     'data-tone': props.tone ?? 'default',
     'data-depth': String(props.depth ?? 0),
     'data-topmost': props.topmost ?? true ? '' : undefined,

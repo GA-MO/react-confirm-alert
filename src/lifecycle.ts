@@ -45,7 +45,8 @@ export function closeDialog (id: DialogId, { sync = true } = {}) {
     commit(() => store.set(remove(store.get(), id)), sync)
     return
   }
-  Promise.all(exits.map((a) => a.finished)).finally(() => store.set(remove(store.get(), id)))
+  // finished rejects with AbortError when an animation is cancelled; that still ends the wait.
+  Promise.all(exits.map((a) => a.finished.catch(() => {}))).then(() => store.set(remove(store.get(), id)))
 }
 
 // Chrome and Safari group modal dialogs opened without a user gesture in between, and a repeated

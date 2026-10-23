@@ -130,6 +130,49 @@ test('#84 #89 onkeyPress receives the keyboard event and a close function', asyn
   expect(typeof onkeyPress.mock.calls[0][1]).toBe('function')
 })
 
+// Closing on Enter returns focus to the opener; the same Enter must not then click it again.
+async function enterClosesOnce (open: () => void) {
+  const opens = vi.fn()
+  const opener = document.createElement('button')
+  opener.textContent = 'Open'
+  opener.addEventListener('click', () => { opens(); open() })
+  document.getElementById('app')!.append(opener)
+  onTestFinished(() => opener.remove())
+  await userEvent.click(opener)
+  await waitForOverlay()
+  await userEvent.keyboard('{Enter}')
+  await vi.waitFor(() => expect(overlay()).toBeNull())
+  await new Promise((resolve) => setTimeout(resolve, 300))
+  expect(opens).toHaveBeenCalledTimes(1)
+  expect(overlay()).toBeNull()
+}
+
+test('#84 onkeyPress closing on Enter does not reopen from the same key', async () => {
+  await enterClosesOnce(() => lib.confirmAlert({
+    title: 'Key',
+    onkeyPress: (e: KeyboardEvent, close: () => void) => { if (e.key === 'Enter') close() }
+  }))
+})
+
+test('#84 onKeyDown closing on Enter does not reopen from the same key', async () => {
+  await enterClosesOnce(() => void lib.confirm({
+    title: 'Key',
+    onKeyDown: (e: KeyboardEvent, close: () => void) => { if (e.key === 'Enter') close() }
+  }))
+})
+
+test('#38 confirmAlert keeps line breaks in message', async () => {
+  lib.confirmAlert({ title: 'Lines', message: 'one\ntwo' })
+  await waitForOverlay()
+  const body = document.querySelector('.react-confirm-alert-body')!
+  const text = Array.from(body.childNodes).find((n) => n.nodeType === Node.TEXT_NODE && n.textContent!.includes('two'))!
+  const range = document.createRange()
+  range.selectNodeContents(text)
+  const lines = new Set(Array.from(range.getClientRects(), (r) => Math.round(r.top)))
+  expect(lines.size).toBe(2)
+  buttonByText('Cancel').click()
+})
+
 test('#92 pressing inside and releasing outside does not close', async () => {
   const onClickOutside = vi.fn()
   lib.confirmAlert({ title: 'Drag', onClickOutside })

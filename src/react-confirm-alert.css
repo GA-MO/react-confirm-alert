@@ -32,6 +32,8 @@ body.react-confirm-alert-body-element {
   border-radius: var(--rca-radius, 10px);
   box-shadow: var(--rca-shadow, 0 20px 75px rgba(0, 0, 0, 0.13));
   color: var(--rca-fg, #666);
+  /* confirmAlert renders message as text right in the body; keep its line breaks (#38). */
+  white-space: pre-line;
 }
 
 .react-confirm-alert-body > h1 {
@@ -125,3 +127,190 @@ dialog.react-confirm-alert-overlay::backdrop {
     opacity: 1;
   }
 }
+
+/* The default look of every dialog except confirmAlert, which has no data-skin and keeps the 3.0 look above; unstyled drops the overlay class, so none of this applies.
+   --_* are internal defaults: a --rca-* variable set by the app always wins over them. */
+.react-confirm-alert-overlay[data-skin] {
+  --_bg: #fff;
+  --_fg: #71717a;
+  --_title: #09090b;
+  --_border: #e4e4e7;
+  --_hover: #f4f4f5;
+  --_primary: #18181b;
+  --_primary-fg: #fff;
+  --_ring: #a1a1aa;
+  --_danger: #dc2626;
+  --_error: #dc2626;
+  box-sizing: border-box;
+  padding: 16px;
+  background: var(--rca-backdrop, rgba(0, 0, 0, 0.5));
+  opacity: 1;
+  animation: rca-in var(--rca-duration, 200ms) var(--rca-easing, cubic-bezier(0.32, 0.72, 0, 1)) both;
+}
+/* Dark is opt-in: the app's .dark class or data-theme="dark" on an ancestor, usually <html>. */
+:is(.dark, [data-theme=dark]) .react-confirm-alert-overlay[data-skin] {
+  --_bg: #18181b;
+  --_fg: #a1a1aa;
+  --_title: #fafafa;
+  --_border: #3f3f46;
+  --_hover: #27272a;
+  --_primary: #fafafa;
+  --_primary-fg: #18181b;
+  --_ring: #71717a;
+  --_error: #f87171;
+  background: var(--rca-backdrop, rgba(0, 0, 0, 0.7));
+}
+.react-confirm-alert-overlay[data-skin] .react-confirm-alert {
+  max-width: 100%;
+  animation: rca-pop var(--rca-duration, 200ms) var(--rca-easing, cubic-bezier(0.32, 0.72, 0, 1)) both;
+}
+.react-confirm-alert-overlay[data-skin] .react-confirm-alert-body {
+  box-sizing: border-box;
+  width: var(--rca-width, 420px);
+  max-width: 100%;
+  padding: var(--rca-padding, 24px);
+  border: 1px solid var(--rca-border, var(--_border));
+  border-radius: var(--rca-radius, 10px);
+  background: var(--rca-bg, var(--_bg));
+  box-shadow: var(--rca-shadow, 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1));
+  color: var(--rca-fg, var(--_fg));
+  font-family: var(--rca-font, inherit);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.react-confirm-alert-overlay[data-skin][data-state=closing] {
+  animation: rca-out 150ms ease-in both;
+}
+.react-confirm-alert-overlay[data-skin][data-state=closing] .react-confirm-alert {
+  animation: rca-pop-out 150ms ease-in both;
+}
+.react-confirm-alert-overlay[data-skin] [data-slot=title] {
+  margin: 0 0 8px;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  color: var(--rca-title, var(--_title));
+}
+.react-confirm-alert-overlay[data-skin] [data-slot=field] {
+  margin-top: 16px;
+}
+.react-confirm-alert-overlay[data-skin] [data-slot=label] {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--rca-title, var(--_title));
+}
+.react-confirm-alert-overlay[data-skin] [data-slot=input] {
+  box-sizing: border-box;
+  width: 100%;
+  height: 36px;
+  padding: 0 12px;
+  border: 1px solid var(--rca-border, var(--_border));
+  border-radius: 6px;
+  background: transparent;
+  color: var(--rca-title, var(--_title));
+  font: inherit;
+  outline: none;
+  transition: border-color 150ms, box-shadow 150ms;
+}
+.react-confirm-alert-overlay[data-skin] [data-slot=input]:focus {
+  border-color: var(--rca-ring, var(--_ring));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--rca-ring, var(--_ring)) 50%, transparent);
+}
+.react-confirm-alert-overlay[data-skin] [data-slot=input][aria-invalid=true] {
+  border-color: var(--rca-danger, var(--_error));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--rca-danger, var(--_error)) 20%, transparent);
+}
+.react-confirm-alert-overlay[data-skin] [data-slot=error] {
+  margin: 6px 0 0;
+  font-size: 13px;
+  color: var(--rca-danger, var(--_error));
+}
+.react-confirm-alert-overlay[data-skin] .react-confirm-alert-button-group {
+  justify-content: flex-end;
+  gap: var(--rca-gap, 8px);
+  margin-top: 24px;
+}
+.react-confirm-alert-overlay[data-skin] .react-confirm-alert-button-group > button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 36px;
+  margin: 0;
+  padding: 0 16px;
+  border: 1px solid var(--rca-border, var(--_border));
+  border-radius: var(--rca-button-radius, 6px);
+  background: var(--rca-bg, var(--_bg));
+  color: var(--rca-title, var(--_title));
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  transition: background-color 150ms, transform 150ms;
+}
+.react-confirm-alert-overlay[data-skin] .react-confirm-alert-button-group > button:hover {
+  background: var(--_hover);
+}
+.react-confirm-alert-overlay[data-skin] .react-confirm-alert-button-group > [data-variant=primary] {
+  border-color: transparent;
+  background: var(--rca-button-bg, var(--_primary));
+  color: var(--rca-button-fg, var(--_primary-fg));
+}
+.react-confirm-alert-overlay[data-skin] .react-confirm-alert-button-group > [data-variant=danger] {
+  border-color: transparent;
+  background: var(--rca-danger, var(--_danger));
+  color: #fff;
+}
+.react-confirm-alert-overlay[data-skin] .react-confirm-alert-button-group > :is([data-variant=primary],[data-variant=danger]):hover {
+  opacity: 0.9;
+}
+.react-confirm-alert-overlay[data-skin] .react-confirm-alert-button-group > button:active {
+  transform: scale(0.97);
+}
+.react-confirm-alert-overlay[data-skin] .react-confirm-alert-button-group > button:focus-visible {
+  outline: var(--rca-focus-ring, 2px solid var(--_ring));
+  outline-offset: 2px;
+}
+.react-confirm-alert-overlay[data-skin] .react-confirm-alert-button-group > button:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+.react-confirm-alert-overlay[data-skin] .react-confirm-alert-button-group > button[aria-busy=true] {
+  cursor: progress;
+  opacity: 1;
+}
+.react-confirm-alert-overlay[data-skin] .react-confirm-alert-button-group > button[aria-busy=true]::before {
+  content: '';
+  width: 12px;
+  height: 12px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: rca-spin 700ms linear infinite;
+}
+@media (max-width: 480px) {
+  .react-confirm-alert-overlay[data-skin] .react-confirm-alert-button-group {
+    flex-direction: column-reverse;
+  }
+  .react-confirm-alert-overlay[data-skin] .react-confirm-alert-button-group > button {
+    height: 40px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .react-confirm-alert-overlay[data-skin],
+  .react-confirm-alert-overlay[data-skin] .react-confirm-alert {
+    animation: none;
+  }
+  .react-confirm-alert-overlay[data-skin] .react-confirm-alert-button-group > button {
+    transition: none;
+  }
+}
+@keyframes rca-in { from { opacity: 0; } }
+@keyframes rca-out { to { opacity: 0; } }
+@keyframes rca-pop { from { opacity: 0; transform: scale(0.95); } }
+@keyframes rca-pop-out { to { opacity: 0; transform: scale(0.95); } }
+@keyframes rca-spin { to { transform: rotate(360deg); } }
