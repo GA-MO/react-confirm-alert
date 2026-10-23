@@ -1,42 +1,42 @@
 name: ci
+# Quick check for day-to-day work: Chromium on the source, types, and the package checks.
+# The full suite (three browsers, the built file, no showModal, all fixtures) runs from
+# release.yml on every push to master and must pass before anything is published.
 on:
-  pull_request:
   push:
-    branches: [master]
+    branches-ignore: [master]
+  pull_request:
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:
-  test:
+  quick:
+    # Branches in this repo are checked on push; pull_request runs only for forks, so a PR is not checked twice.
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.fork
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        browser: [chromium, webkit, firefox]
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: 22, cache: npm }
       - run: npm ci
-      - run: npx playwright install --with-deps ${{ matrix.browser }}
+      - id: pw
+        run: echo "version=$(node -p "require('./package-lock.json').packages['node_modules/playwright'].version")" >> "$GITHUB_OUTPUT"
+      - id: pw-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.pw.outputs.version }}-chromium
+      # The runner image already has Chrome's system libraries, so no apt step here.
+      - if: steps.pw-cache.outputs.cache-hit != 'true'
+        run: npx playwright install chromium
+        timeout-minutes: 3
       - run: npm test
-        env: { VITEST_BROWSERS: '${{ matrix.browser }}' }
-      - run: npm run build
-      - run: npm test
-        env: { VITEST_BROWSERS: '${{ matrix.browser }}', RCA_TARGET: build }
-      - run: npm test
-        env: { VITEST_BROWSERS: '${{ matrix.browser }}', RCA_NO_SHOWMODAL: '1' }
-  package:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with: { node-version: 22, cache: npm }
-      - run: npm ci
-      - run: npm ci --prefix fixtures/v3-baseline
-      - run: npx playwright install --with-deps chromium
+        env: { VITEST_BROWSERS: chromium }
+        timeout-minutes: 5
       - run: npm run test:types
       - run: npm run build
+      - run: npm ci --prefix fixtures/v3-baseline # size-limit also measures the v3.0.6 baseline
       - run: npm run check:package
-      - run: "! grep -q '!important' src/react-confirm-alert.css"
-      - run: npm publish --dry-run
-      - run: npm run test:fixtures
