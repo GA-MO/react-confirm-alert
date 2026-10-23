@@ -1,0 +1,18 @@
+{
+  "name": "fixture-ts-min",
+  "private": true,
+  "scripts": {
+    "check": "tsc -v && tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "react-confirm-alert": "file:../.pack/react-confirm-alert.tgz",
+    "react": "^18",
+    "react-dom": "^18"
+  },
+  "devDependencies": {
+    "typescript": "4.7.4",
+    "@types/react": "18.0.15",
+    "@types/react-dom": "18.0.6",
+    "@types/scheduler": "0.16.2"
+  }
+}

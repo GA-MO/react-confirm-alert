@@ -1,108 +1,75 @@
 # react-confirm-alert
 
-### React 18 is supported!!
-### For React <= 17.x.x use version 2.x.x
-
-React component confirm dialog. [Live demo](https://ga-mo.github.io/react-confirm-alert/demo/)
+Confirm, alert and prompt dialogs for React 18 and 19. `await confirm()`, a native modal, focus that moves in and back, and the v3 `confirmAlert` unchanged.
 
 [![npm version](https://badge.fury.io/js/react-confirm-alert.svg)](https://badge.fury.io/js/react-confirm-alert)
 
-Document for 
-[v.1.x.x](https://github.com/GA-MO/react-confirm-alert/blob/master/Document-v1.md), 
-[v.2.x.x](https://github.com/GA-MO/react-confirm-alert/blob/master/Document-v2.md)
+[Docs](https://ga-mo.github.io/react-confirm-alert/docs/) · [Playground](https://ga-mo.github.io/react-confirm-alert/playground/) · [Migrate from v3](https://ga-mo.github.io/react-confirm-alert/docs/migrate-from-v3/)
 
-## Getting started
+## Install
 
-#### Install with NPM:
-
-```
-$ npm install react-confirm-alert --save
+```bash
+npm install react-confirm-alert
 ```
 
-#### Options
+## Ask a question
 
-```jsx
-const options = {
-  title: 'Title',
-  message: 'Message',
-  buttons: [
-    {
-      label: 'Yes',
-      onClick: () => alert('Click Yes')
-    },
-    {
-      label: 'No',
-      onClick: () => alert('Click No')
-    }
-  ],
-  closeOnEscape: true,
-  closeOnClickOutside: true,
-  keyCodeForClose: [8, 32],
-  willUnmount: () => {},
-  afterClose: () => {},
-  onClickOutside: () => {},
-  onKeypress: () => {},
-  onKeypressEscape: () => {},
-  overlayClassName: "overlay-custom-class-name"
-};
+```tsx
+import { confirm } from 'react-confirm-alert'
+import 'react-confirm-alert/src/react-confirm-alert.css'
 
-confirmAlert(options);
-```
-
-#### Use with function:
-
-```jsx
-import { confirmAlert } from 'react-confirm-alert'; // Import
-import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
-
-class App extends React.Component {
-  submit = () => {
-    confirmAlert({
-      title: 'Confirm to submit',
-      message: 'Are you sure to do this.',
-      buttons: [
-        {
-          label: 'Yes',
-          onClick: () => alert('Click Yes')
-        },
-        {
-          label: 'No',
-          onClick: () => alert('Click No')
-        }
-      ]
-    });
-  };
-
-  render() {
-    return (
-      <div className='container'>
-        <button onClick={this.submit}>Confirm dialog</button>
-      </div>
-    );
-  }
+if (await confirm({ title: 'Delete file?', message: 'This cannot be undone.', tone: 'danger' })) {
+  remove(file)
 }
 ```
 
-#### Custom UI Component
+`confirm()` resolves `true` or `false`. `alert()` and `prompt()` work the same way, and `<DialogHost />` placed inside your providers lets dialogs read their context.
 
-```js
+## v3 code keeps working
+
+```jsx
+import { confirmAlert } from 'react-confirm-alert'
+import 'react-confirm-alert/src/react-confirm-alert.css'
+
 confirmAlert({
-  customUI: ({ onClose }) => {
-    return (
-      <div className='custom-ui'>
-        <h1>Are you sure?</h1>
-        <p>You want to delete this file?</p>
-        <button onClick={onClose}>No</button>
-        <button
-          onClick={() => {
-            this.handleClickDelete();
-            onClose();
-          }}
-        >
-          Yes, Delete it!
-        </button>
-      </div>
-    );
-  }
-});
+  title: 'Confirm to submit',
+  message: 'Are you sure to do this.',
+  buttons: [
+    { label: 'Yes', onClick: () => alert('Click Yes') },
+    { label: 'No', onClick: () => alert('Click No') }
+  ]
+})
 ```
+
+Same options, DOM, class names and CSS path as v3.
+
+## Tailwind CSS
+
+```css
+@import 'tailwindcss';
+@import 'react-confirm-alert/src/react-confirm-alert.css' layer(components);
+```
+
+```tsx
+confirm({ title: 'Publish?', classNames: { button: 'rounded-full bg-red-500' } })
+```
+
+Importing the CSS into `layer(components)` lets Tailwind utilities win without `!important`. Or pass `unstyled: true` and style every slot yourself.
+
+## Size
+
+| Import | gzip |
+|---|---|
+| `import { confirmAlert }` | 3,571 B |
+| `import { confirm }` | 3,851 B |
+| CSS | 1,095 B |
+
+Measured on 2026-10-23 with size-limit 14.3.0 (`npx size-limit`, config in `.size-limit.json`): the ESM build bundled and minified with React and React DOM excluded, then gzipped. v3.0.6 measured the same way is 2,396 B, including `prop-types`. The extra bytes are the native modal, focus handling, stacked and queued dialogs, and dialogs that render inside your providers.
+
+## Older versions
+
+Docs for [v1](https://github.com/GA-MO/react-confirm-alert/blob/master/Document-v1.md) and [v2](https://github.com/GA-MO/react-confirm-alert/blob/master/Document-v2.md). For React 17 or older, use version 2.
+
+## License
+
+MIT

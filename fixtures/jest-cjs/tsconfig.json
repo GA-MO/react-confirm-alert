@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "noEmit": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "types": [
+      "jest"
+    ],
+    "lib": [
+      "ES2020",
+      "DOM"
+    ]
+  },
+  "files": [
+    "typed-mock.ts"
+  ]
+}

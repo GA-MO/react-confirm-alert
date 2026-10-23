@@ -1,0 +1,57 @@
+---
+title: API
+description: Every export, with its type.
+---
+
+## confirm, alert, prompt
+
+```ts
+confirm(options: string | ConfirmOptions): Promise<boolean>
+alert(options: string | AlertOptions): Promise<void>
+prompt(options: string | PromptOptions): Promise<string | null>
+```
+
+All take `title`, `message`, `closeOnEscape`, `closeOnClickOutside`, `strategy` (`'stack' | 'queue'`), `modal`, `signal`, `onKeyDown`, `afterClose`, `unstyled` and `classNames`.
+
+- `confirm` adds `confirmLabel`, `cancelLabel`, `tone: 'danger'` (focuses Cancel) and `onConfirm`. When `onConfirm` returns a Promise the button shows `aria-busy` until it settles.
+- `prompt` adds `label`, `defaultValue`, `inputProps`, `validate` (return a message to keep the dialog open) and `submitLabel`.
+
+## openDialog
+
+```ts
+openDialog<R>(options: { render: ComponentType<DialogRenderProps<R>>, buttons?, ...base }): DialogHandle<R>
+// handle: { id, result: Promise<R | undefined>, close(value), dismiss(), update(patch) }
+```
+
+## closeDialog, closeAll
+
+`closeAll()` dismisses every dialog, including queued ones. Waiting buttons get an aborted `signal`.
+
+## DialogHost, useDialog
+
+`<DialogHost dismissKey={pathname} />` renders dialogs inside your tree and closes them when `dismissKey` changes. `useDialog()` returns the same functions as the module.
+
+## Dialog, ConfirmDialog
+
+```tsx
+<Dialog open={open} onOpenChange={setOpen} aria-label="Edit note">{children}</Dialog>
+<ConfirmDialog kind="confirm" open={open} onOpenChange={setOpen} title="Publish?" onConfirm={publish} />
+```
+
+They render in place, so their content always reads the component's latest state.
+
+## confirmAlert (v3)
+
+```ts
+confirmAlert(options: ReactConfirmAlertProps): void
+```
+
+All v3 options, plus `modal`, `strategy`, `unstyled` and `classNames`. Defaults keep v3 behavior: a `div` overlay, `strategy: 'replace'`, buttons that close without waiting.
+
+## configureDialogs
+
+```ts
+configureDialogs({ modal, strategy, closeOnEscape, closeOnClickOutside, lockScroll, labels, unstyled, classNames, confirmAlert: { modal, strategy, unstyled, classNames } })
+```
+
+App-wide `unstyled` and `classNames` do not reach `confirmAlert`; set them under `confirmAlert` to change it.

@@ -1,0 +1,18 @@
+{
+  "name": "fixture-webpack5",
+  "private": true,
+  "scripts": {
+    "check": "webpack --json > stats.json && cp index.html out/ && node ../assert-module-field.cjs stats.json && node ../open-dialog.mjs out Open 'Fixture dialog'"
+  },
+  "dependencies": {
+    "react-confirm-alert": "file:../.pack/react-confirm-alert.tgz",
+    "react": "^18",
+    "react-dom": "^18"
+  },
+  "devDependencies": {
+    "webpack": "^5",
+    "webpack-cli": "^6",
+    "css-loader": "^7",
+    "style-loader": "^4"
+  }
+}

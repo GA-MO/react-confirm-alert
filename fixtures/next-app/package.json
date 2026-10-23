@@ -1,0 +1,19 @@
+{
+  "name": "fixture-next-app",
+  "private": true,
+  "scripts": {
+    "check": "next build && node ../open-dialog.mjs out Open 'Fixture dialog' && node ../open-dialog.mjs out 'Open and navigate' 'Navigating dialog' gone"
+  },
+  "dependencies": {
+    "react-confirm-alert": "file:../.pack/react-confirm-alert.tgz",
+    "next": "^16",
+    "react": "^19",
+    "react-dom": "^19"
+  },
+  "devDependencies": {
+    "typescript": "^5",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@types/node": "^22"
+  }
+}

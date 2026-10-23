@@ -1,0 +1,36 @@
+---
+title: Getting started
+description: Confirm, alert and prompt dialogs for React 18 and 19, with the v3 API kept as it was.
+---
+
+```bash
+npm install react-confirm-alert
+```
+
+```tsx
+import { confirm } from 'react-confirm-alert'
+import 'react-confirm-alert/src/react-confirm-alert.css'
+
+if (await confirm({ title: 'Delete file?', message: 'This cannot be undone.', tone: 'danger' })) {
+  remove(file)
+}
+```
+
+`confirm()` resolves `true` or `false`. Escape, a click outside, `closeAll()` or a route change resolve it with `false`.
+
+## Already on v3
+
+`confirmAlert(options)` works as before: same options, same DOM and class names, same CSS path. See [Migrate from v3](/docs/migrate-from-v3).
+
+## Dialogs that read your providers
+
+Place `<DialogHost />` inside your providers once. Every dialog then renders there and sees Redux, Intl, SWR and theme context.
+
+```tsx
+<IntlProvider locale="th">
+  <App />
+  <DialogHost />
+</IntlProvider>
+```
+
+Try every form in the [playground](/playground).

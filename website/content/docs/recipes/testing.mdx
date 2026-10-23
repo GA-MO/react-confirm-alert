@@ -1,0 +1,25 @@
+---
+title: Testing
+description: Mock the Promise API, or test through the real dialog.
+---
+
+## Mock
+
+```ts
+vi.mock('react-confirm-alert', () => ({ confirm: vi.fn().mockResolvedValue(true) }))
+// Jest: jest.mock('react-confirm-alert', () => ({ confirm: jest.fn().mockResolvedValue(true) }))
+```
+
+`confirmAlert` returns `void`, so `jest.spyOn(lib, 'confirmAlert').mockImplementation(() => {})` type-checks.
+
+## Through the real dialog
+
+In jsdom, which has no `showModal`, the dialog renders as a plain element with the same roles:
+
+```ts
+const result = confirm({ title: 'Delete?' })
+await user.click(await screen.findByRole('button', { name: 'Confirm' }))
+expect(await result).toBe(true)
+```
+
+For Jest, map CSS imports: `moduleNameMapper: { '\\.css$': 'identity-obj-proxy' }`.

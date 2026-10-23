@@ -3,19 +3,21 @@
   "version": "3.0.6",
   "description": "react component confirm dialog.",
   "main": "lib/index.js",
+  "module": "dist/index.esm.js",
   "scripts": {
-    "dev": "cross-env NODE_ENV=development webpack-dev-server --hot --inline",
-    "test": "npm run lint && mocha ./test/**/*.test.js --compilers js:babel-register",
-    "test:watch": "mocha ./test/**/*.test.js --compilers js:babel-register --watch",
-    "lint": "eslint ./src",
-    "clean": "rimraf lib",
-    "build": "npm run clean && cross-env NODE_ENV=production babel src --out-dir lib && npm run build:demo",
-    "build:demo": "cross-env NODE_ENV=production webpack --config webpack.config.production.js",
-    "prepublish": "npm run build"
+    "build": "vite build && node -e \"require('fs').rmSync('typings',{recursive:true,force:true})\" && tsc -p tsconfig.build.json",
+    "prepublishOnly": "npm run build",
+    "test": "vitest run",
+    "test:fixtures": "node fixtures/run.mjs",
+    "test:types": "tsc -p tsconfig.json && tsc -p tsconfig.test-d.json",
+    "docs:build": "npm run build --prefix website",
+    "check:package": "publint --strict && attw --pack . && size-limit",
+    "version-packages": "changeset version && npm install --package-lock-only",
+    "release": "npm run build && npm run check:package && changeset publish"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/GA-MO/react-confirm-alert.git"
+    "url": "git+https://github.com/GA-MO/react-confirm-alert.git"
   },
   "keywords": [
     "react alert example",
@@ -37,43 +39,36 @@
   "typings": "./index.d.ts",
   "files": [
     "lib",
+    "dist",
+    "typings",
     "src/react-confirm-alert.css",
     "index.d.ts"
   ],
   "devDependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-core": "^6.26.0",
-    "babel-eslint": "^7.2.3",
-    "babel-loader": "^7.1.2",
-    "babel-plugin-transform-decorators-legacy": "^1.3.4",
-    "babel-polyfill": "^6.26.0",
-    "babel-preset-es2015": "^6.24.1",
-    "babel-preset-react": "^6.24.1",
-    "babel-preset-stage-0": "^6.24.1",
-    "chai": "^4.1.2",
-    "cross-env": "^5.2.0",
-    "css-loader": "^0.28.7",
-    "eslint": "^4.5.0",
-    "eslint-config-standard": "^10.2.1",
-    "eslint-config-standard-react": "^5.0.0",
-    "eslint-plugin-import": "^2.7.0",
-    "eslint-plugin-node": "^5.1.1",
-    "eslint-plugin-promise": "^3.5.0",
-    "eslint-plugin-react": "^7.3.0",
-    "eslint-plugin-standard": "^3.0.1",
-    "mocha": "^3.5.0",
-    "prop-types": "^15.6.2",
+    "@arethetypeswrong/cli": "^0.18.5",
+    "@changesets/changelog-github": "^1.0.1",
+    "@changesets/cli": "^3.0.3",
+    "@size-limit/preset-small-lib": "^14.3.0",
+    "@types/react": "^18.3.31",
+    "@types/react-dom": "^18.3.7",
+    "@vitejs/plugin-react": "^6.1.2",
+    "@vitest/browser": "^5.0.5",
+    "@vitest/browser-playwright": "^5.0.5",
+    "jsdom": "^30.1.3",
+    "playwright": "^1.64.1",
+    "publint": "^0.3.25",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
-    "react-hot-loader": "^4.3.3",
-    "rimraf": "^2.6.1",
-    "style-loader": "^0.18.2",
-    "url-loader": "^0.5.9",
-    "webpack": "^3.5.5",
-    "webpack-dev-server": "^2.7.1"
+    "size-limit": "^14.3.0",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.5",
+    "vitest": "^5.0.5"
   },
   "peerDependencies": {
     "react": ">=18.0.0",
-    "react-dom": ">=10.0.0"
-  }
+    "react-dom": ">=18.0.0"
+  },
+  "sideEffects": [
+    "**/*.css"
+  ]
 }

@@ -1,0 +1,44 @@
+name: release
+on:
+  push:
+    branches: [master]
+concurrency: release
+jobs:
+  version:
+    # No environment: the "Version Packages" PR updates on every push without approval.
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    outputs:
+      hasChangesets: ${{ steps.cs.outputs.hasChangesets }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 24 }
+      - run: npm ci
+      - id: cs
+        # Only `version`, no `publish`: the action never writes an npm token to ~/.npmrc.
+        uses: changesets/action@v1
+        with:
+          version: npm run version-packages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  publish:
+    # Runs once no changeset is pending, i.e. after the Version Packages PR is merged.
+    needs: version
+    if: needs.version.outputs.hasChangesets == 'false'
+    runs-on: ubuntu-latest   # trusted publishing does not support self-hosted runners
+    environment: npm-publish # must match the trusted publisher on npmjs; needs the owner's approval
+    permissions:
+      contents: write        # changeset publish pushes git tags
+      id-token: write        # OIDC token for npm trusted publishing (provenance is automatic)
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 24 } # no registry-url and no NODE_AUTH_TOKEN: either can block OIDC
+      - run: npm install -g npm@latest && npm --version # trusted publishing needs npm 11.5.1+
+      - run: npm ci
+      - run: npm ci --prefix fixtures/v3-baseline
+      - run: npm run release # changeset publish skips versions already on the registry
+      - run: git push --follow-tags

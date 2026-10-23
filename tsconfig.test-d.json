@@ -1,0 +1,7 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "paths": { "react-confirm-alert": ["./src/index.ts"] }
+  },
+  "include": ["test/types.test-d.ts"]
+}
