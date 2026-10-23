@@ -19,8 +19,8 @@ import { RenameOpenDialog } from './rename-open-dialog'
 export const apis = [
   { id: 'open-dialog', label: 'openDialog' },
   { id: 'dialog', label: '<Dialog>' },
-  { id: 'confirm', label: 'confirm + content' },
-  { id: 'custom-ui', label: 'customUI (3.0)' }
+  { id: 'confirm', label: 'confirm' },
+  { id: 'custom-ui', label: 'customUI' }
 ] as const
 export type Api = (typeof apis)[number]['id']
 
