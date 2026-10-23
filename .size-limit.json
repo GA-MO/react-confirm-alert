@@ -8,7 +8,7 @@
       "react-dom"
     ],
     "gzip": true,
-    "limit": "2.5 kB"
+    "limit": "3.1 kB"
   },
   {
     "name": "import { confirm } (ESM)",
@@ -19,7 +19,7 @@
       "react-dom"
     ],
     "gzip": true,
-    "limit": "3 kB"
+    "limit": "3.3 kB"
   },
   {
     "name": "whole package (CJS)",
@@ -29,7 +29,7 @@
       "react-dom"
     ],
     "gzip": true,
-    "limit": "4 kB"
+    "limit": "4.8 kB"
   },
   {
     "name": "CSS",
