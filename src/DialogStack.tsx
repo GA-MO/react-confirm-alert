@@ -1,4 +1,4 @@
-import { useId, useLayoutEffect, useSyncExternalStore, type ReactElement } from 'react'
+import { type ReactElement, useId, useLayoutEffect, useReducer, useSyncExternalStore } from 'react'
 import { DialogFrame } from './DialogFrame'
 import { closeDialog } from './lifecycle'
 import { emptyState, runtime, store, type Entry } from './store'
@@ -8,6 +8,11 @@ const serverState = () => emptyState
 
 export function DialogStack ({ target, host }: { target: string | null, host?: symbol }): ReactElement | null {
   const { entries, hosts } = useSyncExternalStore(store.subscribe, store.get, serverState)
+  // useSyncExternalStore subscribes in a passive effect, which a slow device can run after the dialog
+  // is already on screen. A close clicked before that would not re-render in the same click, breaking
+  // v3's synchronous close. A layout-effect subscription exists from the commit that shows the dialog.
+  const [, rerender] = useReducer((n: number) => n + 1, 0)
+  useLayoutEffect(() => store.subscribe(rerender), [])
   // The default container yields to the last mounted DialogHost; a host only renders while it is last.
   const active = host ? hosts[hosts.length - 1] === host : target !== null || hosts.length === 0
   if (!active) return null

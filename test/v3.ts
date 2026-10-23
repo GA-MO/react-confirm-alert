@@ -7,7 +7,12 @@ let instance = 0
 // Each test gets its own copy of the module, so v3's module-level `root` never leaks between tests.
 export async function loadV3(): Promise<any> {
   // The library keeps its page state on globalThis (shared by ESM and CJS copies). Each test starts clean.
-  delete (globalThis as any)[Symbol.for('react-confirm-alert/runtime')]
+  // Unmount what an earlier test left open first: ids restart at rca-1 in a fresh runtime, so a leftover
+  // dialog's keydown listener would treat this test's dialog as its own and close it.
+  const key = Symbol.for('react-confirm-alert/runtime')
+  const previous = (globalThis as any)[key]
+  previous?.containers.forEach((c: { root: { unmount: () => void } }) => c.root.unmount())
+  delete (globalThis as any)[key]
   instance += 1
   return import(/* @vite-ignore */ `/${__RCA_ENTRY__}?instance=${instance}`)
 }
@@ -31,9 +36,10 @@ export function cleanupPage() {
 export const overlay = () => document.querySelector<HTMLElement>('.react-confirm-alert-overlay')
 
 export async function waitForOverlay() {
+  // createRoot renders asynchronously; a slow CI runner can take well over the default 1 s.
   await vi.waitFor(() => {
     if (!overlay()) throw new Error('overlay not rendered')
-  })
+  }, { timeout: 5000, interval: 20 })
   return overlay()!
 }
 
