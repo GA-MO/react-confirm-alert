@@ -1,5 +1,17 @@
 # react-confirm-alert
 
+## 3.2.0
+
+### Minor Changes
+
+- [#101](https://github.com/GA-MO/react-confirm-alert/pull/101) [`22a8084`](https://github.com/GA-MO/react-confirm-alert/commit/22a80843a4952d894b61e207ada297451e265962) Thanks [@GA-MO](https://github.com/GA-MO)! - New default look for `confirm`, `alert`, `prompt` and `<Dialog kind>`. Dialogs now use the app's font, and buttons have a clear order: Cancel is secondary, the action is primary, and `tone: 'danger'` is red. On narrow screens the buttons go full width. The prompt input gets its own padding, focus ring and error text. Opening, closing, hover, press and a waiting button are animated, and the animations turn off under reduced motion. Dark mode is opt-in: put `.dark` or `data-theme="dark"` on an ancestor such as `<html>`. Every colour can still be overridden with the existing `--rca-*` variables, and `--rca-border` and `--rca-ring` are new. `confirmAlert` keeps the 3.0 look.
+
+### Patch Changes
+
+- [#101](https://github.com/GA-MO/react-confirm-alert/pull/101) [`22a8084`](https://github.com/GA-MO/react-confirm-alert/commit/22a80843a4952d894b61e207ada297451e265962) Thanks [@GA-MO](https://github.com/GA-MO)! - Closing a dialog from `onkeyPress` or `onKeyDown` on Enter no longer clicks the button that opened it, so the dialog doesn't open again in Chromium ([#84](https://github.com/GA-MO/react-confirm-alert/issues/84)).
+
+- [#101](https://github.com/GA-MO/react-confirm-alert/pull/101) [`22a8084`](https://github.com/GA-MO/react-confirm-alert/commit/22a80843a4952d894b61e207ada297451e265962) Thanks [@GA-MO](https://github.com/GA-MO)! - `confirmAlert({ message: 'a\nb' })` keeps the line break, as `confirm` already does ([#38](https://github.com/GA-MO/react-confirm-alert/issues/38)).
+
 ## 3.1.1
 
 ### Patch Changes
