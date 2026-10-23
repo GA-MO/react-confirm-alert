@@ -38,12 +38,9 @@ export function closeDialog (id: DialogId, { sync = true } = {}) {
     return
   }
   const node = runtime().frames.get(id)
-  // Compare by what an animation is, not by object identity: WebKit can hand back a new object for
-  // the same running animation, and an entry animation still pending (no frame painted yet) must
-  // not count as an exit animation, or a quick close waits for the v3 fade-in to finish.
-  const before = new Set(node ? animationsOf(node).map(keyOf) : [])
+  const before = new Set(node ? animationsOf(node) : [])
   commit(() => store.set(beginClose(store.get(), id)), sync)
-  const exits = node ? animationsOf(node).filter((a) => !before.has(keyOf(a))) : []
+  const exits = node ? animationsOf(node).filter((a) => !before.has(a)) : []
   if (exits.length === 0) {
     commit(() => store.set(remove(store.get(), id)), sync)
     return
@@ -69,13 +66,6 @@ export function reopenClosedFrames () {
 
 // Only animations on the frame, its ::backdrop and the panel count. Children can run endless
 // animations (a spinner) that would keep the dialog open forever.
-function keyOf (animation: Animation): string {
-  const effect = animation.effect as KeyframeEffect | null
-  const name = (animation as CSSAnimation).animationName ?? (animation as CSSTransition).transitionProperty ?? animation.id
-  const target = effect?.target as Element | null | undefined
-  return `${target?.getAttribute('data-slot') ?? ''}${effect?.pseudoElement ?? ''}:${name}`
-}
-
 function animationsOf ({ frame, panel }: Mounted): Animation[] {
   if (typeof frame.getAnimations !== 'function') return []
   return frame.getAnimations({ subtree: true }).filter((a) => {
