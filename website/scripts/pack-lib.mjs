@@ -5,7 +5,7 @@
 // integrity: a tarball packed on another machine (CI) has a different hash, and a recorded one
 // either fails with EINTEGRITY or installs a stale copy. It is installed with --no-save instead.
 import { execFileSync } from 'node:child_process'
-import { copyFileSync, mkdirSync } from 'node:fs'
+import { copyFileSync, mkdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -19,3 +19,8 @@ const tarball = execFileSync('npm', ['pack', '--pack-destination', join(site, '.
 copyFileSync(join(site, '.pack', tarball), join(site, '.pack', 'react-confirm-alert.tgz'))
 run(['install', '--no-audit', '--no-fund'], site)
 run(['install', '--no-save', '--no-audit', '--no-fund', './.pack/react-confirm-alert.tgz'], site)
+
+// The home page shows the measured gzip size, so it reads size-limit's own output for the build it ships.
+// --ignore-missing skips the v3 baseline entries, whose fixture is not installed here.
+const sizes = execFileSync('npx', ['size-limit', '--json', '--ignore-missing'], { cwd: root }).toString()
+writeFileSync(join(site, '.pack', 'size.json'), sizes)

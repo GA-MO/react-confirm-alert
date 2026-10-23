@@ -74,6 +74,16 @@ figure.shiki .line.highlighted::after { border-left: 2px solid color-mix(in okla
 .dark figure.shiki .line.highlighted { background: color-mix(in oklab, var(--color-indigo-300) 6%, transparent); }
 .dark figure.shiki .line.highlighted::after { border-left-color: color-mix(in oklab, var(--color-indigo-400) 80%, transparent); }
 
+/* Home: a theme switch eases the open dialog into its new look. */
+@media (prefers-reduced-motion: no-preference) {
+  .home-stage [data-rca], .home-stage [data-rca] :is([data-slot=panel], [data-slot=body], [data-slot=button], [data-slot=title], [data-slot=message]),
+  .dialog-thumbnail [data-rca], .dialog-thumbnail [data-rca] :is([data-slot=panel], [data-slot=body], [data-slot=button]) {
+    transition-property: background-color, color, border-color, border-radius, box-shadow, transform;
+    transition-duration: 300ms;
+    transition-timing-function: var(--ease-out-quint);
+  }
+}
+
 /* Playground: a line the last option change added glows briefly, so you see what changed. */
 @keyframes just-changed {
   from { background: color-mix(in oklab, var(--color-amber-400) 28%, transparent); }
