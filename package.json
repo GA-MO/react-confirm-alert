@@ -10,7 +10,10 @@
     "test": "vitest run",
     "test:fixtures": "node fixtures/run.mjs",
     "test:types": "tsc -p tsconfig.json && tsc -p tsconfig.test-d.json",
-    "docs:build": "npm run build --prefix website"
+    "docs:build": "npm run build --prefix website",
+    "check:package": "publint --strict && attw --pack . && size-limit",
+    "version-packages": "changeset version && npm install --package-lock-only",
+    "release": "npm run build && npm run check:package && changeset publish"
   },
   "repository": {
     "type": "git",
@@ -43,6 +46,8 @@
   ],
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.18.5",
+    "@changesets/changelog-github": "^1.0.1",
+    "@changesets/cli": "^3.0.3",
     "@size-limit/preset-small-lib": "^14.3.0",
     "@types/react": "^18.3.31",
     "@types/react-dom": "^18.3.7",

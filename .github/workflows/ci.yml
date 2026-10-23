@@ -1,0 +1,42 @@
+name: ci
+on:
+  pull_request:
+  push:
+    branches: [master]
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, webkit, firefox]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: npx playwright install --with-deps ${{ matrix.browser }}
+      - run: npm test
+        env: { VITEST_BROWSERS: '${{ matrix.browser }}' }
+      - run: npm run build
+      - run: npm test
+        env: { VITEST_BROWSERS: '${{ matrix.browser }}', RCA_TARGET: build }
+      - run: npm test
+        env: { VITEST_BROWSERS: '${{ matrix.browser }}', RCA_NO_SHOWMODAL: '1' }
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: npm ci --prefix fixtures/v3-baseline
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:types
+      - run: npm run build
+      - run: npm run check:package
+      - run: "! grep -q '!important' src/react-confirm-alert.css"
+      - run: npm publish --dry-run
+      - run: npm run test:fixtures
