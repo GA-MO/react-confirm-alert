@@ -98,7 +98,7 @@ export function ConfirmDialog (props: ConfirmDialogProps): ReactElement | null {
 
   const hide = () => props.onOpenChange(false)
   const base: Omit<DialogRenderProps<any>, 'close' | 'buttons'> = {
-    id, titleId, descriptionId, title: props.title, message: props.message, dismiss: hide, onClose: hide
+    id, titleId, descriptionId, title: props.title, message: props.message, content: props.content, dismiss: hide, onClose: hide
   }
   let body: ReactNode
   if (props.kind === 'prompt') {

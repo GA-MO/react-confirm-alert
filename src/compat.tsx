@@ -1,6 +1,6 @@
-import { Component, useId, useLayoutEffect, useRef, type ButtonHTMLAttributes, type ReactElement, type ReactNode } from 'react'
+import { Component, useContext, useId, useLayoutEffect, useRef, type ButtonHTMLAttributes, type ReactElement, type ReactNode } from 'react'
 import { DialogFrame } from './DialogFrame'
-import { styleLayers, useSlot } from './classNames'
+import { FrameContext, styleLayers, useSlot } from './classNames'
 import { runtime } from './store'
 import { openEntry } from './lifecycle'
 import { store, topmost } from './store'
@@ -42,6 +42,8 @@ export interface ReactConfirmAlertProps {
   unstyled?: boolean
   /** classes per slot, added after the app defaults */
   classNames?: DialogClassNames
+  /** use the new default look instead of the 3.0 one; customUI then sits in the dialog body */
+  skin?: boolean
 }
 
 export type ConfirmAlertOptions = ReactConfirmAlertProps
@@ -57,6 +59,7 @@ interface LegacyContentProps {
   close: () => void
   /** a dialog from confirmAlert only reacts to keys while it is the top one */
   id?: DialogId
+  skin: boolean
 }
 
 // customUI is called inside a component with a stable type, so hooks inside it work and a new
@@ -65,13 +68,15 @@ function CustomUIHost<A> ({ render, args }: { render: (args: A) => ReactNode, ar
   return <>{render(args)}</>
 }
 
-function LegacyContent ({ props, titleId, close, id }: LegacyContentProps) {
+function LegacyContent ({ props, titleId, close, id, skin }: LegacyContentProps) {
   const latest = useRef({ props, close })
   latest.current = { props, close }
 
   useLayoutEffect(() => {
     const keyboard = (event: KeyboardEvent) => {
       if (id && topmost(store.get())?.id !== id) return
+      // A DialogLayout action that waits keeps the dialog open, as in the new API.
+      if (id && runtime().busy.has(id)) return
       const { props } = latest.current
       // A key that closes the dialog stops there: focus returns to the opener before the key's
       // default action, so Enter would otherwise click the opener and reopen the dialog (#84).
@@ -92,10 +97,12 @@ function LegacyContent ({ props, titleId, close, id }: LegacyContentProps) {
   }, [])
 
   const slot = useSlot()
+  const frame = useContext(FrameContext)
   const { title, message, customUI, childrenElement } = props
   const buttons = props.buttons ?? defaultButtons
   if (customUI) {
-    return <CustomUIHost render={customUI} args={{ title: title as string, message: message as string, buttons, onClose: close }} />
+    const ui = <CustomUIHost render={customUI} args={{ title: title as string, message: message as string, buttons, onClose: close }} />
+    return skin ? <div {...slot('body')}><FrameContext.Provider value={{ ...frame, inBody: true }}>{ui}</FrameContext.Provider></div> : ui
   }
   return (
     <div {...slot('body')}>
@@ -122,8 +129,9 @@ function LegacyContent ({ props, titleId, close, id }: LegacyContentProps) {
 }
 
 export function confirmAlert (properties: ReactConfirmAlertProps): void {
+  const skin = properties.skin ?? runtime().defaults.confirmAlert?.skin ?? false
   function Content ({ id, titleId, dismiss }: DialogRenderProps<void>) {
-    return <LegacyContent props={properties} titleId={titleId} close={dismiss} id={id} />
+    return <LegacyContent props={properties} titleId={titleId} close={dismiss} id={id} skin={skin} />
   }
   openEntry({
     kind: 'custom',
@@ -136,6 +144,7 @@ export function confirmAlert (properties: ReactConfirmAlertProps): void {
     overlayClassName: properties.overlayClassName,
     onClickOutside: properties.onClickOutside,
     legacy: true,
+    skin,
     willUnmount: properties.willUnmount,
     afterClose: properties.afterClose,
     render: Content
@@ -145,6 +154,7 @@ export function confirmAlert (properties: ReactConfirmAlertProps): void {
 function DeclarativeDialog (props: ReactConfirmAlertProps) {
   const titleId = useId()
   const close = () => props.afterClose?.()
+  const skin = props.skin ?? runtime().defaults.confirmAlert?.skin ?? false
   return (
     <DialogFrame
       modal={props.modal ?? false}
@@ -156,11 +166,12 @@ function DeclarativeDialog (props: ReactConfirmAlertProps) {
       closeOnClickOutside={props.closeOnClickOutside ?? true}
       closeOnEscape={props.closeOnEscape ?? true}
       legacy
+      skin={skin}
       role='dialog'
       onClickOutside={props.onClickOutside}
       onDismiss={close}
     >
-      <LegacyContent props={props} titleId={titleId} close={close} />
+      <LegacyContent props={props} titleId={titleId} close={close} skin={skin} />
     </DialogFrame>
   )
 }

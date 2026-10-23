@@ -24,6 +24,10 @@ export default defineConfig({
   },
   test: {
     include: ['test/**/*.test.{ts,tsx}'],
+    // One test file at a time. Parallel files share one page: the real keyboard, the mouse and
+    // emulateMedia reach every file, and WebKit stops animations in an iframe covered by another
+    // one, so an exit animation there never finishes and the dialog never leaves.
+    fileParallelism: false,
     setupFiles: [
       ...(process.env.RCA_NO_SHOWMODAL ? ['test/setup-no-showmodal.ts'] : []),
       ...(process.env.RCA_JANK ? ['test/setup-jank.ts'] : [])

@@ -158,6 +158,7 @@ dialog.react-confirm-alert-overlay::backdrop {
   --_primary-fg: #18181b;
   --_ring: #71717a;
   --_error: #f87171;
+  color-scheme: dark;
   background: var(--rca-backdrop, rgba(0, 0, 0, 0.7));
 }
 .react-confirm-alert-overlay[data-skin] .react-confirm-alert {
@@ -184,7 +185,10 @@ dialog.react-confirm-alert-overlay::backdrop {
 .react-confirm-alert-overlay[data-skin][data-state=closing] .react-confirm-alert {
   animation: rca-pop-out 150ms ease-in both;
 }
-.react-confirm-alert-overlay[data-skin] [data-slot=title] {
+/* Plain elements inside a skinned dialog look like the slots. Their selectors are type selectors under
+   :where(), so they beat a CSS reset such as Tailwind preflight and lose to any class you add. */
+.react-confirm-alert-overlay[data-skin] [data-slot=title],
+:where(.react-confirm-alert-overlay[data-skin]) div :is(h1, h2, h3) {
   margin: 0 0 8px;
   font-size: 18px;
   font-weight: 600;
@@ -195,14 +199,17 @@ dialog.react-confirm-alert-overlay::backdrop {
 .react-confirm-alert-overlay[data-skin] [data-slot=field] {
   margin-top: 16px;
 }
-.react-confirm-alert-overlay[data-skin] [data-slot=label] {
+.react-confirm-alert-overlay[data-skin] [data-slot=label],
+:where(.react-confirm-alert-overlay[data-skin]) div label {
   display: block;
   margin-bottom: 6px;
   font-size: 13px;
   font-weight: 500;
   color: var(--rca-title, var(--_title));
 }
-.react-confirm-alert-overlay[data-skin] [data-slot=input] {
+.react-confirm-alert-overlay[data-skin] [data-slot=input],
+:where(.react-confirm-alert-overlay[data-skin]) div :is(input:where(:not([type=checkbox], [type=radio], [type=range], [type=file], [type=color], [type=submit], [type=button], [type=reset], [type=image])), textarea, select) {
+  display: block;
   box-sizing: border-box;
   width: 100%;
   height: 36px;
@@ -215,13 +222,34 @@ dialog.react-confirm-alert-overlay::backdrop {
   outline: none;
   transition: border-color 150ms, box-shadow 150ms;
 }
-.react-confirm-alert-overlay[data-skin] [data-slot=input]:focus {
+.react-confirm-alert-overlay[data-skin] textarea[data-slot=input],
+:where(.react-confirm-alert-overlay[data-skin]) div textarea {
+  height: auto;
+  min-height: 80px;
+  padding: 8px 12px;
+  resize: vertical;
+}
+.react-confirm-alert-overlay[data-skin] [data-slot=input]:focus,
+:where(.react-confirm-alert-overlay[data-skin]) div :is(input, textarea, select):where(:focus) {
   border-color: var(--rca-ring, var(--_ring));
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--rca-ring, var(--_ring)) 50%, transparent);
 }
-.react-confirm-alert-overlay[data-skin] [data-slot=input][aria-invalid=true] {
+.react-confirm-alert-overlay[data-skin] [data-slot=input][aria-invalid=true],
+:where(.react-confirm-alert-overlay[data-skin]) div :is(input, textarea, select):where([aria-invalid=true]) {
   border-color: var(--rca-danger, var(--_error));
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--rca-danger, var(--_error)) 20%, transparent);
+}
+:where(.react-confirm-alert-overlay[data-skin]) div p {
+  margin: 0;
+}
+:where(.react-confirm-alert-overlay[data-skin]) div input:where([type=checkbox], [type=radio]) {
+  accent-color: var(--rca-button-bg, var(--_primary));
+}
+:where(.react-confirm-alert-overlay[data-skin]) div * + :is(p, label, input, textarea, select) {
+  margin-top: 12px;
+}
+:where(.react-confirm-alert-overlay[data-skin]) div label + :is(input, textarea, select) {
+  margin-top: 0;
 }
 .react-confirm-alert-overlay[data-skin] [data-slot=error] {
   margin: 6px 0 0;
@@ -233,7 +261,8 @@ dialog.react-confirm-alert-overlay::backdrop {
   gap: var(--rca-gap, 8px);
   margin-top: 24px;
 }
-.react-confirm-alert-overlay[data-skin] .react-confirm-alert-button-group > button {
+.react-confirm-alert-overlay[data-skin] .react-confirm-alert-button-group > button,
+:where(.react-confirm-alert-overlay[data-skin]) div button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -252,43 +281,53 @@ dialog.react-confirm-alert-overlay::backdrop {
   white-space: nowrap;
   transition: background-color 150ms, transform 150ms;
 }
-.react-confirm-alert-overlay[data-skin] .react-confirm-alert-button-group > [data-variant=primary] {
+.react-confirm-alert-overlay[data-skin] .react-confirm-alert-button-group > [data-variant=primary],
+:where(.react-confirm-alert-overlay[data-skin]) div button:where([data-variant=primary]) {
   border-color: transparent;
   background: var(--rca-button-bg, var(--_primary));
   color: var(--rca-button-fg, var(--_primary-fg));
 }
-.react-confirm-alert-overlay[data-skin] .react-confirm-alert-button-group > [data-variant=danger] {
+.react-confirm-alert-overlay[data-skin] .react-confirm-alert-button-group > [data-variant=danger],
+:where(.react-confirm-alert-overlay[data-skin]) div button:where([data-variant=danger]) {
   border-color: transparent;
   background: var(--rca-danger, var(--_danger));
   color: #fff;
 }
-.react-confirm-alert-overlay[data-skin] .react-confirm-alert-button-group > :not([data-variant=primary],[data-variant=danger]):enabled:hover {
+.react-confirm-alert-overlay[data-skin] .react-confirm-alert-button-group > :not([data-variant=primary],[data-variant=danger]):enabled:hover,
+:where(.react-confirm-alert-overlay[data-skin]) div button:where(:not([data-variant=primary],[data-variant=danger]):enabled:hover) {
   background: var(--_hover);
 }
-.react-confirm-alert-overlay[data-skin] .react-confirm-alert-button-group > [data-variant=primary]:enabled:hover {
+.react-confirm-alert-overlay[data-skin] .react-confirm-alert-button-group > [data-variant=primary]:enabled:hover,
+:where(.react-confirm-alert-overlay[data-skin]) div button:where([data-variant=primary]:enabled:hover) {
   background: var(--rca-button-bg-hover, color-mix(in srgb, var(--rca-button-bg, var(--_primary)) 85%, #000));
 }
-.react-confirm-alert-overlay[data-skin] .react-confirm-alert-button-group > [data-variant=danger]:enabled:hover {
+.react-confirm-alert-overlay[data-skin] .react-confirm-alert-button-group > [data-variant=danger]:enabled:hover,
+:where(.react-confirm-alert-overlay[data-skin]) div button:where([data-variant=danger]:enabled:hover) {
   background: var(--rca-danger-hover, color-mix(in srgb, var(--rca-danger, var(--_danger)) 85%, #000));
 }
-.react-confirm-alert-overlay[data-skin] .react-confirm-alert-button-group > button:active {
+.react-confirm-alert-overlay[data-skin] .react-confirm-alert-button-group > button:active,
+:where(.react-confirm-alert-overlay[data-skin]) div button:where(:active) {
   transform: scale(0.97);
 }
-.react-confirm-alert-overlay[data-skin] .react-confirm-alert-button-group > button:focus-visible {
+.react-confirm-alert-overlay[data-skin] .react-confirm-alert-button-group > button:focus-visible,
+:where(.react-confirm-alert-overlay[data-skin]) div button:where(:focus-visible) {
   outline: var(--rca-focus-ring, 2px solid var(--_ring));
   outline-offset: 2px;
 }
 /* Not faded: white on a faded red is below 4.5:1. */
-.react-confirm-alert-overlay[data-skin] .react-confirm-alert-button-group > button:disabled:not([aria-busy=true]) {
+.react-confirm-alert-overlay[data-skin] .react-confirm-alert-button-group > button:disabled:not([aria-busy=true]),
+:where(.react-confirm-alert-overlay[data-skin]) div button:where(:disabled:not([aria-busy=true])) {
   cursor: default;
   border-color: var(--rca-border, var(--_border));
   background: var(--rca-bg, var(--_bg));
   color: var(--rca-fg, var(--_fg));
 }
-.react-confirm-alert-overlay[data-skin] .react-confirm-alert-button-group > button[aria-busy=true] {
+.react-confirm-alert-overlay[data-skin] .react-confirm-alert-button-group > button[aria-busy=true],
+:where(.react-confirm-alert-overlay[data-skin]) div button:where([aria-busy=true]) {
   cursor: progress;
 }
-.react-confirm-alert-overlay[data-skin] .react-confirm-alert-button-group > button[aria-busy=true]::before {
+.react-confirm-alert-overlay[data-skin] .react-confirm-alert-button-group > button[aria-busy=true]::before,
+:where(.react-confirm-alert-overlay[data-skin]) div button:where([aria-busy=true])::before {
   content: '';
   width: 12px;
   height: 12px;

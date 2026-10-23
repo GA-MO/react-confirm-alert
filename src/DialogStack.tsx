@@ -69,6 +69,7 @@ function EntryView ({ entry, depth, topmost }: { entry: Entry, depth: number, to
       closeOnClickOutside={options.closeOnClickOutside ?? defaults.closeOnClickOutside ?? true}
       closeOnEscape={options.closeOnEscape ?? defaults.closeOnEscape ?? true}
       legacy={!!options.legacy}
+      skin={options.skin}
       onClickOutside={options.onClickOutside}
       onDismiss={dismiss}
     >
@@ -78,6 +79,7 @@ function EntryView ({ entry, depth, topmost }: { entry: Entry, depth: number, to
         descriptionId={descriptionId}
         title={options.title}
         message={options.message}
+        content={options.content}
         buttons={options.buttons ?? []}
         close={close}
         dismiss={dismiss}

@@ -73,9 +73,11 @@ function styleSetup (style: StyleMode, width: number): { imports: string, setup:
 function head (fn: string[], style: StyleMode, width: number) {
   const { imports, setup } = styleSetup(style, width)
   const names = style === 'mixed' || style === 'tailwind' ? [...fn, 'configureDialogs'] : fn
+  const list = names.sort().join(', ')
+  const line = `import { ${list} } from 'react-confirm-alert'`
   return `'use client'
 import { useState } from 'react'
-import { ${names.sort().join(', ')} } from 'react-confirm-alert'
+${line.length > 70 ? `import {\n  ${names.join(',\n  ')},\n} from 'react-confirm-alert'` : line}
 ${imports}
 ${setup}`
 }
@@ -116,7 +118,7 @@ export function snippet (id: string, o: SnippetOptions, style: StyleMode, width:
     case 'stack':
       return c(['confirm', 'openDialog'], "    openDialog({\n      render: () => (\n        <button onClick={() => confirm('Level 2')}>\n          Open level 2\n        </button>\n      ),\n    })")
     case 'custom':
-      return c(['openDialog'], "    const { result } = openDialog<string>({\n      render: ({ close }) => (\n        <button onClick={() => close('blue')}>Blue</button>\n      ),\n    })\n    setResult(`openDialog() → ${await result}`)")
+      return c(['openDialog'], "    const { result } = openDialog<string>({\n      render: ({ close }) => (\n        <form\n          className=\"react-confirm-alert-body\"\n          onSubmit={(e) => {\n            e.preventDefault()\n            const data = new FormData(e.currentTarget)\n            close(data.get('colour') as string)\n          }}\n        >\n          <h1 data-slot=\"title\">Pick a colour</h1>\n          <div data-slot=\"field\">\n            <label htmlFor=\"colour\" data-slot=\"label\">Colour</label>\n            <select id=\"colour\" name=\"colour\" data-slot=\"input\">\n              <option>red</option>\n              <option>green</option>\n              <option>blue</option>\n            </select>\n          </div>\n          <div\n            className=\"react-confirm-alert-button-group\"\n            data-slot=\"actions\"\n          >\n            <button data-variant=\"primary\">Pick</button>\n          </div>\n        </form>\n      ),\n    })\n    setResult(`openDialog() → ${await result}`)")
     case 'v3':
       return c(['confirmAlert'], `    confirmAlert(${literal({ ...o, danger: false, modal: true }, ['buttons: [', "  { label: 'Yes', onClick: () => setResult('Yes') },", "  { label: 'No', onClick: () => setResult('No') },", '],'])})`, 'default')
     case 'customUI':
@@ -124,6 +126,6 @@ export function snippet (id: string, o: SnippetOptions, style: StyleMode, width:
     case 'route':
       return `'use client'\n// app/dialogs.tsx, rendered once in the root layout\nimport { usePathname } from 'next/navigation'\nimport { DialogHost } from 'react-confirm-alert'\n\nexport function Dialogs() {\n  return <DialogHost dismissKey={usePathname()} />\n}\n`
     default:
-      return `${head(['Dialog'], style, width)}export function EditNote() {\n  const [open, setOpen] = useState(false)\n  const [note, setNote] = useState('')\n\n  return (\n    <>\n      <button onClick={() => setOpen(true)}>Edit note</button>\n      <Dialog open={open} onOpenChange={setOpen} aria-label="Note">\n        <textarea\n          value={note}\n          onChange={(e) => setNote(e.target.value)}\n        />\n      </Dialog>\n    </>\n  )\n}\n`
+      return `${head(['Dialog'], style, width)}export function EditNote() {\n  const [open, setOpen] = useState(false)\n  const [note, setNote] = useState('')\n\n  return (\n    <>\n      <button onClick={() => setOpen(true)}>Edit note</button>\n      <Dialog\n        open={open}\n        onOpenChange={setOpen}\n        aria-labelledby=\"note-title\"\n      >\n        <div className=\"react-confirm-alert-body\">\n          <h1 id=\"note-title\" data-slot=\"title\">Edit note</h1>\n          <div data-slot=\"field\">\n            <label htmlFor=\"note\" data-slot=\"label\">Note</label>\n            <textarea\n              id=\"note\"\n              data-slot=\"input\"\n              value={note}\n              onChange={(e) => setNote(e.target.value)}\n            />\n          </div>\n          <div\n            className=\"react-confirm-alert-button-group\"\n            data-slot=\"actions\"\n          >\n            <button\n              data-variant=\"primary\"\n              onClick={() => setOpen(false)}\n            >\n              Done\n            </button>\n          </div>\n        </div>\n      </Dialog>\n    </>\n  )\n}\n`
   }
 }

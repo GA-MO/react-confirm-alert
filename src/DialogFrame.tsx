@@ -1,8 +1,8 @@
-import { useLayoutEffect, useRef, type KeyboardEvent, type ReactNode, type SyntheticEvent, type ReactElement } from 'react'
+import { useId, useLayoutEffect, useRef, useState, type KeyboardEvent, type ReactNode, type SyntheticEvent, type ReactElement } from 'react'
 import { registerFrame, reopenClosedFrames } from './lifecycle'
 import { runtime, store, topmost } from './store'
 import type { DialogId, DialogKind, StyleOptions } from './types'
-import { SlotContext, slotsFor } from './classNames'
+import { FrameContext, SlotContext, slotsFor } from './classNames'
 
 export interface DialogFrameProps {
   id?: DialogId
@@ -24,6 +24,8 @@ export interface DialogFrameProps {
   closeOnEscape: boolean
   /** the v3 API reads Escape from document keydown and focuses the panel */
   legacy: boolean
+  /** confirmAlert opted into the new default look */
+  skin?: boolean | undefined
   onKeyDown?: ((event: KeyboardEvent<HTMLElement>, close: () => void) => void) | undefined
   onClickOutside?: (() => void) | undefined
   onDismiss: () => void
@@ -39,6 +41,10 @@ export function DialogFrame (props: DialogFrameProps): ReactElement {
   const pressedOn = useRef<EventTarget | null>(null)
   const stay = useRef<boolean | null>(null)
   const native = props.modal && canShowModal()
+  const layoutTitleId = useId()
+  // How many DialogLayout titles are mounted; one of them names a dialog that has no name of its own.
+  const [layoutTitles, setLayoutTitles] = useState(0)
+  const labelledBy = props.labelledBy ?? (props.label || layoutTitles === 0 ? undefined : layoutTitleId)
 
   useLayoutEffect(() => {
     const element = frame.current!
@@ -122,13 +128,13 @@ export function DialogFrame (props: DialogFrameProps): ReactElement {
     ...slot('dialog', props.extraClass),
     role: props.role,
     'aria-label': props.label,
-    'aria-labelledby': props.labelledBy,
+    'aria-labelledby': labelledBy,
     'aria-describedby': props.describedBy,
     'data-rca': '',
     'data-state': props.state,
     'data-kind': props.kind,
     // Every dialog but confirmAlert gets the new default look; confirmAlert keeps the 3.0 one.
-    'data-skin': props.legacy ? undefined : '',
+    'data-skin': props.legacy && !props.skin ? undefined : '',
     'data-tone': props.tone ?? 'default',
     'data-depth': String(props.depth ?? 0),
     'data-topmost': props.topmost ?? true ? '' : undefined,
@@ -138,7 +144,9 @@ export function DialogFrame (props: DialogFrameProps): ReactElement {
   }
   const content = (
     <div ref={panel} {...slot('panel')} tabIndex={-1}>
-      <SlotContext.Provider value={slot}>{props.children}</SlotContext.Provider>
+      <SlotContext.Provider value={slot}>
+        <FrameContext.Provider value={{ id: props.id, titleId: props.labelledBy ?? layoutTitleId, countTitle: setLayoutTitles }}>{props.children}</FrameContext.Provider>
+      </SlotContext.Provider>
     </div>
   )
 

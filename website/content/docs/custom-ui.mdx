@@ -1,0 +1,55 @@
+---
+title: Custom UI
+description: Put your own form, list or warning in a dialog. Plain HTML already looks right.
+---
+
+import { Example } from '@/components/example'
+import { RenameOpenDialog } from '@/components/custom-ui/rename-open-dialog'
+import { AssignOpenDialog } from '@/components/custom-ui/assign-open-dialog'
+import { DeleteOpenDialog } from '@/components/custom-ui/delete-open-dialog'
+import { InviteCustomUI } from '@/components/custom-ui/invite-custom-ui'
+
+A dialog often needs more than a title and two buttons: a field to fill, a list to pick from, a name to type before a delete. Write that content as plain HTML. Inside a dialog with the default CSS, `h1` to `h3`, `p`, `label`, `input`, `textarea`, `select` and `button` get the default look with no class names. Tailwind v4 preflight does not remove it, and any class you add wins over it.
+
+Every example on this page is in the [playground](/playground), where you can switch how it is written: `openDialog`, `<Dialog>`, `confirm` with `content`, or 3.0 `customUI`.
+
+## A form with validation
+
+`openDialog<R>()` returns a Promise of whatever your content passes to `close()`. `DialogLayout` lays out the title, the message, your content and a row of buttons.
+
+<Example preview={<RenameOpenDialog />}>
+<include meta='title="rename-open-dialog.tsx"'>../../components/custom-ui/rename-open-dialog.tsx</include>
+</Example>
+
+## Pick from a list
+
+<Example preview={<AssignOpenDialog />}>
+<include meta='title="assign-open-dialog.tsx"'>../../components/custom-ui/assign-open-dialog.tsx</include>
+</Example>
+
+## Type the name to delete
+
+A button whose `onClick` returns a Promise shows a spinner, and the dialog stays open until the Promise settles. Escape and outside clicks wait too.
+
+<Example preview={<DeleteOpenDialog />}>
+<include meta='title="delete-open-dialog.tsx"'>../../components/custom-ui/delete-open-dialog.tsx</include>
+</Example>
+
+## customUI from 3.0
+
+`customUI` keeps its 3.0 look by default. Add `skin: true` and your content sits in the new dialog body with the same default look. `configureDialogs({ confirmAlert: { skin: true } })` turns it on for every `confirmAlert` call.
+
+<Example preview={<InviteCustomUI />}>
+<include meta='title="invite-custom-ui.tsx"'>../../components/custom-ui/invite-custom-ui.tsx</include>
+</Example>
+
+## Which API to use
+
+| You want | Use |
+| --- | --- |
+| A value back from your content | `openDialog<R>({ render })` |
+| Content that reads your component's state | `<Dialog open onOpenChange>` |
+| A confirm, alert or prompt with something extra under the message | `confirm({ content })`, `alert({ content })`, `prompt({ content })` |
+| The 3.0 API | `confirmAlert({ skin: true, customUI })` |
+
+To style the content yourself, add classes, use `data-slot` attributes (see [Styling](/docs/styling#your-own-content)), or turn the default look off with `unstyled: true`.
