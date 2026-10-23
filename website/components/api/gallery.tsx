@@ -10,7 +10,7 @@ import { SubmitOrder } from './confirm-alert'
 import { LeavePage } from './confirm-dialog'
 import { ShowTerms } from './custom-ui'
 import { EditNote } from './dialog'
-import { ShowTheme } from './dialog-host'
+import { ShowTheme, ThemeName } from './dialog-host'
 import { renameWorkspace } from './dialog-layout'
 import { pickPlan } from './open-dialog'
 import { renameFile } from './prompt'
@@ -132,7 +132,7 @@ export const apiExamples: GalleryItem[] = [
     Demo: ShowTheme,
     picture: {
       kind: 'alert',
-      content: <p>This site is in light mode.</p>,
+      content: <ThemeName />,
       buttons: [{ label: 'OK', variant: 'primary' }],
     },
   },

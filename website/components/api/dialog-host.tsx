@@ -2,7 +2,7 @@
 import { useTheme } from 'next-themes'
 import { alert } from 'react-confirm-alert'
 
-function ThemeName() {
+export function ThemeName() {
   return <p>This site is in {useTheme().resolvedTheme} mode.</p>
 }
 
