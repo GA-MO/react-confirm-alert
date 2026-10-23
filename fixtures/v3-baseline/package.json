@@ -1,0 +1,9 @@
+{
+  "name": "v3-baseline",
+  "private": true,
+  "description": "react-confirm-alert 3.0.6 from npm, measured by the root .size-limit.json",
+  "dependencies": {
+    "prop-types": "15.8.1",
+    "react-confirm-alert": "3.0.6"
+  }
+}
