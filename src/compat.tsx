@@ -1,6 +1,6 @@
 import { Component, useId, useLayoutEffect, useRef, type ButtonHTMLAttributes, type ReactElement, type ReactNode } from 'react'
 import { DialogFrame } from './DialogFrame'
-import { openDialog } from './lifecycle'
+import { openEntry } from './lifecycle'
 import { store, topmost } from './store'
 import type { DialogId, DialogRenderProps, Strategy } from './types'
 
@@ -113,7 +113,7 @@ export function confirmAlert (properties: ReactConfirmAlertProps): void {
   function Content ({ id, titleId, dismiss }: DialogRenderProps<void>) {
     return <LegacyContent props={properties} titleId={titleId} close={dismiss} id={id} />
   }
-  openDialog<void>({
+  openEntry({
     kind: 'custom',
     title: properties.title,
     modal: properties.modal ?? false,
@@ -121,7 +121,7 @@ export function confirmAlert (properties: ReactConfirmAlertProps): void {
     closeOnEscape: properties.closeOnEscape ?? true,
     overlayClassName: properties.overlayClassName,
     onClickOutside: properties.onClickOutside,
-    legacyKeyboard: true,
+    legacy: true,
     willUnmount: properties.willUnmount,
     afterClose: properties.afterClose,
     render: Content
@@ -141,7 +141,8 @@ function DeclarativeDialog (props: ReactConfirmAlertProps) {
       labelledBy={props.title ? titleId : undefined}
       closeOnClickOutside={props.closeOnClickOutside ?? true}
       closeOnEscape={props.closeOnEscape ?? true}
-      legacyKeyboard
+      legacy
+      role='dialog'
       onClickOutside={props.onClickOutside}
       onDismiss={close}
     >

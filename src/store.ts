@@ -1,12 +1,12 @@
 import type { Root } from 'react-dom/client'
-import type { DialogId, DialogOptions, Strategy } from './types'
+import type { DialogId, EntryOptions, Strategy } from './types'
 
 export type Phase = 'queued' | 'open' | 'closing'
 
 export interface Entry {
   id: DialogId
   // R is erased here and restored by the caller that created the entry.
-  options: DialogOptions<any>
+  options: EntryOptions
   phase: Phase
   /** id of the element the dialog renders into, or null for the default container */
   target: string | null
@@ -49,6 +49,11 @@ export function remove (state: StoreState, id: DialogId): StoreState {
   return promoteQueued({ entries: state.entries.filter((e) => e !== entry) })
 }
 
+export function update (state: StoreState, id: DialogId, patch: Partial<EntryOptions>): StoreState {
+  if (!state.entries.some((e) => e.id === id)) return state
+  return { entries: state.entries.map((e) => (e.id === id ? { ...e, options: { ...e.options, ...patch } } : e)) }
+}
+
 export function promoteQueued (state: StoreState): StoreState {
   if (state.entries.some(isVisible)) return state
   const next = state.entries.find((e) => e.phase === 'queued')
@@ -82,6 +87,8 @@ export interface Runtime {
   containers: Map<string | null, Container>
   frames: Map<DialogId, { frame: HTMLElement, panel: HTMLElement | null }>
   blurred: Element | null
+  /** dialogs whose button is waiting on a Promise; Escape and outside clicks wait too */
+  busy: Set<DialogId>
   pageSynced: boolean
   watchingContainers: boolean
 }
@@ -97,6 +104,7 @@ export function runtime (): Runtime {
     containers: new Map(),
     frames: new Map(),
     blurred: null,
+    busy: new Set(),
     pageSynced: false,
     watchingContainers: false
   }

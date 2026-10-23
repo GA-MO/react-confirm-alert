@@ -45,9 +45,12 @@ function EntryView ({ entry }: { entry: Entry }) {
       className={options.overlayClassName ? `react-confirm-alert-overlay ${options.overlayClassName}` : 'react-confirm-alert-overlay'}
       panelClassName='react-confirm-alert'
       labelledBy={options.title ? titleId : undefined}
+      describedBy={options.message ? descriptionId : undefined}
+      role={options.kind === 'alert' || options.kind === 'confirm' ? 'alertdialog' : 'dialog'}
+      onKeyDown={options.onKeyDown}
       closeOnClickOutside={closeOnClickOutside}
       closeOnEscape={closeOnEscape}
-      legacyKeyboard={!!options.legacyKeyboard}
+      legacy={!!options.legacy}
       onClickOutside={options.onClickOutside}
       onDismiss={dismiss}
     >
@@ -57,6 +60,7 @@ function EntryView ({ entry }: { entry: Entry }) {
         descriptionId={descriptionId}
         title={options.title}
         message={options.message}
+        buttons={options.buttons ?? []}
         close={close}
         dismiss={dismiss}
         onClose={dismiss}

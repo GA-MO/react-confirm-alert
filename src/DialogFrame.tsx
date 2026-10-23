@@ -1,5 +1,6 @@
-import { useLayoutEffect, useRef, type ReactNode, type SyntheticEvent } from 'react'
+import { useLayoutEffect, useRef, type KeyboardEvent, type ReactNode, type SyntheticEvent } from 'react'
 import { registerFrame } from './lifecycle'
+import { runtime } from './store'
 import type { DialogId, DialogKind } from './types'
 
 export interface DialogFrameProps {
@@ -10,10 +11,13 @@ export interface DialogFrameProps {
   className: string
   panelClassName: string
   labelledBy?: string | undefined
+  describedBy?: string | undefined
+  role: 'dialog' | 'alertdialog'
   closeOnClickOutside: boolean
   closeOnEscape: boolean
-  /** the v3 API reads Escape from document keydown, so the native cancel only gets blocked */
-  legacyKeyboard: boolean
+  /** the v3 API reads Escape from document keydown and focuses the panel */
+  legacy: boolean
+  onKeyDown?: ((event: KeyboardEvent<HTMLElement>, close: () => void) => void) | undefined
   onClickOutside?: (() => void) | undefined
   onDismiss: () => void
   children: ReactNode
@@ -36,7 +40,11 @@ export function DialogFrame (props: DialogFrameProps) {
       const dialog = element as HTMLDialogElement
       if (!dialog.open) dialog.showModal()
     }
-    panel.current?.focus({ preventScroll: true })
+    // The v3 API focuses the panel, so Enter cannot press a button by accident (B14). The new API
+    // focuses the element its body marks, or keeps what showModal chose.
+    const marked = panel.current?.querySelector<HTMLElement>('[data-autofocus]')
+    if (props.legacy || !marked) panel.current?.focus({ preventScroll: true })
+    else marked.focus({ preventScroll: true })
     return () => {
       if (props.id) registerFrame(props.id, null, null)
       const dialog = element as HTMLDialogElement
@@ -53,7 +61,7 @@ export function DialogFrame (props: DialogFrameProps) {
     const pressed = pressedOn.current
     pressedOn.current = null
     const outside = e.target === frame.current && (pressed === null || pressed === frame.current)
-    if (props.closeOnClickOutside && outside) {
+    if (props.closeOnClickOutside && outside && !isBusy()) {
       props.onClickOutside?.()
       props.onDismiss()
     }
@@ -62,7 +70,15 @@ export function DialogFrame (props: DialogFrameProps) {
 
   const onCancel = (e: SyntheticEvent) => {
     e.preventDefault()
-    if (!props.legacyKeyboard && props.closeOnEscape) props.onDismiss()
+    if (!props.legacy && props.closeOnEscape && !isBusy()) props.onDismiss()
+  }
+
+  const isBusy = () => !!props.id && runtime().busy.has(props.id)
+
+  // A native modal reports Escape as cancel. Without showModal the frame reads the key itself.
+  const onKeyDown = (e: KeyboardEvent<HTMLElement>) => {
+    props.onKeyDown?.(e, props.onDismiss)
+    if (!native && !props.legacy && e.key === 'Escape' && props.closeOnEscape && !isBusy()) props.onDismiss()
   }
 
   // Some browsers close a modal dialog on a repeated Escape even when cancel was prevented.
@@ -72,13 +88,16 @@ export function DialogFrame (props: DialogFrameProps) {
 
   const shared = {
     className: props.className,
+    role: props.role,
     'aria-labelledby': props.labelledBy,
+    'aria-describedby': props.describedBy,
     'data-rca': '',
     'data-state': props.state,
     'data-kind': props.kind,
     'data-slot': 'dialog',
     onPointerDown,
-    onClick
+    onClick,
+    onKeyDown
   }
   const content = (
     <div ref={panel} className={props.panelClassName} data-slot='panel' tabIndex={-1}>
@@ -88,5 +107,5 @@ export function DialogFrame (props: DialogFrameProps) {
 
   return native
     ? <dialog ref={(el) => { frame.current = el }} {...shared} onCancel={onCancel} onClose={onClose}>{content}</dialog>
-    : <div ref={(el) => { frame.current = el }} role='dialog' {...shared}>{content}</div>
+    : <div ref={(el) => { frame.current = el }} {...shared}>{content}</div>
 }

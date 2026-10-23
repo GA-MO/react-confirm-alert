@@ -1,9 +1,24 @@
-import type { ComponentType, ReactNode } from 'react'
+import type { ButtonHTMLAttributes, ComponentType, InputHTMLAttributes, KeyboardEvent, ReactNode } from 'react'
 
 export type DialogId = string & { readonly __brand: 'DialogId' }
 
 // replace closes whatever is open first (confirmAlert's default), stack opens on top, queue waits.
 export type Strategy = 'stack' | 'queue' | 'replace'
+
+export interface ButtonContext<R> {
+  close: (value: R) => void
+  dismiss: () => void
+  /** aborted when the dialog closes from elsewhere while this button waits */
+  signal: AbortSignal
+}
+
+export interface DialogButton<R> extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'onClick' | 'value' | 'children'> {
+  label: ReactNode
+  value?: R | undefined
+  variant?: 'primary' | 'secondary' | 'danger' | undefined
+  /** return false to stay open; return a Promise to show the button as busy until it settles */
+  onClick?: ((ctx: ButtonContext<R>) => void | false | Promise<void | false>) | undefined
+}
 
 export interface DialogRenderProps<R> {
   id: DialogId
@@ -11,8 +26,10 @@ export interface DialogRenderProps<R> {
   descriptionId: string
   title?: ReactNode | undefined
   message?: ReactNode | undefined
+  buttons: readonly DialogButton<R>[]
   close: (value: R) => void
   dismiss: () => void
+  /** alias of dismiss, so v3 customUI code keeps working */
   onClose: () => void
 }
 
@@ -23,22 +40,63 @@ export interface BaseOptions {
   closeOnClickOutside?: boolean | undefined
   strategy?: Strategy | undefined
   modal?: boolean | undefined
+  signal?: AbortSignal | undefined
+  onKeyDown?: ((event: KeyboardEvent<HTMLElement>, close: () => void) => void) | undefined
   afterClose?: (() => void) | undefined
+}
+
+export interface AlertOptions extends BaseOptions {
+  kind: 'alert'
+  okLabel?: ReactNode | undefined
+}
+
+export interface ConfirmOptions extends BaseOptions {
+  kind: 'confirm'
+  confirmLabel?: ReactNode | undefined
+  cancelLabel?: ReactNode | undefined
+  /** danger moves the initial focus to the cancel button */
+  tone?: 'default' | 'danger' | undefined
+  onConfirm?: ((ctx: { signal: AbortSignal }) => void | Promise<void>) | undefined
+}
+
+export interface PromptOptions extends BaseOptions {
+  kind: 'prompt'
+  label?: ReactNode | undefined
+  defaultValue?: string | undefined
+  inputProps?: Omit<InputHTMLAttributes<HTMLInputElement>, 'value' | 'defaultValue'> | undefined
+  /** return a message to keep the dialog open and show it under the input */
+  validate?: ((value: string) => string | null | Promise<string | null>) | undefined
+  submitLabel?: ReactNode | undefined
+  cancelLabel?: ReactNode | undefined
 }
 
 export interface CustomOptions<R> extends BaseOptions {
   kind: 'custom'
   render: ComponentType<DialogRenderProps<R>>
+  buttons?: readonly DialogButton<R>[] | undefined
+}
+
+export type DialogKind = 'alert' | 'confirm' | 'prompt' | 'custom'
+
+/** what the store keeps: every kind renders through `render` */
+export interface EntryOptions extends BaseOptions {
+  kind: DialogKind
+  render: ComponentType<DialogRenderProps<any>>
+  buttons?: readonly DialogButton<any>[] | undefined
   /** @internal class names from the v3 API, added to the frame */
   overlayClassName?: string | undefined
   /** @internal v3 callback for a click on the overlay */
   onClickOutside?: (() => void) | undefined
-  /** @internal the v3 API handles Escape itself on document keydown */
-  legacyKeyboard?: boolean | undefined
+  /** @internal the v3 API: Escape from document keydown, blur on body.children[0] */
+  legacy?: boolean | undefined
   /** @internal v3 callback, runs before afterClose when the dialog unmounts */
   willUnmount?: (() => void) | undefined
 }
 
-export type DialogOptions<R> = CustomOptions<R>
-
-export type DialogKind = DialogOptions<unknown>['kind']
+export interface DialogHandle<R> {
+  readonly id: DialogId
+  readonly result: Promise<R | undefined>
+  close: (value: R) => void
+  dismiss: () => void
+  update: (patch: Partial<Omit<CustomOptions<R>, 'kind'>>) => void
+}

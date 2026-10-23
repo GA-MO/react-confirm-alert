@@ -1,6 +1,6 @@
 import { flushSync } from 'react-dom'
 import { beginClose, push, remove, runtime, store, type Entry } from './store'
-import type { DialogId, DialogOptions } from './types'
+import type { DialogId, EntryOptions, Strategy } from './types'
 import { ensureContainer } from './fallbackRoot'
 
 type Mounted = { frame: HTMLElement, panel: HTMLElement | null }
@@ -10,10 +10,10 @@ export function registerFrame (id: DialogId, frame: HTMLElement | null, panel: H
   else runtime().frames.delete(id)
 }
 
-export function openDialog<R> (options: DialogOptions<R>, target: string | null, strategy = options.strategy ?? 'stack') {
+export function openEntry (options: EntryOptions, target: string | null, strategy: Strategy, settle: (result: unknown) => void = () => {}) {
   const id = store.nextId()
   const resolved = ensureContainer(target)
-  const entry: Omit<Entry, 'phase'> = { id, options, target: resolved.target, blur: resolved.blur, settle: () => {} }
+  const entry: Omit<Entry, 'phase'> = { id, options, target: resolved.target, blur: !!options.legacy && resolved.blur, settle }
     const before = store.get().entries.filter((e) => e.phase === 'open').map((e) => e.id)
   store.set(push(store.get(), entry, strategy))
   if (strategy === 'replace') for (const old of before) store.set(remove(store.get(), old))
@@ -31,6 +31,8 @@ function commit (update: () => void, sync: boolean) {
 export function closeDialog (id: DialogId, { sync = true } = {}) {
   const entry = store.get().entries.find((e) => e.id === id)
   if (!entry) return
+  // Settling first resolves the caller's Promise with the dismiss value and aborts a busy button.
+  entry.settle(undefined)
   if (entry.phase === 'queued') {
     commit(() => store.set(remove(store.get(), id)), sync)
     return
