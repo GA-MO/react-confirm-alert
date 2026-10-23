@@ -59,6 +59,11 @@ async function unmount () {
   host?.remove()
   root = host = undefined
   configureDialogs({})
+  // WebKit can take over a second to start the first exit animation on a fresh page, so wait for the
+  // animations to end rather than a clock. Endless ones (a spinner) never end and do not hold a dialog.
+  const exits = Array.from(document.querySelectorAll('[data-rca]')).flatMap((d) => d.getAnimations({ subtree: true }))
+    .filter((a) => a.effect?.getComputedTiming().endTime !== Infinity)
+  await Promise.all(exits.map((a) => a.finished.catch(() => {})))
   await vi.waitFor(() => expect(document.querySelector('[data-rca]')).toBeNull())
 }
 
