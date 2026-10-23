@@ -17,21 +17,23 @@ export interface Entry {
 
 export interface StoreState {
   entries: readonly Entry[]
+  /** mounted DialogHosts; the last one renders the default container's dialogs */
+  hosts: readonly symbol[]
 }
 
-export const emptyState: StoreState = { entries: [] }
+export const emptyState: StoreState = { entries: [], hosts: [] }
 
 const isVisible = (entry: Entry) => entry.phase !== 'queued'
 
 export function push (state: StoreState, entry: Omit<Entry, 'phase'>, strategy: Strategy): StoreState {
   const busy = state.entries.some(isVisible)
   if (strategy === 'queue' && busy) {
-    return { entries: [...state.entries, { ...entry, phase: 'queued' }] }
+    return { ...state, entries: [...state.entries, { ...entry, phase: 'queued' }] }
   }
   const entries = strategy === 'replace'
     ? state.entries.map((e) => (e.phase === 'open' ? { ...e, phase: 'closing' as const } : e))
     : state.entries
-  return { entries: [...entries, { ...entry, phase: 'open' }] }
+  return { ...state, entries: [...entries, { ...entry, phase: 'open' }] }
 }
 
 // Only an open entry can start closing. Anything else returns the same state, so a second
@@ -39,26 +41,34 @@ export function push (state: StoreState, entry: Omit<Entry, 'phase'>, strategy: 
 export function beginClose (state: StoreState, id: DialogId): StoreState {
   const entry = state.entries.find((e) => e.id === id)
   if (!entry || entry.phase !== 'open') return state
-  return { entries: state.entries.map((e) => (e === entry ? { ...e, phase: 'closing' } : e)) }
+  return { ...state, entries: state.entries.map((e) => (e === entry ? { ...e, phase: 'closing' } : e)) }
 }
 
 // A closing entry leaves the store; a queued one may be cancelled directly.
 export function remove (state: StoreState, id: DialogId): StoreState {
   const entry = state.entries.find((e) => e.id === id)
   if (!entry || entry.phase === 'open') return state
-  return promoteQueued({ entries: state.entries.filter((e) => e !== entry) })
+  return promoteQueued({ ...state, entries: state.entries.filter((e) => e !== entry) })
 }
 
 export function update (state: StoreState, id: DialogId, patch: Partial<EntryOptions>): StoreState {
   if (!state.entries.some((e) => e.id === id)) return state
-  return { entries: state.entries.map((e) => (e.id === id ? { ...e, options: { ...e.options, ...patch } } : e)) }
+  return { ...state, entries: state.entries.map((e) => (e.id === id ? { ...e, options: { ...e.options, ...patch } } : e)) }
+}
+
+export function addHost (state: StoreState, host: symbol): StoreState {
+  return { ...state, hosts: [...state.hosts, host] }
+}
+
+export function removeHost (state: StoreState, host: symbol): StoreState {
+  return { ...state, hosts: state.hosts.filter((h) => h !== host) }
 }
 
 export function promoteQueued (state: StoreState): StoreState {
   if (state.entries.some(isVisible)) return state
   const next = state.entries.find((e) => e.phase === 'queued')
   if (!next) return state
-  return { entries: state.entries.map((e) => (e === next ? { ...e, phase: 'open' } : e)) }
+  return { ...state, entries: state.entries.map((e) => (e === next ? { ...e, phase: 'open' } : e)) }
 }
 
 export function topmost (state: StoreState): Entry | undefined {
@@ -90,6 +100,8 @@ export interface Runtime {
   /** dialogs whose button is waiting on a Promise; Escape and outside clicks wait too */
   busy: Set<DialogId>
   pageSynced: boolean
+  /** open <Dialog> and <ConfirmDialog> elements, which live outside the store but lock scroll too */
+  inPlace: number
   watchingContainers: boolean
 }
 
@@ -106,6 +118,7 @@ export function runtime (): Runtime {
     blurred: null,
     busy: new Set(),
     pageSynced: false,
+    inPlace: 0,
     watchingContainers: false
   }
 }

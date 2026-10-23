@@ -12,6 +12,9 @@ export function ensureContainer (target: string | null): { target: string | null
     target = null
   }
   const { containers } = runtime()
+  // A mounted DialogHost renders the default container's dialogs inside the app, so there is
+  // no container to create and nothing to blur.
+  if (target === null && store.get().hosts.length > 0) return { target, blur: false }
   let container = containers.get(target)
   if (!container || !container.element.isConnected) {
     let element = document.getElementById(target ?? DEFAULT_ID)

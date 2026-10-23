@@ -1,10 +1,15 @@
 import { useId, useLayoutEffect, useSyncExternalStore } from 'react'
 import { DialogFrame } from './DialogFrame'
 import { closeDialog } from './lifecycle'
-import { store, type Entry } from './store'
+import { emptyState, store, type Entry } from './store'
 
-export function DialogStack ({ target }: { target: string | null }) {
-  const { entries } = useSyncExternalStore(store.subscribe, store.get, store.get)
+const serverState = () => emptyState
+
+export function DialogStack ({ target, host }: { target: string | null, host?: symbol }) {
+  const { entries, hosts } = useSyncExternalStore(store.subscribe, store.get, serverState)
+  // The default container yields to the last mounted DialogHost; a host only renders while it is last.
+  const active = host ? hosts[hosts.length - 1] === host : target !== null || hosts.length === 0
+  if (!active) return null
   return (
     <>
       {entries

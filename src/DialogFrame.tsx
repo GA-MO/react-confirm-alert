@@ -10,6 +10,7 @@ export interface DialogFrameProps {
   kind: DialogKind
   className: string
   panelClassName: string
+  label?: string | undefined
   labelledBy?: string | undefined
   describedBy?: string | undefined
   role: 'dialog' | 'alertdialog'
@@ -73,7 +74,8 @@ export function DialogFrame (props: DialogFrameProps) {
     e.stopPropagation()
   }
 
-  const isTop = () => !props.id || topmost(store.get())?.id === props.id
+  // In-place dialogs are not in the store and count as the top one.
+  const isTop = () => !props.id || !store.get().entries.some((e) => e.id === props.id) || topmost(store.get())?.id === props.id
   // Decided at cancel time: once the top dialog starts closing, the next one would look like the top.
   const mustStay = () => !isTop() || !props.closeOnEscape || isBusy()
 
@@ -104,6 +106,7 @@ export function DialogFrame (props: DialogFrameProps) {
   const shared = {
     className: props.className,
     role: props.role,
+    'aria-label': props.label,
     'aria-labelledby': props.labelledBy,
     'aria-describedby': props.describedBy,
     'data-rca': '',
