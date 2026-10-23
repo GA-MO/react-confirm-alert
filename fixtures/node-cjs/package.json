@@ -1,0 +1,12 @@
+{
+  "name": "fixture-node-cjs",
+  "private": true,
+  "scripts": {
+    "check": "node check.cjs"
+  },
+  "dependencies": {
+    "react-confirm-alert": "file:../.pack/react-confirm-alert.tgz",
+    "react": "^18",
+    "react-dom": "^18"
+  }
+}
