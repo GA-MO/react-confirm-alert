@@ -3,9 +3,8 @@ body.react-confirm-alert-body-element {
 }
 
 .react-confirm-alert-blur {
-  filter: url(#gaussian-blur);
-  filter: blur(2px);
-  -webkit-filter: blur(2px);
+  filter: blur(var(--rca-blur, 2px));
+  -webkit-filter: blur(var(--rca-blur, 2px));
 }
 
 .react-confirm-alert-overlay {
@@ -14,8 +13,8 @@ body.react-confirm-alert-body-element {
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: 99;
-  background: rgba(255, 255, 255, 0.9);
+  z-index: var(--rca-z-index, 99);
+  background: var(--rca-backdrop, rgba(255, 255, 255, 0.9));
   display: -webkit-flex;
   display: -moz-flex;
   display: -ms-flex;
@@ -25,21 +24,21 @@ body.react-confirm-alert-body-element {
   -ms-align-items: center;
   align-items: center;
   opacity: 0;
-  -webkit-animation: react-confirm-alert-fadeIn 0.5s 0.2s forwards;
-  -moz-animation: react-confirm-alert-fadeIn 0.5s 0.2s forwards;
-  -o-animation: react-confirm-alert-fadeIn 0.5s 0.2s forwards;
-  animation: react-confirm-alert-fadeIn 0.5s 0.2s forwards;
+  -webkit-animation: react-confirm-alert-fadeIn var(--rca-duration, 0.5s) var(--rca-easing, ease) var(--rca-delay, 0.2s) forwards;
+  -moz-animation: react-confirm-alert-fadeIn var(--rca-duration, 0.5s) var(--rca-easing, ease) var(--rca-delay, 0.2s) forwards;
+  -o-animation: react-confirm-alert-fadeIn var(--rca-duration, 0.5s) var(--rca-easing, ease) var(--rca-delay, 0.2s) forwards;
+  animation: react-confirm-alert-fadeIn var(--rca-duration, 0.5s) var(--rca-easing, ease) var(--rca-delay, 0.2s) forwards;
 }
 
 .react-confirm-alert-body {
-  font-family: Arial, Helvetica, sans-serif;
-  width: 400px;
-  padding: 30px;
+  font-family: var(--rca-font, Arial, Helvetica, sans-serif);
+  width: var(--rca-width, 400px);
+  padding: var(--rca-padding, 30px);
   text-align: left;
-  background: #fff;
-  border-radius: 10px;
-  box-shadow: 0 20px 75px rgba(0, 0, 0, 0.13);
-  color: #666;
+  background: var(--rca-bg, #fff);
+  border-radius: var(--rca-radius, 10px);
+  box-shadow: var(--rca-shadow, 0 20px 75px rgba(0, 0, 0, 0.13));
+  color: var(--rca-fg, #666);
 }
 
 .react-confirm-alert-svg {
@@ -69,15 +68,50 @@ body.react-confirm-alert-body-element {
 
 .react-confirm-alert-button-group > button {
   outline: none;
-  background: #333;
+  background: var(--rca-button-bg, #333);
   border: none;
   display: inline-block;
   padding: 6px 18px;
-  color: #eee;
-  margin-right: 10px;
-  border-radius: 5px;
+  color: var(--rca-button-fg, #eee);
+  margin-right: var(--rca-gap, 10px);
+  border-radius: var(--rca-button-radius, 5px);
   font-size: 12px;
   cursor: pointer;
+}
+
+/* Keyboard focus is visible again (B15); a mouse click shows no ring. */
+.react-confirm-alert-button-group > button:focus-visible {
+  outline: var(--rca-focus-ring, 2px solid Highlight);
+  outline-offset: 2px;
+}
+
+/* modal: true renders the overlay as a <dialog> in the top layer. Reset the browser's dialog box so it
+   looks like the v3 overlay, and never set display while it is closed. */
+dialog.react-confirm-alert-overlay {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  color: inherit;
+}
+
+dialog.react-confirm-alert-overlay:not([open]) {
+  display: none;
+}
+
+dialog.react-confirm-alert-overlay::backdrop {
+  background: transparent;
+}
+
+.react-confirm-alert [data-slot='message'] {
+  white-space: pre-line;
+}
+
+.react-confirm-alert:focus {
+  outline: none;
 }
 
 @-webkit-keyframes react-confirm-alert-fadeIn {
