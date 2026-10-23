@@ -20,6 +20,8 @@ jest.mock('react-confirm-alert', () => ({
 `confirmAlert` returns `void`, so this type-checks:
 
 ```ts
+import * as lib from 'react-confirm-alert'
+
 jest.spyOn(lib, 'confirmAlert').mockImplementation(() => {})
 ```
 

@@ -8,8 +8,8 @@ export function NavigateAway() {
   return (
     <button
       onClick={() => {
-        void confirm('This page changes in 2 seconds')
-        setTimeout(() => router.push('/docs/recipes/vite'), 2000)
+        const timer = setTimeout(() => router.push('/docs/recipes/vite'), 2000)
+        void confirm('This page changes in 2 seconds').then(() => clearTimeout(timer))
       }}
     >
       Open, then navigate
