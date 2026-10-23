@@ -1,6 +1,6 @@
 import { createContext, useContext } from 'react'
 import { runtime } from './store'
-import type { DialogClassNames, DialogDefaults, DialogSlot, StyleOptions } from './types'
+import type { DialogClassNames, DialogDefaults, DialogId, DialogSlot, StyleOptions } from './types'
 
 // The v3 class names, so v3 CSS overrides keep matching. Unstyled leaves them out.
 const builtIn: Partial<Record<DialogSlot, string>> = {
@@ -35,6 +35,9 @@ export const slotsFor = (layers: readonly StyleOptions[]): SlotProps => (slot, e
 
 export const SlotContext = createContext<SlotProps>(slotsFor([]))
 export const useSlot = () => useContext(SlotContext)
+
+// What DialogLayout needs from the frame around it: the id to mark busy and the id its title takes.
+export const FrameContext = createContext<{ id?: DialogId | undefined, titleId?: string | undefined, inBody?: boolean }>({})
 
 export function configureDialogs (defaults: DialogDefaults): void {
   runtime().defaults = defaults

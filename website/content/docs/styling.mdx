@@ -29,7 +29,7 @@ To follow the OS setting instead, set the class from `prefers-color-scheme` in y
 
 ## Your own content
 
-`<Dialog>` and `openDialog({ render })` render what you give them. To get the default look, use the same markup as `prompt`:
+Inside a dialog with the default look, plain `h1` to `h3`, `p`, `label`, `input`, `textarea`, `select` and `button` are styled with no class names. Those rules sit under `:where()`, so any class you add wins over them, and they still beat a reset such as Tailwind preflight. `DialogLayout` adds the body and the button row for you. To mark up the parts by hand, use the same markup as `prompt`:
 
 | Element | Markup |
 | --- | --- |
@@ -42,7 +42,7 @@ To follow the OS setting instead, set the class from `prefers-color-scheme` in y
 | Button row | `className="react-confirm-alert-button-group"` and `data-slot="actions"` |
 | Main button | `data-variant="primary"` or `data-variant="danger"` |
 
-A `data-slot="input"` control fills the width of the dialog and has a border. A `textarea` is at least 80px tall and resizes vertically. These rules come from the library CSS, so a CSS reset such as Tailwind preflight does not remove them.
+A `data-slot="input"` control fills the width of the dialog and has a border. A `textarea` is at least 80px tall and resizes vertically.
 
 ```tsx
 <Dialog open={open} onOpenChange={setOpen} aria-labelledby="note-title">
@@ -59,7 +59,7 @@ A `data-slot="input"` control fills the width of the dialog and has a border. A 
 </Dialog>
 ```
 
-A bare `<h1>` or `<textarea>` gets no style from the library. With Tailwind preflight it has no border and no heading size.
+A `data-slot` rule is more specific than the plain element rules, so use it when your own CSS would otherwise win.
 
 ## Data attributes
 

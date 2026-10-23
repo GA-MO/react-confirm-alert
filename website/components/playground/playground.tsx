@@ -7,16 +7,18 @@ import type { ShikiTransformer } from 'shiki'
 import { codeThemes } from '@/lib/code-themes'
 import { Colors, Nested, NoteDialog } from './dialogs'
 import { snippet } from './snippet'
+import { apis, examples, type Api } from '../custom-ui'
 
 type Log = { id: number, scenario: string, text: string }
 type Options = { title: string, message: string, danger: boolean, modal: boolean, closeOnEscape: boolean, closeOnClickOutside: boolean }
 type Run = (o: Options, log: (text: string) => void, go: (path: string) => void) => void | Promise<void>
-interface Scenario { id: string, label: string, group: string, run?: Run, inline?: true }
+interface Scenario { id: string, label: string, group: string, run?: Run, inline?: true, custom?: true }
 
 const wait = (ms: number) => new Promise<void>((r) => setTimeout(r, ms))
 const base = (o: Options) => ({ title: o.title, message: o.message, modal: o.modal, closeOnEscape: o.closeOnEscape, closeOnClickOutside: o.closeOnClickOutside })
 
 const scenarios: Scenario[] = [
+  ...examples.map((e): Scenario => ({ id: e.id, group: 'Custom UI', label: e.label, custom: true })),
   { id: 'confirm', group: 'Promise API', label: 'await confirm()', run: async (o, log) => log(`resolved ${await confirm({ ...base(o), tone: o.danger ? 'danger' : 'default' })}`) },
   { id: 'alert', group: 'Promise API', label: 'alert()', run: async (o, log) => { await alert(base(o)); log('resolved') } },
   { id: 'prompt', group: 'Promise API', label: 'prompt() with validate', run: async (o, log) => log(`resolved ${JSON.stringify(await prompt({ ...base(o), title: 'Your name', label: 'Name', validate: (v) => (v.trim() ? null : 'Required') }))}`) },
@@ -64,9 +66,13 @@ function Toggle ({ label, checked, onChange }: { label: string, checked: boolean
   )
 }
 
-export function Playground () {
+export function Playground ({ sources }: { sources: Record<string, string> }) {
   const router = useRouter()
-  const [active, setActive] = useState('confirm')
+  const [active, setActiveId] = useState(examples[0]!.id)
+  const [api, setApi] = useState<Api>(examples[0]!.first)
+  const example = examples.find((e) => e.id === active)
+  const setActive = (id: string) => { setActiveId(id); const e = examples.find((x) => x.id === id); if (e) setApi(e.first) }
+  const Variant = example?.variants[api]
   const [opts, setOpts] = useState<Options>({ title: 'Delete file?', message: 'This cannot be undone.', danger: false, modal: true, closeOnEscape: true, closeOnClickOutside: true })
   const [style, setStyle] = useState<StyleKey>('default')
   const [width, setWidth] = useState(400)
@@ -74,7 +80,7 @@ export function Playground () {
   const [inlineOpen, setInlineOpen] = useState(false)
   const scenario = scenarios.find((s) => s.id === active)!
   // Rebuilt on every change, so the panel always shows a complete component for the current options.
-  const code = snippet(active, opts, style, width)
+  const code = example ? sources[`${active}-${api}`] ?? '' : snippet(active, opts, style, width)
   // Lines that were not in the previous snippet get a brief tint (the class's CSS fades it out).
   const [shown, setShown] = useState({ code, changed: new Set<number>() })
   if (shown.code !== code) {
@@ -124,15 +130,30 @@ export function Playground () {
       <section className="flex min-w-0 flex-col gap-5">
         <header className="flex flex-wrap items-center justify-between gap-3">
           <h1 className="text-2xl font-bold">{scenario.label}</h1>
-          <button onClick={run} className="cursor-pointer rounded-lg bg-fd-primary px-5 py-2.5 font-medium text-fd-primary-foreground shadow-sm transition duration-150 ease-out-quint hover:-translate-y-px hover:shadow-md active:translate-y-0 active:scale-97">Open dialog</button>
+          {!example && <button onClick={run} className="cursor-pointer rounded-lg bg-fd-primary px-5 py-2.5 font-medium text-fd-primary-foreground shadow-sm transition duration-150 ease-out-quint hover:-translate-y-px hover:shadow-md active:translate-y-0 active:scale-97">Open dialog</button>}
         </header>
-        <div aria-live="polite" className="rounded-2xl bg-white p-6 dark:bg-fd-card shadow-sm ring-1 ring-zinc-950/5 dark:ring-white/10">
+        {example && Variant && (
+          <>
+            <div role="radiogroup" aria-label="Written with" className="flex flex-wrap gap-1 rounded-xl bg-fd-muted p-1">
+              {apis.map((a) => (
+                <button key={a.id} role="radio" aria-checked={api === a.id} onClick={() => setApi(a.id)}
+                  className="cursor-pointer rounded-lg px-3 py-1.5 font-mono text-xs text-fd-muted-foreground transition duration-150 hover:text-fd-foreground active:scale-97 aria-checked:bg-fd-background aria-checked:text-fd-foreground aria-checked:shadow-sm">
+                  {a.label}
+                </button>
+              ))}
+            </div>
+            <div className="example-preview flex min-h-40 flex-col items-center justify-center gap-3 rounded-2xl bg-fd-muted/40 px-6 py-10 ring-1 ring-zinc-950/5 dark:ring-white/10">
+              <Variant key={`${active}-${api}`} />
+            </div>
+          </>
+        )}
+        {!example && <div aria-live="polite" className="rounded-2xl bg-white p-6 dark:bg-fd-card shadow-sm ring-1 ring-zinc-950/5 dark:ring-white/10">
           <h2 className="mb-2 text-sm font-semibold">Results</h2>
           {logs.length === 0
             ? <p className="text-sm text-fd-muted-foreground">Open a dialog. What it resolves with shows up here.</p>
             : <ul className="flex flex-col gap-1 font-mono text-sm">{logs.map((l) => <li key={l.id} className="transition duration-300 starting:-translate-y-1 starting:opacity-0"><span className="text-fd-muted-foreground">{l.scenario}:</span> {l.text}</li>)}</ul>}
-        </div>
-        <fieldset className="flex flex-col gap-3 rounded-2xl bg-white p-6 dark:bg-fd-card shadow-sm ring-1 ring-zinc-950/5 dark:ring-white/10">
+        </div>}
+        {!example && <fieldset className="flex flex-col gap-3 rounded-2xl bg-white p-6 dark:bg-fd-card shadow-sm ring-1 ring-zinc-950/5 dark:ring-white/10">
           <legend className="float-left mb-1 w-full text-sm font-semibold">Options</legend>
           <Field label="Title"><input value={opts.title} onChange={(e) => set('title')(e.target.value)} className="w-full rounded-md border bg-transparent px-2 py-1.5 text-sm" /></Field>
           <Field label="Message"><input value={opts.message} onChange={(e) => set('message')(e.target.value)} className="w-full rounded-md border bg-transparent px-2 py-1.5 text-sm" /></Field>
@@ -140,7 +161,7 @@ export function Playground () {
           <Toggle label="modal (native <dialog>)" checked={opts.modal} onChange={set('modal')} />
           <Toggle label="closeOnEscape" checked={opts.closeOnEscape} onChange={set('closeOnEscape')} />
           <Toggle label="closeOnClickOutside" checked={opts.closeOnClickOutside} onChange={set('closeOnClickOutside')} />
-        </fieldset>
+        </fieldset>}
         <fieldset className="flex flex-col gap-3 rounded-2xl bg-white p-6 dark:bg-fd-card shadow-sm ring-1 ring-zinc-950/5 dark:ring-white/10">
           <legend className="float-left mb-1 w-full text-sm font-semibold">Styling</legend>
           <div role="radiogroup" className="grid grid-cols-2 gap-2">

@@ -44,16 +44,32 @@ export function Body ({ props, children }: { props: DialogRenderProps<any>, chil
   return (
     <div {...slot('body')}>
       {props.title && <h1 id={props.titleId} {...slot('title')}>{props.title}</h1>}
-      {props.message != null && <p id={props.descriptionId} {...slot('message')}>{props.message}</p>}
+      {props.message != null && (typeof props.message === 'object'
+        ? <div id={props.descriptionId} {...slot('message')}>{props.message}</div>
+        : <p id={props.descriptionId} {...slot('message')}>{props.message}</p>)}
+      {props.content}
       {children}
     </div>
   )
 }
 
+// Which button waits. While one does, the frame has data-busy and Escape and outside clicks wait too.
+export function useBusy (id: DialogId | undefined): [number | null, (index: number | null) => void] {
+  const [busy, setBusy] = useState<number | null>(null)
+  const mark = (index: number | null) => {
+    if (id) {
+      runtime().frames.get(id)?.frame.toggleAttribute('data-busy', index !== null)
+      if (index === null) runtime().busy.delete(id)
+      else runtime().busy.add(id)
+    }
+    setBusy(index)
+  }
+  return [busy, mark]
+}
+
 export function Buttons<R> ({ props, signal: getSignal, focus }: { props: DialogRenderProps<R>, signal: () => AbortSignal, focus: number }): ReactElement {
   const slot = useSlot()
-  const [busy, setBusy] = useState<number | null>(null)
-  const markBusy = (on: boolean) => runtime().frames.get(props.id)?.frame.toggleAttribute('data-busy', on)
+  const [busy, setBusy] = useBusy(props.id)
   const press = async (button: DialogButton<R>, index: number) => {
     const signal = getSignal()
     let waiting = false
@@ -65,16 +81,11 @@ export function Buttons<R> ({ props, signal: getSignal, focus }: { props: Dialog
       }
       waiting = true
       setBusy(index)
-      markBusy(true)
-      runtime().busy.add(props.id)
       if ((await outcome) !== false && !signal.aborted) props.close(button.value as R)
     } catch (error) {
       console.error(error)
     } finally {
-      if (!waiting) return
-      runtime().busy.delete(props.id)
-      markBusy(false)
-      if (!signal.aborted) setBusy(null)
+      if (waiting) setBusy(null)
     }
   }
   return (

@@ -1,4 +1,4 @@
-import type { ButtonHTMLAttributes, ComponentType, InputHTMLAttributes, KeyboardEvent, ReactNode } from 'react'
+import type { ButtonHTMLAttributes, ComponentType, InputHTMLAttributes, KeyboardEvent, MouseEvent, ReactNode } from 'react'
 
 export type DialogId = string & { readonly __brand: 'DialogId' }
 
@@ -26,6 +26,7 @@ export interface DialogRenderProps<R> {
   descriptionId: string
   title?: ReactNode | undefined
   message?: ReactNode | undefined
+  content?: ReactNode | undefined
   buttons: readonly DialogButton<R>[]
   close: (value: R) => void
   dismiss: () => void
@@ -54,7 +55,7 @@ export interface DialogDefaults extends StyleOptions {
   lockScroll?: boolean | undefined
   labels?: { ok?: ReactNode, confirm?: ReactNode, cancel?: ReactNode, submit?: ReactNode } | undefined
   /** separate defaults for confirmAlert, which otherwise keeps v3 behavior */
-  confirmAlert?: (StyleOptions & { modal?: boolean | undefined, strategy?: Strategy | undefined }) | undefined
+  confirmAlert?: (StyleOptions & { modal?: boolean | undefined, strategy?: Strategy | undefined, skin?: boolean | undefined }) | undefined
 }
 
 /** Attributes on the frame, for CSS and Tailwind data-* variants. A type only, kept in step by tests. */
@@ -80,6 +81,8 @@ export interface ButtonDataAttributes extends SlotDataAttributes {
 export interface BaseOptions extends StyleOptions {
   title?: ReactNode | undefined
   message?: ReactNode | undefined
+  /** your own content between the message and the buttons */
+  content?: ReactNode | undefined
   closeOnEscape?: boolean | undefined
   closeOnClickOutside?: boolean | undefined
   strategy?: Strategy | undefined
@@ -133,6 +136,8 @@ export interface EntryOptions extends BaseOptions {
   onClickOutside?: (() => void) | undefined
   /** @internal the v3 API: Escape from document keydown, blur on body.children[0] */
   legacy?: boolean | undefined
+  /** @internal confirmAlert opted into the new default look */
+  skin?: boolean | undefined
   /** @internal confirm's tone, shown as data-tone on the frame */
   tone?: 'default' | 'danger' | undefined
   /** @internal v3 callback, runs before afterClose when the dialog unmounts */
@@ -145,4 +150,18 @@ export interface DialogHandle<R> {
   close: (value: R) => void
   dismiss: () => void
   update: (patch: Partial<Omit<CustomOptions<R>, 'kind'>>) => void
+}
+
+export interface DialogAction extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'onClick' | 'children'> {
+  label: ReactNode
+  variant?: 'primary' | 'secondary' | 'danger' | undefined
+  /** return a Promise to show the button as busy until it settles; the dialog stays open */
+  onClick?: ((event: MouseEvent<HTMLButtonElement>) => void | Promise<unknown>) | undefined
+}
+
+export interface DialogLayoutProps {
+  title?: ReactNode | undefined
+  message?: ReactNode | undefined
+  actions?: readonly DialogAction[] | undefined
+  children?: ReactNode | undefined
 }

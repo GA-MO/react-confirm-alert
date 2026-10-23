@@ -48,9 +48,24 @@ Renders in place, driven by `open`, so its content reads your state. Add `data-s
 <include meta='title="edit-note.tsx"'>../../components/examples/edit-note.tsx</include>
 </Example>
 
+## DialogLayout
+
+`<DialogLayout title message actions>{children}</DialogLayout>` renders the default layout around your content: title, message, children, then a row of buttons. Use it in `openDialog` render, in `<Dialog>` and in `customUI`. An action takes `label`, `variant` (`'primary'`, `'secondary'` or `'danger'`), `onClick` and any button attribute such as `type` or `disabled`. When `onClick` returns a Promise, the button is busy until it settles, and the dialog stays open. A `DialogLayout` title names the dialog when it has no `aria-label`.
+
+```tsx
+openDialog<string>({
+  render: ({ close, dismiss }) => (
+    <DialogLayout
+      title="Pick a colour"
+      actions={[{ label: 'Cancel', onClick: dismiss }, { label: 'Blue', variant: 'primary', onClick: () => close('blue') }]}
+    />
+  ),
+})
+```
+
 ## Options every dialog takes
 
-`title`, `message`, `closeOnEscape`, `closeOnClickOutside`, `strategy` (`'stack'` or `'queue'`), `modal`, `signal`, `onKeyDown`, `afterClose`, `unstyled` and `classNames`.
+`title`, `message` (text or JSX), `content`, `closeOnEscape`, `closeOnClickOutside`, `strategy` (`'stack'` or `'queue'`), `modal`, `signal`, `onKeyDown`, `afterClose`, `unstyled` and `classNames`.
 
 ## openDialog, closeDialog, closeAll
 
@@ -60,10 +75,16 @@ Renders in place, driven by `open`, so its content reads your state. Add `data-s
 
 `<DialogHost dismissKey={pathname} />` renders dialogs inside your tree and closes them when `dismissKey` changes. `<ConfirmDialog kind="confirm" open onOpenChange />` is `confirm` rendered in place.
 
+`content` renders your own JSX between the message and the buttons of `confirm`, `alert` and `prompt`. In `prompt` it sits above the input, and `validate` works as before.
+
 ## confirmAlert (3.0 API)
 
-`confirmAlert(options): void` takes every 3.0 option, plus `modal`, `strategy`, `unstyled` and `classNames`. Its defaults keep 3.0 behavior.
+`confirmAlert(options): void` takes every 3.0 option, plus `modal`, `strategy`, `unstyled`, `classNames` and `skin`. Its defaults keep 3.0 behavior.
+
+## customUI (3.0)
+
+`customUI: ({ title, message, buttons, onClose }) => ReactNode` replaces the whole dialog content. It still works as in 3.0. With `skin: true`, the content sits in the new dialog body and plain HTML gets the default look. See [Custom UI](/docs/custom-ui).
 
 ## configureDialogs
 
-Sets app-wide defaults: `modal`, `strategy`, `closeOnEscape`, `closeOnClickOutside`, `lockScroll`, `labels`, `unstyled`, `classNames`, and separate `confirmAlert` defaults.
+Sets app-wide defaults: `modal`, `strategy`, `closeOnEscape`, `closeOnClickOutside`, `lockScroll`, `labels`, `unstyled`, `classNames`, and separate `confirmAlert` defaults, including `skin`.

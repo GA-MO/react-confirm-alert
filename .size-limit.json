@@ -8,7 +8,7 @@
       "react-dom"
     ],
     "gzip": true,
-    "limit": "3.7 kB"
+    "limit": "3.8 kB"
   },
   {
     "name": "import { confirm } (ESM)",
@@ -19,7 +19,7 @@
       "react-dom"
     ],
     "gzip": true,
-    "limit": "4 kB"
+    "limit": "4.1 kB"
   },
   {
     "name": "whole package (CJS)",
@@ -29,14 +29,14 @@
       "react-dom"
     ],
     "gzip": true,
-    "limit": "6.1 kB"
+    "limit": "6.6 kB"
   },
   {
     "name": "CSS",
     "path": "src/react-confirm-alert.css",
     "gzip": true,
     "rolldown": false,
-    "limit": "2.5 kB"
+    "limit": "2.85 kB"
   },
   {
     "name": "v3.0.6 baseline: import { confirmAlert } (CJS, includes prop-types)",

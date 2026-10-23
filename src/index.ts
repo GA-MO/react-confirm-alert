@@ -5,13 +5,16 @@ export { DialogHost, useDialog } from './DialogHost'
 export { configureDialogs } from './classNames'
 export type { DialogHostProps } from './DialogHost'
 export { ConfirmDialog, Dialog } from './Dialog'
+export { DialogLayout } from './DialogLayout'
 export type { ConfirmDialogProps, DialogProps } from './Dialog'
 export type {
   AlertOptions,
   BaseOptions,
   ButtonContext,
   ButtonDataAttributes,
+  DialogAction,
   DialogClassNames,
+  DialogLayoutProps,
   DialogDataAttributes,
   DialogDefaults,
   DialogSlot,

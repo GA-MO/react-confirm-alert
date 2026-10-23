@@ -45,3 +45,24 @@ test('README: Tailwind classNames example', async () => {
   await vi.waitFor(() => buttonByText('Confirm'))
   expect(buttonByText('Confirm').className).toBe('rounded-full bg-red-500')
 })
+
+test('README: Custom UI examples', async () => {
+  expect(readme).toContain("<DialogLayout title=\"Pick a colour\" actions={[{ label: 'Cancel', onClick: dismiss }, { label: 'Blue', variant: 'primary', onClick: () => close('blue') }]}>")
+  const colour = lib.openDialog({
+    render: ({ close, dismiss }: any) => (
+      <lib.DialogLayout title='Pick a colour' actions={[{ label: 'Cancel', onClick: dismiss }, { label: 'Blue', variant: 'primary', onClick: () => close('blue') }]}>
+        <p>Used for the team badge.</p>
+      </lib.DialogLayout>
+    )
+  }).result
+  await vi.waitFor(() => buttonByText('Blue'))
+  buttonByText('Blue').click()
+  await expect(colour).resolves.toBe('blue')
+
+  expect(readme).toContain('  skin: true,\n  customUI: ({ onClose }) => (')
+  lib.confirmAlert({ skin: true, customUI: ({ onClose }: any) => <><h1>Leave the board?</h1><button onClick={onClose}>Stay</button></> })
+  await vi.waitFor(() => buttonByText('Stay'))
+  expect(overlay()!.hasAttribute('data-skin')).toBe(true)
+  buttonByText('Stay').click()
+  await vi.waitFor(() => expect(overlay()).toBeNull())
+})
