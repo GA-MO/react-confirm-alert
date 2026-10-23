@@ -6,7 +6,14 @@ export function Try({ run, children }: { run: () => Promise<unknown>, children: 
   const [result, setResult] = useState<string>()
   return (
     <div className="try">
-      <button onClick={async () => setResult(JSON.stringify(await run()) ?? 'undefined')}>{children}</button>
+      <button
+        onClick={() => run().then(
+          (value) => setResult(JSON.stringify(value) ?? 'undefined'),
+          (error: unknown) => setResult(`error: ${String(error)}`),
+        )}
+      >
+        {children}
+      </button>
       <output>{result && `→ ${result}`}</output>
     </div>
   )

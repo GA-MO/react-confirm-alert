@@ -36,13 +36,13 @@ html > body[data-scroll-locked] {
 }
 :is(.example-preview, .gallery-tile) output { @apply font-mono text-xs text-zinc-700; }
 :is(.example-preview, .gallery-tile) output:not(:empty) { @apply animate-rise rounded-md bg-white px-2 py-1 ring-1 ring-zinc-200; }
-.example-preview output:empty::before { content: 'Press the button to see what it returns'; @apply font-sans text-zinc-500; }
+.example-preview .try output:empty::before { content: 'Press the button to see what it returns'; @apply font-sans text-zinc-500; }
 .dark :is(.example-preview, .gallery-tile) .row { @apply bg-zinc-900 ring-white/10; }
 .dark :is(.example-preview, .gallery-tile) .row > span { @apply text-zinc-100; }
 .dark :is(.example-preview, .gallery-tile) .row > button { @apply text-zinc-300 ring-white/15 hover:bg-white/5 hover:text-white; }
 .dark :is(.example-preview, .gallery-tile) output { @apply text-zinc-200; }
 .dark :is(.example-preview, .gallery-tile) output:not(:empty) { @apply bg-zinc-900 ring-white/10; }
-.dark .example-preview output:empty::before { @apply text-zinc-400; }
+.dark .example-preview .try output:empty::before { @apply text-zinc-400; }
 /* Styling examples render a bare trigger <button>, or one inside a data-theme wrapper. */
 /* A Try trigger: its output sits under the button in a preview and beside it in a gallery card. */
 .try { @apply flex flex-col items-center gap-3; }
