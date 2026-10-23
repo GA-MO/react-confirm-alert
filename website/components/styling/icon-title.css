@@ -1,0 +1,9 @@
+.title-icon {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.title-icon svg {
+  flex: none;
+  color: #dc2626;
+}

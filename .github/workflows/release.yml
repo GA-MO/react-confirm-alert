@@ -25,13 +25,48 @@ jobs:
           version: npm run version-packages
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  changes:
+    # A push that only bumps versions and release notes (the Version Packages merge) has the same code
+    # as the push before it, which already ran the full suite. code=false lets verify skip it.
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    outputs:
+      code: ${{ steps.diff.outputs.code }}
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - id: diff
+        env: { BEFORE: '${{ github.event.before }}' }
+        run: |
+          set -euo pipefail
+          code=true
+          # Equal once the root version fields are removed from both sides.
+          same='const { execFileSync } = require("child_process")
+            const strip = (text, lock) => { const j = JSON.parse(text); delete j.version; if (lock) delete j.packages[""].version; return JSON.stringify(j) }
+            for (const f of ["package.json", "package-lock.json"]) {
+              const before = execFileSync("git", ["show", `${process.env.BEFORE}:${f}`], { encoding: "utf8" })
+              if (strip(before, f !== "package.json") !== strip(require("fs").readFileSync(f, "utf8"), f !== "package.json")) process.exit(1)
+            }'
+          if git cat-file -e "$BEFORE^{commit}" 2>/dev/null; then
+            other=$(git diff --name-only "$BEFORE" HEAD | grep -vxE 'package\.json|package-lock\.json|CHANGELOG\.md|\.changeset/.*' || true)
+            if [ -z "$other" ] && node -e "$same"; then code=false; fi
+          fi
+          echo "code=$code" | tee -a "$GITHUB_OUTPUT"
   verify:
-    # The full suite on every push to master; publish waits for it.
+    # The full suite on every push to master that changes code; publish waits for it.
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
     uses: ./.github/workflows/test-full.yml
   publish:
-    # Runs once no changeset is pending, i.e. after the Version Packages PR is merged.
-    needs: [version, verify]
-    if: needs.version.outputs.hasChangesets == 'false'
+    # Runs once no changeset is pending, i.e. after the Version Packages PR is merged. A skipped verify
+    # counts only when changes reported no code change; a failed or cancelled one blocks publish.
+    needs: [version, changes, verify]
+    if: >-
+      !cancelled() && needs.version.result == 'success' && needs.changes.result == 'success'
+      && (needs.verify.result == 'success' || (needs.verify.result == 'skipped' && needs.changes.outputs.code == 'false'))
+      && needs.version.outputs.hasChangesets == 'false'
     runs-on: ubuntu-latest   # trusted publishing does not support self-hosted runners
     timeout-minutes: 15
     environment: npm-publish # must match the trusted publisher on npmjs; needs the owner's approval
