@@ -25,18 +25,13 @@ body.react-confirm-alert-body-element {
 .react-confirm-alert-body {
   font-family: var(--rca-font, Arial, Helvetica, sans-serif);
   width: var(--rca-width, 400px);
+  max-width: calc(100vw - 92px);
   padding: var(--rca-padding, 30px);
   text-align: left;
   background: var(--rca-bg, #fff);
   border-radius: var(--rca-radius, 10px);
   box-shadow: var(--rca-shadow, 0 20px 75px rgba(0, 0, 0, 0.13));
   color: var(--rca-fg, #666);
-}
-
-.react-confirm-alert-svg {
-  position: absolute;
-  top: 0;
-  left: 0;
 }
 
 .react-confirm-alert-body > h1 {
