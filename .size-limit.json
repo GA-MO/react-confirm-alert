@@ -11,6 +11,17 @@
     "limit": "2.5 kB"
   },
   {
+    "name": "import { confirm } (ESM)",
+    "path": "dist/index.esm.js",
+    "import": "{ confirm }",
+    "ignore": [
+      "react",
+      "react-dom"
+    ],
+    "gzip": true,
+    "limit": "3 kB"
+  },
+  {
     "name": "whole package (CJS)",
     "path": "lib/index.js",
     "ignore": [
