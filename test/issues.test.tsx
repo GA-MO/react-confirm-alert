@@ -43,12 +43,17 @@ test('#29 focus moves into the dialog and Tab reaches its buttons, not the page 
   buttonByText('Cancel').click()
 })
 
-test('#31 with modal: true the dialog sits above a Bootstrap modal (z-index 1050)', async () => {
+test('#31 with modal: true (or --rca-z-index) the dialog sits above a Bootstrap modal (z-index 1050)', async () => {
   // React-Bootstrap portals its modal to the end of body, outside the app root that v3 blurs.
   const modal = document.createElement('div')
   modal.style.cssText = 'position:fixed;inset:0;z-index:1050;background:rgba(0,0,0,.3)'
   document.body.append(modal)
   onTestFinished(() => modal.remove())
+  // Without showModal there is no top layer, so the v3 overlay is raised with --rca-z-index instead.
+  if (typeof HTMLDialogElement.prototype.showModal !== 'function') {
+    document.documentElement.style.setProperty('--rca-z-index', '2000')
+    onTestFinished(() => document.documentElement.style.removeProperty('--rca-z-index'))
+  }
   lib.confirmAlert({ title: 'Above', modal: true })
   await waitForOverlay()
   await new Promise((resolve) => setTimeout(resolve, 800))

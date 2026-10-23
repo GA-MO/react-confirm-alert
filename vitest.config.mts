@@ -24,6 +24,7 @@ export default defineConfig({
   },
   test: {
     include: ['test/**/*.test.{ts,tsx}'],
+    setupFiles: process.env.RCA_NO_SHOWMODAL ? ['test/setup-no-showmodal.ts'] : [],
     browser: {
       enabled: true,
       headless: true,
