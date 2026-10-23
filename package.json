@@ -9,7 +9,8 @@
     "prepublishOnly": "npm run build",
     "test": "vitest run",
     "test:fixtures": "node fixtures/run.mjs",
-    "test:types": "tsc -p tsconfig.json && tsc -p tsconfig.test-d.json"
+    "test:types": "tsc -p tsconfig.json && tsc -p tsconfig.test-d.json",
+    "docs:build": "npm run build --prefix website"
   },
   "repository": {
     "type": "git",
