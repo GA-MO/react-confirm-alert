@@ -1,5 +1,22 @@
 # react-confirm-alert
 
+## 3.3.0
+
+### Minor Changes
+
+- [#106](https://github.com/GA-MO/react-confirm-alert/pull/106) [`ade17fa`](https://github.com/GA-MO/react-confirm-alert/commit/ade17fa0c5cc5cf043eafbdcd502f0ecdc89ca62) Thanks [@GA-MO](https://github.com/GA-MO)! - Custom UI gets the default look with no class names. Inside a dialog with the new look, plain `h1` to `h3`, `p`, `label`, `input`, `textarea`, `select` and `button` are styled under `:where()`, so any class you add wins and Tailwind v4 preflight does not strip them. Radios and checkboxes take the skin accent colour. `unstyled: true` turns them off.
+  
+  - `DialogLayout` renders a title, a message, your content and a row of actions. An action whose `onClick` returns a Promise is busy until it settles.
+  - `confirm`, `alert` and `prompt` take `content`: your JSX between the message and the buttons. `message` can be JSX.
+  - `confirmAlert({ skin: true })` and `configureDialogs({ confirmAlert: { skin: true } })` give `confirmAlert`, including `customUI`, the new look. Without `skin`, `confirmAlert` keeps the 3.0 look.
+  - The playground opens on Custom UI examples, and the docs have a Custom UI page.
+  
+  Size budgets grow to match: `confirmAlert` 3.8 kB, `confirm` 4.1 kB, the CJS bundle 6.6 kB and the CSS 2.95 kB (gzip). The bytes are the skin option, `content`, `DialogLayout` and the plain element rules, which repeat the button hover rules for plain buttons.
+
+### Patch Changes
+
+- [#106](https://github.com/GA-MO/react-confirm-alert/pull/106) [`23049b5`](https://github.com/GA-MO/react-confirm-alert/commit/23049b54211e68f26e79b8fc4b85930d1f0711f5) Thanks [@GA-MO](https://github.com/GA-MO)! - A `textarea` with `data-slot="input"` in `<Dialog>` or `openDialog` now fills the width, is at least 80px tall and resizes vertically. The dark theme sets `color-scheme: dark`, so a `select`'s option list and scrollbars are dark too. The docs and playground examples mark up their content with `data-slot`, so their fields keep a visible border under Tailwind preflight, and the Styling page lists the slots.
+
 ## 3.2.1
 
 ### Patch Changes
