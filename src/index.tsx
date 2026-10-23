@@ -1,4 +1,4 @@
-import React, { Component, type ButtonHTMLAttributes, type ReactNode } from 'react'
+import { Component, type ButtonHTMLAttributes, type MouseEvent as ReactMouseEvent, type ReactElement, type ReactNode } from 'react'
 import { createRoot, type Root } from 'react-dom/client'
 
 export type ReactConfirmAlertButton = {
@@ -74,7 +74,7 @@ export default class ReactConfirmAlert extends Component<ReactConfirmAlertProps>
     this.close()
   }
 
-  handleClickOverlay = (e: React.MouseEvent<HTMLDivElement>) => {
+  handleClickOverlay = (e: ReactMouseEvent<HTMLDivElement>) => {
     const { closeOnClickOutside, onClickOutside } = this.props
     const isClickOutside = e.target === this.overlay
 
@@ -133,7 +133,7 @@ export default class ReactConfirmAlert extends Component<ReactConfirmAlertProps>
     return customUI!(dataCustomUI)
   }
 
-  render () {
+  render (): ReactElement {
     const { title, message, buttons, childrenElement, customUI, overlayClassName } = this.props
 
     return (
