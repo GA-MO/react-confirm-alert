@@ -1,20 +1,15 @@
 'use client'
-import { createContext, useContext } from 'react'
-import { alert, DialogHost } from 'react-confirm-alert'
+import { useTheme } from 'next-themes'
+import { alert } from 'react-confirm-alert'
 
-const Plan = createContext('Free')
-
-function PlanName() {
-  return <p>You are on the {useContext(Plan)} plan.</p>
+function ThemeName() {
+  return <p>This site is in {useTheme().resolvedTheme} mode.</p>
 }
 
-export function ShowPlan() {
+export function ShowTheme() {
   return (
-    <Plan.Provider value="Pro">
-      <button onClick={() => alert({ content: <PlanName /> })}>
-        Show plan
-      </button>
-      <DialogHost />
-    </Plan.Provider>
+    <button onClick={() => alert({ content: <ThemeName /> })}>
+      Show theme
+    </button>
   )
 }

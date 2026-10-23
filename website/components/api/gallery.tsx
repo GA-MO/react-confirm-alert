@@ -10,7 +10,7 @@ import { SubmitOrder } from './confirm-alert'
 import { LeavePage } from './confirm-dialog'
 import { ShowTerms } from './custom-ui'
 import { EditNote } from './dialog'
-import { ShowPlan } from './dialog-host'
+import { ShowTheme } from './dialog-host'
 import { renameWorkspace } from './dialog-layout'
 import { pickPlan } from './open-dialog'
 import { renameFile } from './prompt'
@@ -19,7 +19,7 @@ import { publish } from './wait'
 const cancel = { label: 'Cancel' }
 
 // The preview resets the labels, so the Thai ones stay in this one example.
-const askInThaiOnce = () => askInThai().finally(() => configureDialogs({}))
+export const askInThaiOnce = () => askInThai().finally(() => configureDialogs({}))
 
 // Same order and anchors as the headings in content/docs/api.mdx.
 // Each picture repeats its example's options, so the card shows the dialog the button opens.
@@ -129,10 +129,10 @@ export const apiExamples: GalleryItem[] = [
     id: 'dialoghost-and-usedialog',
     label: 'DialogHost',
     change: 'Dialogs read your providers',
-    Demo: ShowPlan,
+    Demo: ShowTheme,
     picture: {
       kind: 'alert',
-      content: <p>You are on the Pro plan.</p>,
+      content: <p>This site is in light mode.</p>,
       buttons: [{ label: 'OK', variant: 'primary' }],
     },
   },

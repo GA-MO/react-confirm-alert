@@ -59,6 +59,8 @@ html > body[data-scroll-locked] {
 /* Reference tables: a variable name stays on one line, and a narrow screen scrolls the table in its frame. */
 .var-table td:first-child { white-space: nowrap; }
 @media (max-width: 640px) { .var-table table { min-width: 40rem; } }
+/* API tables keep each type on one line too; the last column wraps. */
+.api-table td:not(:last-child) code { white-space: nowrap; }
 
 /* Code sits apart from the grey page: white in light, a raised grey in dark (bg in lib/code-themes.json). */
 figure.shiki { background: var(--shiki-light-bg); }

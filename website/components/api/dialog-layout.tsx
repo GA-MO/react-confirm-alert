@@ -1,7 +1,7 @@
 'use client'
 import { DialogLayout, openDialog } from 'react-confirm-alert'
 
-const save = () => new Promise((done) => setTimeout(done, 1500))
+const save = () => new Promise((r) => setTimeout(r, 1500))
 
 export const renameWorkspace = () =>
   openDialog({
