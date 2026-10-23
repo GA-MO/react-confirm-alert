@@ -1,11 +1,13 @@
 import { vi } from 'vitest'
 
+declare const __RCA_ENTRY__: string
+
 let instance = 0
 
 // Each test gets its own copy of the module, so v3's module-level `root` never leaks between tests.
 export async function loadV3(): Promise<any> {
   instance += 1
-  return import(/* @vite-ignore */ `/src/index.js?instance=${instance}`)
+  return import(/* @vite-ignore */ `/${__RCA_ENTRY__}?instance=${instance}`)
 }
 
 export function setupPage() {
