@@ -252,9 +252,6 @@ dialog.react-confirm-alert-overlay::backdrop {
   white-space: nowrap;
   transition: background-color 150ms, transform 150ms;
 }
-.react-confirm-alert-overlay[data-skin] .react-confirm-alert-button-group > button:hover {
-  background: var(--_hover);
-}
 .react-confirm-alert-overlay[data-skin] .react-confirm-alert-button-group > [data-variant=primary] {
   border-color: transparent;
   background: var(--rca-button-bg, var(--_primary));
@@ -265,8 +262,14 @@ dialog.react-confirm-alert-overlay::backdrop {
   background: var(--rca-danger, var(--_danger));
   color: #fff;
 }
-.react-confirm-alert-overlay[data-skin] .react-confirm-alert-button-group > :is([data-variant=primary],[data-variant=danger]):hover {
-  opacity: 0.9;
+.react-confirm-alert-overlay[data-skin] .react-confirm-alert-button-group > :not([data-variant=primary],[data-variant=danger]):enabled:hover {
+  background: var(--_hover);
+}
+.react-confirm-alert-overlay[data-skin] .react-confirm-alert-button-group > [data-variant=primary]:enabled:hover {
+  background: var(--rca-button-bg-hover, color-mix(in srgb, var(--rca-button-bg, var(--_primary)) 85%, #000));
+}
+.react-confirm-alert-overlay[data-skin] .react-confirm-alert-button-group > [data-variant=danger]:enabled:hover {
+  background: var(--rca-danger-hover, color-mix(in srgb, var(--rca-danger, var(--_danger)) 85%, #000));
 }
 .react-confirm-alert-overlay[data-skin] .react-confirm-alert-button-group > button:active {
   transform: scale(0.97);
@@ -275,13 +278,15 @@ dialog.react-confirm-alert-overlay::backdrop {
   outline: var(--rca-focus-ring, 2px solid var(--_ring));
   outline-offset: 2px;
 }
-.react-confirm-alert-overlay[data-skin] .react-confirm-alert-button-group > button:disabled {
+/* Not faded: white on a faded red is below 4.5:1. */
+.react-confirm-alert-overlay[data-skin] .react-confirm-alert-button-group > button:disabled:not([aria-busy=true]) {
   cursor: default;
-  opacity: 0.6;
+  border-color: var(--rca-border, var(--_border));
+  background: var(--rca-bg, var(--_bg));
+  color: var(--rca-fg, var(--_fg));
 }
 .react-confirm-alert-overlay[data-skin] .react-confirm-alert-button-group > button[aria-busy=true] {
   cursor: progress;
-  opacity: 1;
 }
 .react-confirm-alert-overlay[data-skin] .react-confirm-alert-button-group > button[aria-busy=true]::before {
   content: '';
