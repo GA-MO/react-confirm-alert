@@ -24,7 +24,8 @@ export function FeedbackForm() {
                 <label htmlFor="details">Details</label>
                 <textarea id="details" data-autofocus required />
                 <label>
-                  <input type="checkbox" defaultChecked /> You can email me about this
+                  <input type="checkbox" defaultChecked />{' '}
+                  You can email me about this
                 </label>
               </DialogLayout>
             </form>
