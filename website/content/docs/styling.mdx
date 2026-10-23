@@ -1,0 +1,29 @@
+---
+title: Styling
+description: CSS variables, classNames per slot, data attributes and unstyled.
+---
+
+## CSS variables
+
+The default CSS reads every value from a variable with the v3 value as its fallback:
+`--rca-width`, `--rca-padding`, `--rca-radius`, `--rca-bg`, `--rca-fg`, `--rca-shadow`, `--rca-font`, `--rca-gap`, `--rca-backdrop`, `--rca-blur`, `--rca-z-index`, `--rca-button-bg`, `--rca-button-fg`, `--rca-button-radius`, `--rca-focus-ring`, `--rca-duration`, `--rca-delay`, `--rca-easing`.
+
+```css
+:root { --rca-width: 28rem; --rca-button-bg: #111; }
+```
+
+## Slots
+
+`classNames` takes a class per slot: `dialog`, `panel`, `body`, `title`, `message`, `actions`, `button`, `field`, `label`, `input`, `error`. Classes add up in this order: the v3 class (unless `unstyled`), `configureDialogs`, the call, then a v3 button `className`.
+
+## Data attributes
+
+The frame has `data-rca`, `data-state` (`open` or `closing`), `data-kind`, `data-tone`, `data-depth`, `data-topmost` and, while a button waits, `data-busy`. Every slot has `data-slot`; buttons have `data-variant`.
+
+## Unstyled
+
+`unstyled: true` drops every `react-confirm-alert-*` class and inline style. Behavior stays: focus, Escape, outside clicks, waiting for exit animations. With `unstyled`, lock scroll in your own CSS.
+
+## Motion
+
+Closing waits for animations and transitions on the frame, its `::backdrop` and the panel, so an exit transition on `[data-state='closing']` plays out. `prefers-reduced-motion: reduce` turns the default fade-in off.

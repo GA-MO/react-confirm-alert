@@ -1,0 +1,34 @@
+---
+title: Migrate from v3
+description: Nothing breaks on upgrade. Each step after that is optional.
+---
+
+## What stays the same
+
+`confirmAlert(options)` and every v3 option, the default export, `react-confirm-alert/src/react-confirm-alert.css`, all class names, `lib/index.js`, the typings path, and the timing: a button calls `onClick`, then `willUnmount`, then `afterClose`, before the click returns.
+
+## What changes on its own (bug fixes)
+
+- The blur shows on every open, not only the first (#77).
+- Pressing inside the dialog and releasing outside no longer closes it (#92).
+- Focus moves into the dialog and back (#29). Buttons show a ring for keyboard focus.
+- Calling `confirmAlert` while one is open no longer logs a `createRoot` error, and the replaced dialog gets `willUnmount` and `afterClose` (#82).
+
+## Optional steps
+
+1. Place `<DialogHost />` inside your providers so dialogs see context.
+2. `configureDialogs({ confirmAlert: { modal: true, strategy: 'stack' } })` gives `confirmAlert` the native modal and stacking. Check toasts and widgets that should sit above dialogs.
+3. Move call sites to `if (await confirm(...))`.
+4. Use `<Dialog open>` where the dialog needs the component's state.
+
+Before:
+
+```js
+confirmAlert({ title: 'Delete?', buttons: [{ label: 'Yes', onClick: remove }, { label: 'No' }] })
+```
+
+After:
+
+```js
+if (await confirm({ title: 'Delete?', confirmLabel: 'Yes', cancelLabel: 'No' })) remove()
+```
