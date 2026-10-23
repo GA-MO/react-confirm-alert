@@ -162,6 +162,7 @@ dialog.react-confirm-alert-overlay::backdrop {
 }
 .react-confirm-alert-overlay[data-skin] .react-confirm-alert {
   max-width: 100%;
+  animation: rca-pop var(--rca-duration, 200ms) var(--rca-easing, cubic-bezier(0.32, 0.72, 0, 1)) both;
 }
 .react-confirm-alert-overlay[data-skin] .react-confirm-alert-body {
   box-sizing: border-box;
@@ -176,12 +177,11 @@ dialog.react-confirm-alert-overlay::backdrop {
   font-family: var(--rca-font, inherit);
   font-size: 14px;
   line-height: 1.5;
-  animation: rca-pop var(--rca-duration, 200ms) var(--rca-easing, cubic-bezier(0.32, 0.72, 0, 1)) both;
 }
 .react-confirm-alert-overlay[data-skin][data-state=closing] {
   animation: rca-out 150ms ease-in both;
 }
-.react-confirm-alert-overlay[data-skin][data-state=closing] .react-confirm-alert-body {
+.react-confirm-alert-overlay[data-skin][data-state=closing] .react-confirm-alert {
   animation: rca-pop-out 150ms ease-in both;
 }
 .react-confirm-alert-overlay[data-skin] [data-slot=title] {
@@ -302,7 +302,7 @@ dialog.react-confirm-alert-overlay::backdrop {
 }
 @media (prefers-reduced-motion: reduce) {
   .react-confirm-alert-overlay[data-skin],
-  .react-confirm-alert-overlay[data-skin] .react-confirm-alert-body {
+  .react-confirm-alert-overlay[data-skin] .react-confirm-alert {
     animation: none;
   }
   .react-confirm-alert-overlay[data-skin] .react-confirm-alert-button-group > button {
