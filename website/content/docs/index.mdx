@@ -3,10 +3,7 @@ title: Getting started
 description: Confirm, alert and prompt dialogs for React 18 and 19. Code written for 3.0 keeps working.
 ---
 
-import { Example } from '@/components/example'
-import { Try } from '@/components/try'
 import { StartGallery } from '@/components/api/gallery'
-import { deleteFile } from '@/components/api/confirm'
 
 Each call opens a dialog and returns a Promise of the answer. Press a button to see what it returns.
 
@@ -28,15 +25,15 @@ import 'react-confirm-alert/style.css'
 
 `confirm()` resolves `true` from the confirm button. Cancel, Escape, a click outside and `closeAll()` resolve `false`.
 
-<Example preview={<Try run={deleteFile}>Delete</Try>}>
-<include meta='title="delete-file.tsx"'>../../components/api/confirm.tsx</include>
-</Example>
-
-Await it where you handle the click:
-
 ```tsx
+import { confirm } from 'react-confirm-alert'
+
 async function onDelete() {
-  if (await deleteFile()) await trash('Q3 report.pdf')
+  const ok = await confirm({
+    title: 'Delete “Q3 report.pdf”?',
+    tone: 'danger',
+  })
+  if (ok) await moveToTrash('Q3 report.pdf')
 }
 ```
 
@@ -46,10 +43,12 @@ Place `<DialogHost />` once, inside your providers. Every dialog then renders th
 
 ```tsx title="app/providers.tsx"
 <IntlProvider locale="th">
-  <App />
+  {children}
   <DialogHost />
 </IntlProvider>
 ```
+
+The [Next.js recipe](/docs/recipes/next-app-router) adds `dismissKey`, so dialogs close on navigation.
 
 ## Next
 
