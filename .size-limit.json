@@ -1,5 +1,33 @@
 [
   {
+    "name": "import { confirmAlert } (ESM)",
+    "path": "dist/index.esm.js",
+    "import": "{ confirmAlert }",
+    "ignore": [
+      "react",
+      "react-dom"
+    ],
+    "gzip": true,
+    "limit": "2.5 kB"
+  },
+  {
+    "name": "whole package (CJS)",
+    "path": "lib/index.js",
+    "ignore": [
+      "react",
+      "react-dom"
+    ],
+    "gzip": true,
+    "limit": "4 kB"
+  },
+  {
+    "name": "CSS",
+    "path": "src/react-confirm-alert.css",
+    "gzip": true,
+    "rolldown": false,
+    "limit": "1 kB"
+  },
+  {
     "name": "v3.0.6 baseline: import { confirmAlert } (CJS, includes prop-types)",
     "path": "fixtures/v3-baseline/node_modules/react-confirm-alert/lib/index.js",
     "import": "{ confirmAlert }",

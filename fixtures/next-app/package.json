@@ -6,7 +6,7 @@
   },
   "dependencies": {
     "react-confirm-alert": "file:../.pack/react-confirm-alert.tgz",
-    "next": "latest",
+    "next": "^16",
     "react": "^19",
     "react-dom": "^19"
   },
