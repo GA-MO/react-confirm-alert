@@ -6,7 +6,7 @@ import 'react-confirm-alert/src/react-confirm-alert.css'
 import { buttonByText, cleanupPage, loadV3, overlay, setupPage, spyConsole, waitForOverlay } from './v3'
 
 // One test per open issue that a browser test can reproduce. Each is test.fails until the phase that
-// fixes it (plan section 1), which turns it into a plain test. #38 waits for confirm() in P3.
+// fixes it (plan section 1), which turns it into a plain test.
 
 let lib: any
 let roots: Root[] = []
@@ -63,7 +63,7 @@ test('#31 with modal: true (or --rca-z-index) the dialog sits above a Bootstrap 
   button.click()
 })
 
-test.fails('#38 line breaks in message are kept', async () => {
+test('#38 line breaks in message are kept', async () => {
   expect(lib.confirm).toBeTypeOf('function')
   lib.confirm({ title: 'Lines', message: 'one\ntwo' })
   await vi.waitFor(() => expect(document.body.textContent).toContain('two'))
@@ -71,24 +71,18 @@ test.fails('#38 line breaks in message are kept', async () => {
   expect(getComputedStyle(message).whiteSpace).toBe('pre-line')
 })
 
-test.fails('#46 a dialog opened from inside another stacks on top of it', async () => {
+test('#46 #47 a dialog opened from inside another stacks on top of it', async () => {
   lib.confirmAlert({
-    title: 'Parent',
-    buttons: [
-      {
-        label: 'Open child',
-        onClick: () => {
-          lib.confirmAlert({ title: 'Child', strategy: 'stack' })
-          return false
-        }
-      }
-    ],
-    strategy: 'stack'
+    strategy: 'stack',
+    customUI: () => <button onClick={() => lib.confirmAlert({ title: 'Child', strategy: 'stack' })}>Open child</button>
   })
   await waitForOverlay()
   buttonByText('Open child').click()
   await vi.waitFor(() => expect(document.body.textContent).toContain('Child'))
-  expect(document.body.textContent).toContain('Parent')
+  expect(document.body.textContent).toContain('Open child')
+  await userEvent.keyboard('{Escape}')
+  await vi.waitFor(() => expect(document.body.textContent).not.toContain('Child'))
+  expect(document.body.textContent).toContain('Open child')
 })
 
 test.fails('#63 #66 a dialog reads the latest parent state', async () => {
