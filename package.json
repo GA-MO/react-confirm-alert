@@ -5,7 +5,7 @@
   "main": "lib/index.js",
   "module": "dist/index.esm.js",
   "scripts": {
-    "build": "vite build && node -e \"require('fs').rmSync('typings',{recursive:true,force:true})\" && tsc -p tsconfig.build.json",
+    "build": "vite build && node -e \"require('fs').rmSync('typings',{recursive:true,force:true})\" && tsc -p tsconfig.build.json && node -e \"require('fs').copyFileSync('src/react-confirm-alert.css','style.css')\"",
     "prepublishOnly": "npm run build",
     "test": "vitest run",
     "test:fixtures": "node fixtures/run.mjs",
@@ -42,6 +42,7 @@
     "dist",
     "typings",
     "src/react-confirm-alert.css",
+    "style.css",
     "index.d.ts"
   ],
   "devDependencies": {

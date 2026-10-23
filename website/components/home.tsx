@@ -51,7 +51,7 @@ export function Home () {
       <section>
         <p className="text-sm font-medium text-indigo-600">For React 18 and 19</p>
         <h1 className="mt-3 text-balance text-4xl font-semibold tracking-tight text-zinc-950 sm:text-5xl">Ask, then wait for the answer.</h1>
-        <p className="mt-4 text-pretty text-lg text-zinc-600"><code className="rounded bg-zinc-100 px-1.5 py-0.5 text-base">await confirm()</code> gives you true or false. Focus moves in and back, Escape works, and your v3 calls keep working.</p>
+        <p className="mt-4 text-pretty text-lg text-zinc-600"><code className="rounded bg-zinc-100 px-1.5 py-0.5 text-base">await confirm()</code> gives you true or false. Focus moves in and back, Escape works, and your 3.0 calls keep working.</p>
         <div className="mt-8 flex flex-wrap gap-3">
           <Link href="/docs" className="cursor-pointer rounded-lg bg-zinc-950 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition duration-150 hover:-translate-y-px hover:shadow-md active:translate-y-0 active:scale-98">Get started</Link>
           <Link href="/playground" className="cursor-pointer rounded-lg px-4 py-2.5 text-sm font-medium text-zinc-700 ring-1 ring-zinc-200 transition duration-150 hover:bg-zinc-50 active:scale-98">Playground</Link>

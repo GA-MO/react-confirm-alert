@@ -1,57 +1,69 @@
 ---
 title: API
-description: Every export, with its type.
+description: Every export, with a live example.
 ---
 
-## confirm, alert, prompt
+import { Example } from '@/components/example'
+import { DeleteButton } from '@/components/examples/delete-button'
+import { SavedAlert } from '@/components/examples/saved-alert'
+import { RenamePrompt } from '@/components/examples/rename-prompt'
+import { PublishButton } from '@/components/examples/save-async'
+import { EditNote } from '@/components/examples/edit-note'
 
-```ts
-confirm(options: string | ConfirmOptions): Promise<boolean>
-alert(options: string | AlertOptions): Promise<void>
-prompt(options: string | PromptOptions): Promise<string | null>
-```
+## confirm
 
-All take `title`, `message`, `closeOnEscape`, `closeOnClickOutside`, `strategy` (`'stack' | 'queue'`), `modal`, `signal`, `onKeyDown`, `afterClose`, `unstyled` and `classNames`.
+Resolves `true` from the confirm button, `false` otherwise. `tone: 'danger'` paints the confirm button red and focuses Cancel.
 
-- `confirm` adds `confirmLabel`, `cancelLabel`, `tone: 'danger'` (focuses Cancel) and `onConfirm`. When `onConfirm` returns a Promise the button shows `aria-busy` until it settles.
-- `prompt` adds `label`, `defaultValue`, `inputProps`, `validate` (return a message to keep the dialog open) and `submitLabel`.
+<Example preview={<DeleteButton />}>
+<include meta='title="delete-button.tsx"'>../../components/examples/delete-button.tsx</include>
+</Example>
 
-## openDialog
+## alert
 
-```ts
-openDialog<R>(options: { render: ComponentType<DialogRenderProps<R>>, buttons?, ...base }): DialogHandle<R>
-// handle: { id, result: Promise<R | undefined>, close(value), dismiss(), update(patch) }
-```
+<Example preview={<SavedAlert />}>
+<include meta='title="saved-alert.tsx"'>../../components/examples/saved-alert.tsx</include>
+</Example>
 
-## closeDialog, closeAll
+## prompt
 
-`closeAll()` dismisses every dialog, including queued ones. Waiting buttons get an aborted `signal`.
+Resolves the text, or `null`. Return a message from `validate` to keep the dialog open.
 
-## DialogHost, useDialog
+<Example preview={<RenamePrompt />}>
+<include meta='title="rename-prompt.tsx"'>../../components/examples/rename-prompt.tsx</include>
+</Example>
 
-`<DialogHost dismissKey={pathname} />` renders dialogs inside your tree and closes them when `dismissKey` changes. `useDialog()` returns the same functions as the module.
+## Buttons that wait
 
-## Dialog, ConfirmDialog
+When `onConfirm` (or a button's `onClick`) returns a Promise, the button shows `aria-busy` and the dialog stays open until it settles.
 
-```tsx
-<Dialog open={open} onOpenChange={setOpen} aria-label="Edit note">{children}</Dialog>
-<ConfirmDialog kind="confirm" open={open} onOpenChange={setOpen} title="Publish?" onConfirm={publish} />
-```
+<Example preview={<PublishButton />}>
+<include meta='title="publish-button.tsx"'>../../components/examples/save-async.tsx</include>
+</Example>
 
-They render in place, so their content always reads the component's latest state.
+## Dialog
 
-## confirmAlert (v3)
+Renders in place, driven by `open`, so its content reads your state.
 
-```ts
-confirmAlert(options: ReactConfirmAlertProps): void
-```
+<Example preview={<EditNote />}>
+<include meta='title="edit-note.tsx"'>../../components/examples/edit-note.tsx</include>
+</Example>
 
-All v3 options, plus `modal`, `strategy`, `unstyled` and `classNames`. Defaults keep v3 behavior: a `div` overlay, `strategy: 'replace'`, buttons that close without waiting.
+## Options every dialog takes
+
+`title`, `message`, `closeOnEscape`, `closeOnClickOutside`, `strategy` (`'stack'` or `'queue'`), `modal`, `signal`, `onKeyDown`, `afterClose`, `unstyled` and `classNames`.
+
+## openDialog, closeDialog, closeAll
+
+`openDialog<R>({ render })` returns `{ id, result, close, dismiss, update }`. `closeAll()` dismisses every dialog, including queued ones.
+
+## DialogHost, useDialog, ConfirmDialog
+
+`<DialogHost dismissKey={pathname} />` renders dialogs inside your tree and closes them when `dismissKey` changes. `<ConfirmDialog kind="confirm" open onOpenChange />` is `confirm` rendered in place.
+
+## confirmAlert (3.0 API)
+
+`confirmAlert(options): void` takes every 3.0 option, plus `modal`, `strategy`, `unstyled` and `classNames`. Its defaults keep 3.0 behavior.
 
 ## configureDialogs
 
-```ts
-configureDialogs({ modal, strategy, closeOnEscape, closeOnClickOutside, lockScroll, labels, unstyled, classNames, confirmAlert: { modal, strategy, unstyled, classNames } })
-```
-
-App-wide `unstyled` and `classNames` do not reach `confirmAlert`; set them under `confirmAlert` to change it.
+Sets app-wide defaults: `modal`, `strategy`, `closeOnEscape`, `closeOnClickOutside`, `lockScroll`, `labels`, `unstyled`, `classNames`, and separate `confirmAlert` defaults.

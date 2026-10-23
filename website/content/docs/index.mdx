@@ -1,36 +1,42 @@
 ---
 title: Getting started
-description: Confirm, alert and prompt dialogs for React 18 and 19, with the v3 API kept as it was.
+description: Confirm, alert and prompt dialogs for React 18 and 19. Code written for 3.0 keeps working.
 ---
+
+import { Example } from '@/components/example'
+import { DeleteButton } from '@/components/examples/delete-button'
 
 ```bash
 npm install react-confirm-alert
 ```
 
-```tsx
-import { confirm } from 'react-confirm-alert'
-import 'react-confirm-alert/src/react-confirm-alert.css'
+Import the CSS once, for example in your root layout:
 
-if (await confirm({ title: 'Delete file?', message: 'This cannot be undone.', tone: 'danger' })) {
-  remove(file)
-}
+```tsx title="app/layout.tsx"
+import 'react-confirm-alert/src/react-confirm-alert.css'
 ```
 
-`confirm()` resolves `true` or `false`. Escape, a click outside, `closeAll()` or a route change resolve it with `false`.
+Then ask a question and wait for the answer. Press the button:
 
-## Already on v3
+<Example preview={<DeleteButton />}>
+<include meta='title="delete-button.tsx"'>../../components/examples/delete-button.tsx</include>
+</Example>
 
-`confirmAlert(options)` works as before: same options, same DOM and class names, same CSS path. See [Migrate from v3](/docs/migrate-from-v3).
+`confirm()` resolves `true` or `false`. Escape, a click outside, `closeAll()` and a route change all resolve it with `false`.
+
+## Already on 3.0
+
+`confirmAlert(options)` works as it did in 3.0. See [What's new in 3.1](/docs/whats-new-in-3-1) for what you can adopt, one step at a time.
 
 ## Dialogs that read your providers
 
 Place `<DialogHost />` inside your providers once. Every dialog then renders there and sees Redux, Intl, SWR and theme context.
 
-```tsx
+```tsx title="app/providers.tsx"
 <IntlProvider locale="th">
   <App />
   <DialogHost />
 </IntlProvider>
 ```
 
-Try every form in the [playground](/playground).
+Try every option in the [playground](/playground).
