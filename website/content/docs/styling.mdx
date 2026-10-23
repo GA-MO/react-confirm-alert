@@ -135,15 +135,29 @@ Inside a dialog with the default look, plain `h1` to `h3`, `p`, `label`, `input`
 A `data-slot="input"` control fills the width of the dialog and has a border. A `textarea` is at least 80px tall and resizes vertically.
 
 ```tsx
-<Dialog open={open} onOpenChange={setOpen} aria-labelledby="note-title">
+<Dialog
+  open={open}
+  onOpenChange={setOpen}
+  aria-labelledby="note-title"
+>
   <div className="react-confirm-alert-body">
     <h1 id="note-title" data-slot="title">Edit note</h1>
     <div data-slot="field">
       <label htmlFor="note" data-slot="label">Note</label>
-      <textarea id="note" data-slot="input" value={note} onChange={(e) => setNote(e.target.value)} />
+      <textarea
+        id="note"
+        data-slot="input"
+        value={note}
+        onChange={(e) => setNote(e.target.value)}
+      />
     </div>
-    <div className="react-confirm-alert-button-group" data-slot="actions">
-      <button data-variant="primary" onClick={() => setOpen(false)}>Done</button>
+    <div
+      className="react-confirm-alert-button-group"
+      data-slot="actions"
+    >
+      <button data-variant="primary" onClick={() => setOpen(false)}>
+        Done
+      </button>
     </div>
   </div>
 </Dialog>
@@ -171,6 +185,8 @@ Every CSS variable the default CSS reads. The Default column is what `confirm`, 
 
 ### Colours
 
+<div className="var-table">
+
 | Variable | Default | 3.0 | What it changes |
 | --- | --- | --- | --- |
 | `--rca-button-bg` | `#18181b`, dark `#fafafa` | `#333` | Main button background. Also the checkbox and radio accent. |
@@ -187,7 +203,11 @@ Every CSS variable the default CSS reads. The Default column is what `confirm`, 
 | `--rca-backdrop` | `rgba(0, 0, 0, 0.5)`, dark `rgba(0, 0, 0, 0.7)` | `rgba(255, 255, 255, 0.9)` | The layer over your page behind the dialog. |
 | `--rca-shadow` | `0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1)` | `0 20px 75px rgba(0, 0, 0, 0.13)` | Panel shadow. |
 
+</div>
+
 ### Size and shape
+
+<div className="var-table">
 
 | Variable | Default | 3.0 | What it changes |
 | --- | --- | --- | --- |
@@ -198,7 +218,11 @@ Every CSS variable the default CSS reads. The Default column is what `confirm`, 
 | `--rca-gap` | `8px` | `10px` | Space between buttons. |
 | `--rca-font` | `inherit`, your page font | `Arial, Helvetica, sans-serif` | Font family. |
 
+</div>
+
 ### Motion and layering
+
+<div className="var-table">
 
 | Variable | Default | 3.0 | What it changes |
 | --- | --- | --- | --- |
@@ -207,3 +231,6 @@ Every CSS variable the default CSS reads. The Default column is what `confirm`, 
 | `--rca-delay` | – | `0.2s` | Wait before the 3.0 fade-in starts. |
 | `--rca-blur` | – | `2px` | Blur on your app behind a 3.0 dialog. |
 | `--rca-z-index` | `99` | `99` | Stack order of the overlay with `modal: false`. A modal dialog sits in the top layer, above everything. |
+
+
+</div>

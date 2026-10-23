@@ -14,7 +14,11 @@ export function DarkMode() {
           message="You can sign back in at any time."
           actions={[
             { label: 'Cancel', onClick: () => setOpen(false) },
-            { label: 'Sign out', variant: 'primary', onClick: () => setOpen(false) },
+            {
+              label: 'Sign out',
+              variant: 'primary',
+              onClick: () => setOpen(false),
+            },
           ]}
         />
       </Dialog>

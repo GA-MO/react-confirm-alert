@@ -49,6 +49,13 @@ html > body[data-scroll-locked] {
 }
 .dark :is(.example-preview, .gallery-tile) > button, .dark :is(.example-preview, .gallery-tile) > [data-theme] > button { @apply bg-zinc-900 text-zinc-300 ring-white/15 hover:bg-white/5 hover:text-white; }
 .example-code figure { margin: 0; border-width: 0; border-radius: 0; }
+/* A Styling gallery card draws its dialog at 40%. The transform also holds the dialog's position: fixed,
+   so its backdrop fills the thumbnail instead of the page. */
+.dialog-thumbnail { @apply h-40 overflow-hidden rounded-lg border bg-fd-background select-none; }
+.dialog-thumbnail > div { width: calc(100% / 0.4); height: calc(100% / 0.4); transform: scale(0.4); transform-origin: 0 0; }
+/* Reference tables: a variable name stays on one line, and a narrow screen scrolls the table in its frame. */
+.var-table td:first-child { white-space: nowrap; }
+@media (max-width: 640px) { .var-table table { min-width: 40rem; } }
 
 /* Code sits apart from the grey page: white in light, a raised grey in dark (bg in lib/code-themes.json). */
 figure.shiki { background: var(--shiki-light-bg); }
