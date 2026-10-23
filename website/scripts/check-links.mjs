@@ -13,6 +13,12 @@ const walk = (dir) => readdirSync(dir).forEach((f) => {
 walk(out)
 const broken = []
 for (const page of pages) {
+  // Without an icon link, browsers ask for /favicon.ico at the domain root, outside the basePath,
+  // and log a 404 on a visitor's first load.
+  const icon = readFileSync(page, 'utf8').match(/<link rel="icon" href="([^"?]+)/)
+  if (!page.endsWith('404.html') && (!icon || !icon[1].startsWith(`${base}/`) || !existsSync(join(out, icon[1].slice(base.length))))) {
+    broken.push(`${page.slice(out.length)} -> missing icon under ${base}`)
+  }
   for (const [, href] of readFileSync(page, 'utf8').matchAll(/href="([^"#?]+)/g)) {
     if (!href.startsWith(`${base}/`)) continue
     const path = join(out, href.slice(base.length))
