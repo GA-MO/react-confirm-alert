@@ -14,7 +14,7 @@ const cancel = { label: 'Cancel' }
 
 // Same order and anchors as the Examples headings in content/docs/styling.mdx.
 // Each picture repeats its example's options, so the card shows the dialog the button opens.
-const examples: GalleryItem[] = [
+export const stylingExamples: GalleryItem[] = [
   {
     id: 'brand-colour',
     label: 'Brand colour',
@@ -148,5 +148,5 @@ const examples: GalleryItem[] = [
 ]
 
 export function StylingGallery() {
-  return <Gallery items={examples} />
+  return <Gallery items={stylingExamples} />
 }
