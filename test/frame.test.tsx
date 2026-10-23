@@ -79,3 +79,39 @@ test('StrictMode: the default export opens and closes 10 times without console e
   root.unmount()
   expect(consoleSpy.error).not.toHaveBeenCalled()
 })
+
+test('closing from an effect inside customUI logs nothing and still closes', async () => {
+  const consoleSpy = spyConsole()
+  function AutoClose({ onClose }: { onClose: () => void }) {
+    React.useEffect(() => { onClose() }, [])
+    return <p>auto</p>
+  }
+  lib.confirmAlert({ customUI: ({ onClose }: any) => <AutoClose onClose={onClose} /> })
+  await vi.waitFor(() => expect(overlay()).toBeNull())
+  expect(consoleSpy.error).not.toHaveBeenCalled()
+})
+
+test('a declarative customUI keeps its subtree when the parent re-renders', async () => {
+  const host = document.createElement('div')
+  document.getElementById('app')!.append(host)
+  const Default = lib.default
+  let mounts = 0
+  function Inner() {
+    React.useEffect(() => { mounts += 1 }, [])
+    return <p>inner</p>
+  }
+  let rerender!: () => void
+  function App() {
+    const [n, setN] = useState(0)
+    rerender = () => setN((x) => x + 1)
+    return <Default title={`t${n}`} customUI={() => <Inner />} />
+  }
+  const root = createRoot(host)
+  root.render(<App />)
+  await vi.waitFor(() => expect(mounts).toBe(1))
+  rerender()
+  rerender()
+  await vi.waitFor(() => expect(host.querySelector('.react-confirm-alert')).not.toBeNull())
+  expect(mounts).toBe(1)
+  root.unmount()
+})

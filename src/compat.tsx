@@ -1,4 +1,4 @@
-import { Component, createElement, useId, useLayoutEffect, useRef, type ButtonHTMLAttributes, type ComponentType, type ReactElement, type ReactNode } from 'react'
+import { Component, useId, useLayoutEffect, useRef, type ButtonHTMLAttributes, type ReactElement, type ReactNode } from 'react'
 import { DialogFrame } from './DialogFrame'
 import { openDialog } from './lifecycle'
 import { store, topmost } from './store'
@@ -53,6 +53,12 @@ interface LegacyContentProps {
   id?: DialogId
 }
 
+// customUI is called inside a component with a stable type, so hooks inside it work and a new
+// inline customUI on a parent re-render keeps the subtree, as calling it did in v3.
+function CustomUIHost<A> ({ render, args }: { render: (args: A) => ReactNode, args: A }) {
+  return <>{render(args)}</>
+}
+
 function LegacyContent ({ props, titleId, close, id }: LegacyContentProps) {
   const latest = useRef({ props, close })
   latest.current = { props, close }
@@ -76,13 +82,7 @@ function LegacyContent ({ props, titleId, close, id }: LegacyContentProps) {
   const { title, message, customUI, childrenElement } = props
   const buttons = props.buttons ?? defaultButtons
   if (customUI) {
-    // Rendered as a component, not called, so hooks inside customUI work.
-    return createElement(customUI as ComponentType<Parameters<typeof customUI>[0]>, {
-      title: title as string,
-      message: message as string,
-      buttons,
-      onClose: close
-    })
+    return <CustomUIHost render={customUI} args={{ title: title as string, message: message as string, buttons, onClose: close }} />
   }
   return (
     <div className='react-confirm-alert-body' data-slot='body'>

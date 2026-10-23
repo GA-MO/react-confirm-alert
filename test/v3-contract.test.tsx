@@ -96,6 +96,17 @@ describe('DOM', () => {
     buttonByText('Cancel').click()
   })
 
+  test('a missing targetId logs an error and renders in the default container with blur', async () => {
+    const consoleSpy = spyConsole()
+    lib.confirmAlert({ title: 'Missing', targetId: 'nope' })
+    const el = await waitForOverlay()
+    expect(consoleSpy.error).toHaveBeenCalledWith('React Confirm Alert:', 'Can not get element id (#nope)')
+    expect(el.parentElement!.id).toBe('react-confirm-alert')
+    expect(document.getElementById('app')!.classList.contains('react-confirm-alert-blur')).toBe(true)
+    buttonByText('Cancel').click()
+    expect(overlay()).toBeNull()
+  })
+
   test('body classes are set while open and removed after close', async () => {
     lib.confirmAlert({ title: 'Body' })
     await waitForOverlay()

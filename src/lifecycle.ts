@@ -12,8 +12,8 @@ export function registerFrame (id: DialogId, frame: HTMLElement | null, panel: H
 
 export function openDialog<R> (options: DialogOptions<R>, target: string | null, strategy = options.strategy ?? 'stack') {
   const id = store.nextId()
-  const { blur } = ensureContainer(target)
-  const entry: Omit<Entry, 'phase'> = { id, options, target, blur, settle: () => {} }
+  const resolved = ensureContainer(target)
+  const entry: Omit<Entry, 'phase'> = { id, options, target: resolved.target, blur: resolved.blur, settle: () => {} }
     const before = store.get().entries.filter((e) => e.phase === 'open').map((e) => e.id)
   store.set(push(store.get(), entry, strategy))
   if (strategy === 'replace') for (const old of before) store.set(remove(store.get(), old))
@@ -22,8 +22,9 @@ export function openDialog<R> (options: DialogOptions<R>, target: string | null,
 
 // Runs a store update and renders it before returning, so a close from a click handler leaves the
 // DOM, body classes and v3 callbacks (willUnmount, then afterClose) settled when the click returns.
+// flushSync only runs while the browser dispatches an event; from an effect or a timer it would warn.
 function commit (update: () => void, sync: boolean) {
-  if (sync) flushSync(update)
+  if (sync && typeof window !== 'undefined' && window.event !== undefined) flushSync(update)
   else update()
 }
 
