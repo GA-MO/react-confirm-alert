@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState } from 'react'
 import { createRoot, type Root } from 'react-dom/client'
 import { afterEach, beforeEach, expect, test, vi } from 'vitest'
-import { page } from 'vitest/browser'
+import { page, userEvent } from 'vitest/browser'
 import 'react-confirm-alert/src/react-confirm-alert.css'
 import { buttonByText, cleanupPage, loadV3, overlay, setupPage } from './v3'
 
@@ -104,4 +104,45 @@ test('a dialog shown by a host moves to its own root when the host unmounts', as
   await vi.waitFor(() => expect(document.getElementById('react-confirm-alert')?.textContent).toContain('Moves'))
   buttonByText('Confirm').click()
   await expect(result).resolves.toBe(true)
+})
+
+test('under StrictMode, ConfirmDialog hands onConfirm a live signal and closes when it resolves', async () => {
+  const { StrictMode } = React
+  let aborted: boolean | undefined
+  let finish!: () => void
+  const onOpenChange = vi.fn()
+  render(
+    <StrictMode>
+      <lib.ConfirmDialog
+        kind="confirm"
+        open
+        onOpenChange={onOpenChange}
+        title="Save?"
+        onConfirm={({ signal }: { signal: AbortSignal }) => {
+          aborted = signal.aborted
+          return new Promise<void>((r) => { finish = r })
+        }}
+      />
+    </StrictMode>
+  )
+  await vi.waitFor(() => buttonByText('Confirm'))
+  buttonByText('Confirm').click()
+  expect(aborted).toBe(false)
+  finish()
+  await vi.waitFor(() => expect(onOpenChange).toHaveBeenCalledWith(false))
+})
+
+test('an in-place Dialog with closeOnEscape false stays open through repeated Escape', async () => {
+  const onOpenChange = vi.fn()
+  render(
+    <lib.Dialog open onOpenChange={onOpenChange} closeOnEscape={false} aria-label="Sticky">
+      <button>inside</button>
+    </lib.Dialog>
+  )
+  await vi.waitFor(() => buttonByText('inside'))
+  for (let i = 0; i < 3; i++) await userEvent.keyboard('{Escape}')
+  await new Promise((r) => setTimeout(r, 50))
+  const frame = document.querySelector('[data-rca]') as HTMLElement
+  if (frame instanceof HTMLDialogElement) expect(frame.open).toBe(true)
+  expect(onOpenChange).not.toHaveBeenCalled()
 })
