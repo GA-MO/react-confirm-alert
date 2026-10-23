@@ -1,0 +1,173 @@
+/* B, Sharp (Vercel/Geist-like): crisp ring shadow, 40px buttons, a footer strip with Cancel
+   left and the action right. Same scope as quiet.css: confirm, alert and prompt only. */
+.react-confirm-alert-overlay:is([data-kind=confirm], [data-kind=alert], [data-kind=prompt]) {
+  box-sizing: border-box;
+  padding: 16px;
+  background: var(--rca-backdrop, rgba(0, 0, 0, 0.4));
+  opacity: 1;
+  animation: rca-fade var(--rca-duration, 160ms) var(--rca-easing, cubic-bezier(0.2, 0.8, 0.2, 1)) both;
+}
+.react-confirm-alert-overlay:is([data-kind=confirm], [data-kind=alert], [data-kind=prompt]) .react-confirm-alert {
+  max-width: 100%;
+}
+.react-confirm-alert-overlay:is([data-kind=confirm], [data-kind=alert], [data-kind=prompt]) .react-confirm-alert-body {
+  box-sizing: border-box;
+  width: var(--rca-width, 400px);
+  max-width: 100%;
+  padding: var(--rca-padding, 24px);
+  border: 1px solid var(--rca-border, rgba(0, 0, 0, 0.08));
+  border-radius: var(--rca-radius, 12px);
+  background: var(--rca-bg, #fff);
+  box-shadow: var(--rca-shadow, 0 0 0 1px rgba(0, 0, 0, 0.02), 0 8px 30px rgba(0, 0, 0, 0.12));
+  color: var(--rca-fg, #4d4d4d);
+  font-family: var(--rca-font, inherit);
+  font-size: 14px;
+  line-height: 1.5;
+  animation: rca-pop var(--rca-duration, 200ms) var(--rca-easing, cubic-bezier(0.16, 1, 0.3, 1)) both;
+}
+.react-confirm-alert-overlay:is([data-kind=confirm], [data-kind=alert], [data-kind=prompt])[data-state=closing] {
+  animation: rca-fade-out 120ms ease-in both;
+}
+.react-confirm-alert-overlay:is([data-kind=confirm], [data-kind=alert], [data-kind=prompt])[data-state=closing] .react-confirm-alert-body {
+  animation: rca-pop-out 120ms ease-in both;
+}
+.react-confirm-alert-overlay:is([data-kind=confirm], [data-kind=alert], [data-kind=prompt]) [data-slot=title] {
+  margin: 0 0 8px;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--rca-title, #000);
+}
+.react-confirm-alert-overlay:is([data-kind=confirm], [data-kind=alert], [data-kind=prompt]) [data-slot=label] {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--rca-title, #000);
+}
+.react-confirm-alert-overlay:is([data-kind=confirm], [data-kind=alert], [data-kind=prompt]) [data-slot=field] {
+  margin-top: 16px;
+}
+.react-confirm-alert-overlay:is([data-kind=confirm], [data-kind=alert], [data-kind=prompt]) [data-slot=input] {
+  box-sizing: border-box;
+  width: 100%;
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid var(--rca-border, rgba(0, 0, 0, 0.14));
+  border-radius: 6px;
+  background: var(--rca-bg, #fff);
+  color: var(--rca-title, #000);
+  font: inherit;
+  outline: none;
+  transition: border-color 120ms, box-shadow 120ms;
+}
+.react-confirm-alert-overlay:is([data-kind=confirm], [data-kind=alert], [data-kind=prompt]) [data-slot=input]:focus {
+  border-color: var(--rca-ring, #0070f3);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--rca-ring, #0070f3) 20%, transparent);
+}
+.react-confirm-alert-overlay:is([data-kind=confirm], [data-kind=alert], [data-kind=prompt]) [data-slot=input][aria-invalid=true] {
+  border-color: var(--rca-danger, #ce2c31);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--rca-danger, #ce2c31) 15%, transparent);
+}
+.react-confirm-alert-overlay:is([data-kind=confirm], [data-kind=alert], [data-kind=prompt]) [data-slot=error] {
+  margin: 6px 0 0;
+  font-size: 13px;
+  color: var(--rca-danger, #ce2c31);
+}
+.react-confirm-alert-overlay:is([data-kind=confirm], [data-kind=alert], [data-kind=prompt]) .react-confirm-alert-button-group {
+  justify-content: space-between;
+  gap: var(--rca-gap, 8px);
+  margin: 24px calc(-1 * var(--rca-padding, 24px)) calc(-1 * var(--rca-padding, 24px));
+  padding: 16px var(--rca-padding, 24px);
+  border-top: 1px solid var(--rca-border, rgba(0, 0, 0, 0.08));
+  border-radius: 0 0 var(--rca-radius, 12px) var(--rca-radius, 12px);
+  background: #fafafa;
+}
+.react-confirm-alert-overlay:is([data-kind=confirm], [data-kind=alert], [data-kind=prompt]) .react-confirm-alert-button-group > button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 40px;
+  margin: 0;
+  padding: 0 16px;
+  border: 1px solid var(--rca-border, rgba(0, 0, 0, 0.12));
+  border-radius: var(--rca-button-radius, 6px);
+  background: #fff;
+  color: var(--rca-title, #000);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 120ms, border-color 120ms, transform 120ms;
+}
+.react-confirm-alert-overlay:is([data-kind=confirm], [data-kind=alert], [data-kind=prompt]) .react-confirm-alert-button-group > button:hover {
+  background: #f4f4f5;
+}
+.react-confirm-alert-overlay:is([data-kind=confirm], [data-kind=alert], [data-kind=prompt]) .react-confirm-alert-button-group > [data-variant=primary] {
+  border-color: transparent;
+  background: var(--rca-button-bg, #000);
+  color: var(--rca-button-fg, #fff);
+}
+.react-confirm-alert-overlay:is([data-kind=confirm], [data-kind=alert], [data-kind=prompt]) .react-confirm-alert-button-group > [data-variant=primary]:hover {
+  background: color-mix(in srgb, var(--rca-button-bg, #000) 85%, #fff);
+}
+.react-confirm-alert-overlay:is([data-kind=confirm], [data-kind=alert], [data-kind=prompt]) .react-confirm-alert-button-group > [data-variant=danger] {
+  border-color: transparent;
+  background: var(--rca-danger, #ce2c31);
+  color: #fff;
+}
+.react-confirm-alert-overlay:is([data-kind=confirm], [data-kind=alert], [data-kind=prompt]) .react-confirm-alert-button-group > [data-variant=danger]:hover {
+  background: color-mix(in srgb, var(--rca-danger, #ce2c31) 88%, #000);
+}
+.react-confirm-alert-overlay:is([data-kind=confirm], [data-kind=alert], [data-kind=prompt]) .react-confirm-alert-button-group > button:active {
+  transform: scale(0.97);
+}
+.react-confirm-alert-overlay:is([data-kind=confirm], [data-kind=alert], [data-kind=prompt]) .react-confirm-alert-button-group > button:focus-visible {
+  outline: var(--rca-focus-ring, 2px solid #0070f3);
+  outline-offset: 2px;
+}
+.react-confirm-alert-overlay:is([data-kind=confirm], [data-kind=alert], [data-kind=prompt]) .react-confirm-alert-button-group > button:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+.react-confirm-alert-overlay:is([data-kind=confirm], [data-kind=alert], [data-kind=prompt]) .react-confirm-alert-button-group > button[aria-busy=true] {
+  cursor: progress;
+  opacity: 1;
+}
+.react-confirm-alert-overlay:is([data-kind=confirm], [data-kind=alert], [data-kind=prompt]) .react-confirm-alert-button-group > button[aria-busy=true]::before {
+  content: '';
+  width: 12px;
+  height: 12px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: rca-spin 700ms linear infinite;
+}
+/* An alert has one button: keep it on the right. */
+.react-confirm-alert-overlay:is([data-kind=confirm], [data-kind=alert], [data-kind=prompt]) .react-confirm-alert-button-group > button:only-child {
+  margin-left: auto;
+}
+@media (max-width: 480px) {
+  .react-confirm-alert-overlay:is([data-kind=confirm], [data-kind=alert], [data-kind=prompt]) .react-confirm-alert-button-group {
+    flex-direction: column-reverse;
+  }
+  .react-confirm-alert-overlay:is([data-kind=confirm], [data-kind=alert], [data-kind=prompt]) .react-confirm-alert-button-group > button {
+    justify-content: center;
+    height: 40px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .react-confirm-alert-overlay:is([data-kind=confirm], [data-kind=alert], [data-kind=prompt]),
+  .react-confirm-alert-overlay:is([data-kind=confirm], [data-kind=alert], [data-kind=prompt]) .react-confirm-alert-body {
+    animation: none;
+  }
+  .react-confirm-alert-overlay:is([data-kind=confirm], [data-kind=alert], [data-kind=prompt]) .react-confirm-alert-button-group > button {
+    transition: none;
+  }
+}
+@keyframes rca-fade { from { opacity: 0; } }
+@keyframes rca-fade-out { to { opacity: 0; } }
+@keyframes rca-pop { from { opacity: 0; transform: translateY(8px); } }
+@keyframes rca-pop-out { to { opacity: 0; transform: translateY(4px); } }
+@keyframes rca-spin { to { transform: rotate(360deg); } }
