@@ -2,7 +2,7 @@
 @import 'fumadocs-ui/css/neutral.css';
 @import 'fumadocs-ui/css/preset.css';
 /* The library CSS goes under Tailwind's utilities, so classNames can override it (recipe: Tailwind). */
-@import 'react-confirm-alert/src/react-confirm-alert.css' layer(components);
+@import 'react-confirm-alert/style.css' layer(components);
 
 /* dark: follows the site's theme switch (the .dark class), not the OS setting. */
 @custom-variant dark (&:where(.dark, .dark *));

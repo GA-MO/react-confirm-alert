@@ -16,12 +16,14 @@ npm install react-confirm-alert
 
 ```tsx
 import { confirm } from 'react-confirm-alert'
-import 'react-confirm-alert/src/react-confirm-alert.css'
+import 'react-confirm-alert/style.css'
 
 if (await confirm({ title: 'Delete file?', message: 'This cannot be undone.', tone: 'danger' })) {
   remove(file)
 }
 ```
+
+`style.css` needs 3.1.1 or later. The older path, `react-confirm-alert/src/react-confirm-alert.css`, still works.
 
 `confirm()` resolves `true` or `false`. `alert()` and `prompt()` work the same way, and `<DialogHost />` placed inside your providers lets dialogs read their context.
 
@@ -29,7 +31,7 @@ if (await confirm({ title: 'Delete file?', message: 'This cannot be undone.', to
 
 ```jsx
 import { confirmAlert } from 'react-confirm-alert'
-import 'react-confirm-alert/src/react-confirm-alert.css'
+import 'react-confirm-alert/style.css'
 
 confirmAlert({
   title: 'Confirm to submit',
@@ -47,7 +49,7 @@ Same options, DOM, class names and CSS path as 3.0.
 
 ```css
 @import 'tailwindcss';
-@import 'react-confirm-alert/src/react-confirm-alert.css' layer(components);
+@import 'react-confirm-alert/style.css' layer(components);
 ```
 
 ```tsx

@@ -24,7 +24,7 @@ function literal (o: SnippetOptions, extra: string[] = [], indent = '    ') {
   return `{\n${lines.map((l) => `${indent}  ${l}`).join('\n')}\n${indent}}`
 }
 
-const css = "import 'react-confirm-alert/src/react-confirm-alert.css'\n"
+const css = "import 'react-confirm-alert/style.css'\n"
 
 // What each Styling choice adds above the component: the CSS import, a variable, configureDialogs.
 function styleSetup (style: StyleMode, width: number): { imports: string, setup: string } {
