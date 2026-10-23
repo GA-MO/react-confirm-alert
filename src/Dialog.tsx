@@ -1,4 +1,4 @@
-import { useId, useLayoutEffect, useRef, useSyncExternalStore, type KeyboardEvent, type ReactNode } from 'react'
+import { useId, useLayoutEffect, useRef, useSyncExternalStore, type KeyboardEvent, type ReactNode, type ReactElement } from 'react'
 import { Body, Buttons, PromptBody } from './api'
 import { DialogFrame } from './DialogFrame'
 import { syncPage } from './page'
@@ -49,7 +49,7 @@ function useScrollLock (open: boolean) {
 }
 
 /** A dialog rendered where it is placed, so its children read the latest state of the component (#63 #66). */
-export function Dialog (props: DialogProps) {
+export function Dialog (props: DialogProps): ReactElement | null {
   const id = useId() as DialogId
   const hydrated = useHydrated()
   useScrollLock(props.open && hydrated)
@@ -78,7 +78,7 @@ export function Dialog (props: DialogProps) {
 }
 
 /** confirm, alert or prompt rendered in place and driven by `open`. */
-export function ConfirmDialog (props: ConfirmDialogProps) {
+export function ConfirmDialog (props: ConfirmDialogProps): ReactElement | null {
   const id = useId() as DialogId
   const titleId = useId()
   const descriptionId = useId()

@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, type KeyboardEvent, type ReactNode, type SyntheticEvent } from 'react'
+import { useLayoutEffect, useRef, type KeyboardEvent, type ReactNode, type SyntheticEvent, type ReactElement } from 'react'
 import { registerFrame, reopenClosedFrames } from './lifecycle'
 import { runtime, store, topmost } from './store'
 import type { DialogId, DialogKind } from './types'
@@ -27,7 +27,7 @@ export interface DialogFrameProps {
 const canShowModal = () =>
   typeof HTMLDialogElement !== 'undefined' && typeof HTMLDialogElement.prototype.showModal === 'function'
 
-export function DialogFrame (props: DialogFrameProps) {
+export function DialogFrame (props: DialogFrameProps): ReactElement {
   const frame = useRef<HTMLElement | null>(null)
   const panel = useRef<HTMLDivElement | null>(null)
   const pressedOn = useRef<EventTarget | null>(null)

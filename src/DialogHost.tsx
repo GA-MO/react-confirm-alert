@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState, type ReactElement } from 'react'
 import { alert, closeAll, confirm, openDialog, prompt } from './api'
 import { DialogStack } from './DialogStack'
 import { ensureContainer } from './fallbackRoot'
@@ -12,7 +12,7 @@ export interface DialogHostProps {
 
 // Renders the dialogs of confirmAlert, confirm and the rest where it is placed, so they see every
 // provider above it (#23 #28 #35 #94). The top layer shows them above the page, so no portal.
-export function DialogHost ({ dismissKey }: DialogHostProps) {
+export function DialogHost ({ dismissKey }: DialogHostProps): ReactElement {
   const [host] = useState(() => Symbol('DialogHost'))
   useLayoutEffect(() => {
     installPageEffects()

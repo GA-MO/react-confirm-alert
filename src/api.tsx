@@ -1,4 +1,4 @@
-import { useId, useState, type FormEvent, type ReactNode } from 'react'
+import { useId, useState, type FormEvent, type ReactNode, type ReactElement } from 'react'
 import { closeDialog as closeEntry, openEntry } from './lifecycle'
 import { runtime, store, update } from './store'
 import type {
@@ -38,7 +38,7 @@ function open<R> (options: Omit<EntryOptions, 'render'>, dismissValue: R, body: 
   return { id, result }
 }
 
-export function Body ({ props, children }: { props: DialogRenderProps<any>, children: ReactNode }) {
+export function Body ({ props, children }: { props: DialogRenderProps<any>, children: ReactNode }): ReactElement {
   return (
     <div className='react-confirm-alert-body' data-slot='body'>
       {props.title && <h1 id={props.titleId} data-slot='title'>{props.title}</h1>}
@@ -48,7 +48,7 @@ export function Body ({ props, children }: { props: DialogRenderProps<any>, chil
   )
 }
 
-export function Buttons<R> ({ props, signal: getSignal, focus }: { props: DialogRenderProps<R>, signal: () => AbortSignal, focus: number }) {
+export function Buttons<R> ({ props, signal: getSignal, focus }: { props: DialogRenderProps<R>, signal: () => AbortSignal, focus: number }): ReactElement {
   const [busy, setBusy] = useState<number | null>(null)
   const press = async (button: DialogButton<R>, index: number) => {
     const signal = getSignal()
@@ -121,7 +121,7 @@ export function confirm (input: string | Omit<ConfirmOptions, 'kind'>): Promise<
   return open({ ...options, kind: 'confirm', buttons }, false, choice(danger ? 0 : 1)).result
 }
 
-export function PromptBody ({ props, options }: { props: DialogRenderProps<string>, options: Omit<PromptOptions, 'kind'> }) {
+export function PromptBody ({ props, options }: { props: DialogRenderProps<string>, options: Omit<PromptOptions, 'kind'> }): ReactElement {
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
   const inputId = useId()
