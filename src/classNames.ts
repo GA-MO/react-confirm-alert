@@ -10,10 +10,13 @@ const builtIn: Partial<Record<DialogSlot, string>> = {
   actions: 'react-confirm-alert-button-group'
 }
 
-/** Style layers from widest to narrowest: app defaults, confirmAlert defaults, the call's options. */
+/**
+ * Style layers from widest to narrowest. confirmAlert keeps the v3 look unless the app sets
+ * confirmAlert defaults, so app-wide unstyled or classNames never reach it by surprise.
+ */
 export function styleLayers (options: StyleOptions, legacy: boolean): StyleOptions[] {
   const defaults = runtime().defaults
-  return legacy ? [defaults, defaults.confirmAlert ?? {}, options] : [defaults, options]
+  return [legacy ? defaults.confirmAlert ?? {} : defaults, options]
 }
 
 // The narrowest layer that sets unstyled decides it. Class names add up, they never replace.

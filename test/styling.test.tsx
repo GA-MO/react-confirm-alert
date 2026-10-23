@@ -93,3 +93,43 @@ describe('in the browser', () => {
     style.remove()
   })
 })
+
+describe('review fixes', () => {
+  let lib: any
+  beforeEach(async () => {
+    setupPage()
+    lib = await loadV3()
+  })
+  afterEach(() => {
+    lib.configureDialogs({})
+    lib.closeAll()
+    cleanupPage()
+  })
+
+  test('labels from configureDialogs reach prompt, and inputProps.className adds to the slot classes', async () => {
+    lib.configureDialogs({ labels: { cancel: 'Nope', submit: 'Go' }, classNames: { input: 'app-input' } })
+    lib.prompt({ title: 'P', inputProps: { className: 'mine' } })
+    await vi.waitFor(() => expect(document.querySelector('input')).not.toBeNull())
+    expect(document.querySelector('input')!.className).toBe('app-input mine')
+    expect(document.querySelector('input')!.dataset.slot).toBe('input')
+    buttonByText('Nope')
+    buttonByText('Go')
+  })
+
+  test('app-wide unstyled does not reach confirmAlert unless set for confirmAlert', async () => {
+    lib.configureDialogs({ unstyled: true, classNames: { panel: 'app' } })
+    lib.confirmAlert({ title: 'Legacy' })
+    const overlay = await waitForOverlay()
+    expect(overlay.querySelector('[data-slot="panel"]')!.className).toBe('react-confirm-alert')
+    buttonByText('Cancel').click()
+  })
+
+  test('depth and topmost leave out a closing dialog and count across dialogs', async () => {
+    lib.alert('A')
+    lib.alert('B')
+    await vi.waitFor(() => expect(document.querySelectorAll('[data-rca]').length).toBe(2))
+    const [a, b] = Array.from(document.querySelectorAll<HTMLElement>('[data-rca]'))
+    expect([a!.dataset.depth, b!.dataset.depth]).toEqual(['0', '1'])
+    expect(b!.hasAttribute('data-topmost')).toBe(true)
+  })
+})

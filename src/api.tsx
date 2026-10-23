@@ -159,10 +159,10 @@ export function PromptBody ({ props, options }: { props: DialogRenderProps<strin
           <input
             id={inputId}
             name='value'
-            {...slot('input')}
             data-autofocus=''
             defaultValue={options.defaultValue}
             {...options.inputProps}
+            {...slot('input', options.inputProps?.className)}
             aria-invalid={error ? true : undefined}
             aria-describedby={error ? errorId : undefined}
           />
@@ -170,10 +170,10 @@ export function PromptBody ({ props, options }: { props: DialogRenderProps<strin
         </div>
         <div {...slot('actions')}>
           <button type='button' {...slot('button')} data-variant='secondary' onClick={props.dismiss}>
-            {options.cancelLabel ?? 'Cancel'}
+            {options.cancelLabel ?? runtime().defaults.labels?.cancel ?? 'Cancel'}
           </button>
           <button type='submit' {...slot('button')} data-variant='primary' aria-busy={busy || undefined} disabled={busy}>
-            {options.submitLabel ?? 'OK'}
+            {options.submitLabel ?? runtime().defaults.labels?.submit ?? 'OK'}
           </button>
         </div>
       </Body>

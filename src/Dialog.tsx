@@ -59,7 +59,7 @@ export function Dialog (props: DialogProps): ReactElement | null {
   return (
     <DialogFrame
       id={id}
-      modal={props.modal ?? true}
+      modal={props.modal ?? runtime().defaults.modal ?? true}
       state='open'
       kind='custom'
       layers={styleLayers(props, false)}
@@ -67,8 +67,8 @@ export function Dialog (props: DialogProps): ReactElement | null {
       labelledBy={props['aria-labelledby']}
       describedBy={props['aria-describedby']}
       role='dialog'
-      closeOnClickOutside={props.closeOnClickOutside ?? true}
-      closeOnEscape={props.closeOnEscape ?? true}
+      closeOnClickOutside={props.closeOnClickOutside ?? runtime().defaults.closeOnClickOutside ?? true}
+      closeOnEscape={props.closeOnEscape ?? runtime().defaults.closeOnEscape ?? true}
       legacy={false}
       onKeyDown={props.onKeyDown}
       onDismiss={() => props.onOpenChange(false)}
@@ -115,10 +115,10 @@ export function ConfirmDialog (props: ConfirmDialogProps): ReactElement | null {
   } else {
     const danger = props.kind === 'confirm' && props.tone === 'danger'
     const buttons: DialogButton<boolean>[] = props.kind === 'alert'
-      ? [{ label: props.okLabel ?? 'OK', variant: 'primary' }]
+      ? [{ label: props.okLabel ?? runtime().defaults.labels?.ok ?? 'OK', variant: 'primary' }]
       : [
-          { label: props.cancelLabel ?? 'Cancel', value: false },
-          { label: props.confirmLabel ?? 'Confirm', value: true, variant: danger ? 'danger' : 'primary', onClick: props.onConfirm && ((ctx) => props.onConfirm!({ signal: ctx.signal })) }
+          { label: props.cancelLabel ?? runtime().defaults.labels?.cancel ?? 'Cancel', value: false },
+          { label: props.confirmLabel ?? runtime().defaults.labels?.confirm ?? 'Confirm', value: true, variant: danger ? 'danger' : 'primary', onClick: props.onConfirm && ((ctx) => props.onConfirm!({ signal: ctx.signal })) }
         ]
     const renderProps = { ...base, buttons, close: hide }
     body = <Body props={renderProps}><Buttons props={renderProps} signal={() => controller.current.signal} focus={props.kind === 'alert' || danger ? 0 : 1} /></Body>
@@ -126,7 +126,7 @@ export function ConfirmDialog (props: ConfirmDialogProps): ReactElement | null {
   return (
     <DialogFrame
       id={id}
-      modal={props.modal ?? true}
+      modal={props.modal ?? runtime().defaults.modal ?? true}
       state='open'
       kind={props.kind}
       layers={styleLayers(props, false)}
@@ -134,8 +134,8 @@ export function ConfirmDialog (props: ConfirmDialogProps): ReactElement | null {
       labelledBy={props.title ? titleId : undefined}
       describedBy={props.message ? descriptionId : undefined}
       role={props.kind === 'prompt' ? 'dialog' : 'alertdialog'}
-      closeOnClickOutside={props.closeOnClickOutside ?? true}
-      closeOnEscape={props.closeOnEscape ?? true}
+      closeOnClickOutside={props.closeOnClickOutside ?? runtime().defaults.closeOnClickOutside ?? true}
+      closeOnEscape={props.closeOnEscape ?? runtime().defaults.closeOnEscape ?? true}
       legacy={false}
       onKeyDown={props.onKeyDown}
       onDismiss={hide}

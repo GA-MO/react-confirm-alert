@@ -11,11 +11,14 @@ export function DialogStack ({ target, host }: { target: string | null, host?: s
   // The default container yields to the last mounted DialogHost; a host only renders while it is last.
   const active = host ? hosts[hosts.length - 1] === host : target !== null || hosts.length === 0
   if (!active) return null
+  // Depth and topmost count open dialogs across every container, not only this one.
+  const openIds = entries.filter((e) => e.phase === 'open').map((e) => e.id)
+  const top = openIds[openIds.length - 1]
   return (
     <>
       {entries
         .filter((e) => e.target === target && e.phase !== 'queued')
-        .map((e, i, visible) => <EntryView key={e.id} entry={e} depth={i} topmost={i === visible.length - 1} />)}
+        .map((e) => <EntryView key={e.id} entry={e} depth={openIds.indexOf(e.id)} topmost={e.id === top} />)}
     </>
   )
 }
