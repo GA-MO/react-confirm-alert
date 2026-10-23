@@ -107,15 +107,24 @@ test.each(['light', 'dark'])('every button variant keeps text at 4.5:1 or more a
       // A disabled button never becomes :active, so it stays measured as hovered.
       measure(id, kind === 'enabled' ? 'active' : 'hover')
       await pointer('up')
-      if (kind === 'enabled') {
-        await pointer('hover', '#start')
-        // After a key press the browser treats the next focus as keyboard focus.
-        document.getElementById('start')!.focus()
-        await userEvent.keyboard('a')
-        document.getElementById(id)!.focus()
-        measure(id, 'focus-visible')
-      }
     }
   }
+  // Keyboard focus, reached with real Tab presses: focus() from script is not :focus-visible in Firefox.
+  await pointer('hover', '#start')
+  document.getElementById('start')!.focus()
+  const focusable = variants.map((variant) => `b-${variant ?? 'none'}-enabled`)
+  const reached: string[] = []
+  for (let i = 0; i < focusable.length; i++) {
+    const from = document.activeElement as HTMLElement
+    await userEvent.tab()
+    // WebKit on macOS, like Safari, moves Tab to buttons only with Option held.
+    if (document.activeElement?.tagName !== 'BUTTON') {
+      from.focus()
+      await userEvent.keyboard('{Alt>}{Tab}{/Alt}')
+    }
+    reached.push(document.activeElement!.id)
+    measure(document.activeElement!.id, 'focus-visible')
+  }
+  expect(reached).toEqual(focusable)
   expect(failures).toEqual([])
 })
