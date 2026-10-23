@@ -15,18 +15,10 @@ body.react-confirm-alert-body-element {
   bottom: 0;
   z-index: var(--rca-z-index, 99);
   background: var(--rca-backdrop, rgba(255, 255, 255, 0.9));
-  display: -webkit-flex;
-  display: -moz-flex;
-  display: -ms-flex;
-  display: -o-flex;
   display: flex;
   justify-content: center;
-  -ms-align-items: center;
   align-items: center;
   opacity: 0;
-  -webkit-animation: react-confirm-alert-fadeIn var(--rca-duration, 0.5s) var(--rca-easing, ease) var(--rca-delay, 0.2s) forwards;
-  -moz-animation: react-confirm-alert-fadeIn var(--rca-duration, 0.5s) var(--rca-easing, ease) var(--rca-delay, 0.2s) forwards;
-  -o-animation: react-confirm-alert-fadeIn var(--rca-duration, 0.5s) var(--rca-easing, ease) var(--rca-delay, 0.2s) forwards;
   animation: react-confirm-alert-fadeIn var(--rca-duration, 0.5s) var(--rca-easing, ease) var(--rca-delay, 0.2s) forwards;
 }
 
@@ -57,10 +49,6 @@ body.react-confirm-alert-body-element {
 }
 
 .react-confirm-alert-button-group {
-  display: -webkit-flex;
-  display: -moz-flex;
-  display: -ms-flex;
-  display: -o-flex;
   display: flex;
   justify-content: flex-start;
   margin-top: 20px;
@@ -112,33 +100,6 @@ dialog.react-confirm-alert-overlay::backdrop {
 
 .react-confirm-alert:focus {
   outline: none;
-}
-
-@-webkit-keyframes react-confirm-alert-fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@-moz-keyframes react-confirm-alert-fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@-o-keyframes react-confirm-alert-fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
 }
 
 @keyframes react-confirm-alert-fadeIn {

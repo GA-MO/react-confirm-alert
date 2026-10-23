@@ -6,3 +6,4 @@ dist
 lib
 coverage
 .vitest
+typings

@@ -35,6 +35,7 @@
   "files": [
     "lib",
     "dist",
+    "typings",
     "src/react-confirm-alert.css",
     "index.d.ts"
   ],

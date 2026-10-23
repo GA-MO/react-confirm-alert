@@ -5,10 +5,10 @@
     "declaration": true,
     "emitDeclarationOnly": true,
     "rootDir": "src",
-    "declarationDir": "."
+    "declarationDir": "typings"
   },
   "include": [
-    "src/index.tsx"
+    "src"
   ],
   "exclude": [
     "node_modules"
