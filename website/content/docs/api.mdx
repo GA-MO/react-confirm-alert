@@ -9,7 +9,7 @@ import { ApiGallery, askInThaiOnce } from '@/components/api/gallery'
 import { deleteFile } from '@/components/api/confirm'
 import { showSaved } from '@/components/api/alert'
 import { renameFile } from '@/components/api/prompt'
-import { publish } from '@/components/api/wait'
+import { publish } from '@/components/api/publish'
 import { pickPlan } from '@/components/api/open-dialog'
 import { askThenClose } from '@/components/api/close-all'
 import { EditNote } from '@/components/api/dialog'
@@ -36,7 +36,7 @@ Resolves `true` from the confirm button and `false` otherwise. `tone: 'danger'` 
 When `onConfirm` returns a Promise, the button shows a spinner and the dialog stays open until it settles.
 
 <Example preview={<Try run={publish}>Publish</Try>}>
-<include meta='title="publish.tsx"'>../../components/api/wait.tsx</include>
+<include meta='title="publish.tsx"'>../../components/api/publish.tsx</include>
 </Example>
 
 <div className="var-table api-table">
@@ -70,7 +70,7 @@ Resolves when the dialog closes, from the button, Escape or a click outside.
 
 ## prompt
 
-Resolves the text, or `null` on Cancel and Escape. Return a message from `validate` to keep the dialog open.
+Resolves the text, or `null` on Cancel, Escape and a click outside. Return a message from `validate` to keep the dialog open.
 
 <Example preview={<Try run={renameFile}>Rename</Try>}>
 <include meta='title="prompt.tsx"'>../../components/api/prompt.tsx</include>
@@ -252,7 +252,7 @@ Sets defaults for every dialog. Call it once, where your app starts.
 | --- | --- | --- |
 | `labels` | `{ ok, confirm, cancel, submit }` | Default button text. |
 | `modal` | `boolean` | Native modal `<dialog>`. Default `true`. |
-| `strategy` | `'stack' \| 'queue'` | What a new dialog does when one is open. |
+| `strategy` | `'stack' \| 'queue' \| 'replace'` | What a new dialog does when one is open. Default `'stack'`. |
 | `closeOnEscape` | `boolean` | Default `true`. |
 | `closeOnClickOutside` | `boolean` | Default `true`. |
 | `lockScroll` | `boolean` | Stops the page from scrolling behind a dialog. Default `true`. |
@@ -275,7 +275,7 @@ Sets defaults for every dialog. Call it once, where your app starts.
 | `content` | `ReactNode` | Your JSX between the message and the buttons. |
 | `closeOnEscape` | `boolean` | Default `true`. |
 | `closeOnClickOutside` | `boolean` | Default `true`. |
-| `strategy` | `'stack' \| 'queue'` | `stack` opens on top, the default. `queue` waits its turn. |
+| `strategy` | `'stack' \| 'queue' \| 'replace'` | `stack` opens on top, the default. `queue` waits its turn. `replace` closes the open one. |
 | `modal` | `boolean` | `false` renders a plain overlay instead of a top-layer `<dialog>`. |
 | `signal` | `AbortSignal` | Aborting it dismisses the dialog. |
 | `onKeyDown` | `(event, close) => void` | Your own keys. `close()` dismisses. |

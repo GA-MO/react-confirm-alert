@@ -1,7 +1,9 @@
 'use client'
 import { configureDialogs, confirm } from 'react-confirm-alert'
 
-export function askInThai() {
+// Call once, where your app starts.
+export const setThaiLabels = () =>
   configureDialogs({ labels: { confirm: 'ลบ', cancel: 'ยกเลิก' } })
-  return confirm({ title: 'ลบไฟล์นี้ไหม', tone: 'danger' })
-}
+
+export const deleteInThai = () =>
+  confirm({ title: 'ลบไฟล์นี้ไหม', tone: 'danger' })

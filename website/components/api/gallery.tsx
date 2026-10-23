@@ -4,7 +4,7 @@ import { Gallery, type GalleryItem } from '../gallery'
 import { Try } from '../try'
 import { showSaved } from './alert'
 import { askThenClose } from './close-all'
-import { askInThai } from './configure-dialogs'
+import { deleteInThai, setThaiLabels } from './configure-dialogs'
 import { deleteFile } from './confirm'
 import { SubmitOrder } from './confirm-alert'
 import { LeavePage } from './confirm-dialog'
@@ -14,12 +14,15 @@ import { ShowTheme, ThemeName } from './dialog-host'
 import { renameWorkspace } from './dialog-layout'
 import { pickPlan } from './open-dialog'
 import { renameFile } from './prompt'
-import { publish } from './wait'
+import { publish } from './publish'
 
 const cancel = { label: 'Cancel' }
 
 // The preview resets the labels, so the Thai ones stay in this one example.
-export const askInThaiOnce = () => askInThai().finally(() => configureDialogs({}))
+export const askInThaiOnce = () => {
+  setThaiLabels()
+  return deleteInThai().finally(() => configureDialogs({}))
+}
 
 // Same order and anchors as the headings in content/docs/api.mdx.
 // Each picture repeats its example's options, so the card shows the dialog the button opens.
@@ -96,7 +99,7 @@ export const apiExamples: GalleryItem[] = [
     picture: {
       kind: 'custom',
       title: 'Edit note',
-      message: '12 characters',
+      message: '13 characters',
       content: <textarea defaultValue="Call the bank" />,
       buttons: [{ label: 'Done' }],
     },
@@ -132,6 +135,7 @@ export const apiExamples: GalleryItem[] = [
     Demo: ShowTheme,
     picture: {
       kind: 'alert',
+      title: 'Theme',
       content: <ThemeName />,
       buttons: [{ label: 'OK', variant: 'primary' }],
     },
