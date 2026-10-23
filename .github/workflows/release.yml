@@ -7,6 +7,7 @@ jobs:
   version:
     # No environment: the "Version Packages" PR updates on every push without approval.
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     permissions:
       contents: write
       pull-requests: write
@@ -24,21 +25,46 @@ jobs:
           version: npm run version-packages
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  verify:
+    # The full suite on every push to master; publish waits for it.
+    uses: ./.github/workflows/test-full.yml
   publish:
     # Runs once no changeset is pending, i.e. after the Version Packages PR is merged.
-    needs: version
+    needs: [version, verify]
     if: needs.version.outputs.hasChangesets == 'false'
     runs-on: ubuntu-latest   # trusted publishing does not support self-hosted runners
+    timeout-minutes: 15
     environment: npm-publish # must match the trusted publisher on npmjs; needs the owner's approval
     permissions:
-      contents: write        # changeset publish pushes git tags
+      contents: write        # the version tag and the GitHub Release
       id-token: write        # OIDC token for npm trusted publishing (provenance is automatic)
     steps:
       - uses: actions/checkout@v4
+        with: { fetch-depth: 0 } # the tag step finds the commit that set the version
       - uses: actions/setup-node@v4
         with: { node-version: 24 } # no registry-url and no NODE_AUTH_TOKEN: either can block OIDC
       - run: npm install -g npm@latest && npm --version # trusted publishing needs npm 11.5.1+
       - run: npm ci
       - run: npm ci --prefix fixtures/v3-baseline
       - run: npm run release # changeset publish skips versions already on the registry
-      - run: git push --follow-tags
+      # changeset publish makes a lightweight tag, which git push --follow-tags skips, so 3.1.0 never
+      # reached GitHub. This step tags the commit that set the published version (annotated), pushes it
+      # by name and creates the GitHub Release from that version's CHANGELOG section. It does nothing
+      # for a version npm does not have, and skips a tag or release that already exists.
+      - name: Tag and GitHub Release
+        env: { GH_TOKEN: '${{ secrets.GITHUB_TOKEN }}' }
+        run: |
+          version=$(node -p "require('./package.json').version")
+          tag="v$version"
+          npm view "react-confirm-alert@$version" version >/dev/null || { echo "$version is not on npm"; exit 0; }
+          if ! git ls-remote --exit-code --tags origin "refs/tags/$tag" >/dev/null; then
+            commit=$(git log -1 --format=%H -S"\"version\": \"$version\"" -- package.json)
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git tag -f -a "$tag" "$commit" -m "$tag"
+            git push origin "refs/tags/$tag"
+          fi
+          if ! gh release view "$tag" >/dev/null 2>&1; then
+            awk -v v="$version" '$0 == "## " v { on = 1; next } /^## / && on { exit } on' CHANGELOG.md > release-notes.md
+            gh release create "$tag" --title "$tag" --notes-file release-notes.md --verify-tag
+          fi
