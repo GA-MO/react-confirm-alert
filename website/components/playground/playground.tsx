@@ -134,10 +134,10 @@ export function Playground ({ sources }: { sources: Record<string, string> }) {
         </header>
         {example && Variant && (
           <>
-            <div role="radiogroup" aria-label="Written with" className="flex flex-wrap gap-1 rounded-xl bg-fd-muted p-1">
+            <div role="radiogroup" aria-label="Written with" className="grid grid-cols-4 gap-1 rounded-xl bg-fd-muted p-1">
               {apis.map((a) => (
                 <button key={a.id} role="radio" aria-checked={api === a.id} onClick={() => setApi(a.id)}
-                  className="cursor-pointer rounded-lg px-3 py-1.5 font-mono text-xs text-fd-muted-foreground transition duration-150 hover:text-fd-foreground active:scale-97 aria-checked:bg-fd-background aria-checked:text-fd-foreground aria-checked:shadow-sm">
+                  className="cursor-pointer whitespace-nowrap rounded-lg px-1 py-1.5 text-xs text-fd-muted-foreground transition duration-150 hover:text-fd-foreground active:scale-97 aria-checked:bg-fd-background aria-checked:text-fd-foreground aria-checked:shadow-sm">
                   {a.label}
                 </button>
               ))}

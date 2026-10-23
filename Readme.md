@@ -29,7 +29,7 @@ if (await confirm({ title: 'Delete file?', message: 'This cannot be undone.', to
 
 ## Custom UI
 
-Put your own form, list or warning in a dialog. Plain HTML gets the default look, and any class you add wins:
+Put your own form, list or warning in a dialog. Plain HTML gets the default look, even under Tailwind v4 preflight, and any class you add wins:
 
 ```jsx
 import { DialogLayout, openDialog } from 'react-confirm-alert'
