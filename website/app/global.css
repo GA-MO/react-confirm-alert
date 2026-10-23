@@ -74,7 +74,7 @@ figure.shiki .line.highlighted::after { border-left: 2px solid color-mix(in okla
 .dark figure.shiki .line.highlighted { background: color-mix(in oklab, var(--color-indigo-300) 6%, transparent); }
 .dark figure.shiki .line.highlighted::after { border-left-color: color-mix(in oklab, var(--color-indigo-400) 80%, transparent); }
 
-/* Home variants. A theme switch eases the open dialog into its new look; B's stage has a dot grid. */
+/* Home: a theme switch eases the open dialog into its new look. */
 @media (prefers-reduced-motion: no-preference) {
   .home-stage [data-rca], .home-stage [data-rca] :is([data-slot=panel], [data-slot=body], [data-slot=button], [data-slot=title], [data-slot=message]),
   .dialog-thumbnail [data-rca], .dialog-thumbnail [data-rca] :is([data-slot=panel], [data-slot=body], [data-slot=button]) {
@@ -83,7 +83,6 @@ figure.shiki .line.highlighted::after { border-left: 2px solid color-mix(in okla
     transition-timing-function: var(--ease-out-quint);
   }
 }
-.home-dots { background-image: radial-gradient(var(--color-fd-border) 1px, transparent 1px); background-size: 16px 16px; }
 
 /* Playground: a line the last option change added glows briefly, so you see what changed. */
 @keyframes just-changed {

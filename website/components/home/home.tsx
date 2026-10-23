@@ -14,8 +14,8 @@ import { useTheme } from './use-theme'
 const rise = (i: number) => ({ animationDelay: `${i * 70}ms` })
 const enter = 'animate-rise motion-reduce:animate-none'
 
-// A: the product page. Copy and proof on the left, the live dialog on the right.
-export function HomeA({ stats }: { stats: HomeStats }) {
+// Copy and proof on the left, the live dialog on the right.
+export function Home({ stats }: { stats: HomeStats }) {
   const [theme, setTheme] = useState(themes[0]!)
   useTheme(theme)
   return (
