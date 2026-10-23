@@ -1,12 +1,12 @@
 import React, { createContext, useContext, useState } from 'react'
 import { createRoot, type Root } from 'react-dom/client'
 import { afterEach, beforeEach, expect, onTestFinished, test, vi } from 'vitest'
-import { userEvent } from 'vitest/browser'
+import { server, userEvent } from 'vitest/browser'
 import 'react-confirm-alert/src/react-confirm-alert.css'
 import { buttonByText, cleanupPage, loadV3, overlay, setupPage, spyConsole, waitForOverlay } from './v3'
 
 // One test per open issue that a browser test can reproduce. Each is test.fails until the phase that
-// fixes it (plan section 1), which turns it into a plain test.
+// fixes it (plan section 1), which turns it into a plain test. #38 waits for confirm() in P3.
 
 let lib: any
 let roots: Root[] = []
@@ -31,25 +31,31 @@ function render(element: React.ReactElement) {
   return host
 }
 
-test.fails('#29 Tab from inside the dialog reaches its buttons, not the page behind', async () => {
+test('#29 focus moves into the dialog and Tab reaches its buttons, not the page behind', async () => {
+  document.getElementById('behind')!.focus()
   lib.confirmAlert({ title: 'Tab' })
   const el = await waitForOverlay()
+  await vi.waitFor(() => expect(el.contains(document.activeElement)).toBe(true))
   await userEvent.tab()
-  expect(el.contains(document.activeElement)).toBe(true)
+  // WebKit only tabs to buttons when the macOS "use keyboard navigation" setting is on.
+  if (server.browser !== 'webkit') expect(document.activeElement).toBe(buttonByText('Cancel'))
+  expect(document.activeElement).not.toBe(document.getElementById('behind'))
+  buttonByText('Cancel').click()
 })
 
-test.fails('#31 the dialog sits above a Bootstrap modal (z-index 1050)', async () => {
+test('#31 with modal: true the dialog sits above a Bootstrap modal (z-index 1050)', async () => {
   // React-Bootstrap portals its modal to the end of body, outside the app root that v3 blurs.
   const modal = document.createElement('div')
   modal.style.cssText = 'position:fixed;inset:0;z-index:1050;background:rgba(0,0,0,.3)'
   document.body.append(modal)
   onTestFinished(() => modal.remove())
-  lib.confirmAlert({ title: 'Above' })
+  lib.confirmAlert({ title: 'Above', modal: true })
   await waitForOverlay()
   await new Promise((resolve) => setTimeout(resolve, 800))
   const button = buttonByText('Cancel')
   const box = button.getBoundingClientRect()
   expect(document.elementFromPoint(box.x + box.width / 2, box.y + box.height / 2)).toBe(button)
+  button.click()
 })
 
 test.fails('#38 line breaks in message are kept', async () => {
@@ -97,7 +103,7 @@ test.fails('#63 #66 a dialog reads the latest parent state', async () => {
   expect(buttonByText('Save').disabled).toBe(false)
 })
 
-test.fails('#77 the page is blurred on every open, not only the first', async () => {
+test('#77 the page is blurred on every open, not only the first', async () => {
   lib.confirmAlert({ title: 'First' })
   await waitForOverlay()
   buttonByText('Cancel').click()
@@ -107,7 +113,7 @@ test.fails('#77 the page is blurred on every open, not only the first', async ()
   buttonByText('Cancel').click()
 })
 
-test.fails('#82 calling confirmAlert while a dialog is open logs no createRoot error', async () => {
+test('#82 calling confirmAlert while a dialog is open logs no createRoot error', async () => {
   const consoleSpy = spyConsole()
   lib.confirmAlert({ title: 'First' })
   await waitForOverlay()
@@ -116,7 +122,7 @@ test.fails('#82 calling confirmAlert while a dialog is open logs no createRoot e
   expect(consoleSpy.error).not.toHaveBeenCalled()
 })
 
-test.fails('#84 #89 onkeyPress receives the keyboard event and a close function', async () => {
+test('#84 #89 onkeyPress receives the keyboard event and a close function', async () => {
   const onkeyPress = vi.fn()
   lib.confirmAlert({ title: 'Key', onkeyPress })
   await waitForOverlay()
@@ -125,7 +131,7 @@ test.fails('#84 #89 onkeyPress receives the keyboard event and a close function'
   expect(typeof onkeyPress.mock.calls[0][1]).toBe('function')
 })
 
-test.fails('#92 pressing inside and releasing outside does not close', async () => {
+test('#92 pressing inside and releasing outside does not close', async () => {
   const onClickOutside = vi.fn()
   lib.confirmAlert({ title: 'Drag', onClickOutside })
   const el = await waitForOverlay()

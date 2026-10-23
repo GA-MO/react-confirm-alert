@@ -7,7 +7,7 @@ const root = fileURLToPath(new URL('./', import.meta.url))
 // Playwright's Firefox cannot launch on some macOS versions ("Could not find profile folder"),
 // so a machine can narrow the list, e.g. VITEST_BROWSERS=chromium,webkit. CI runs all three.
 // RCA_TARGET=build runs the same tests against the built ESM file instead of the source.
-const entry = process.env.RCA_TARGET === 'build' ? 'dist/index.esm.js' : 'src/index.tsx'
+const entry = process.env.RCA_TARGET === 'build' ? 'dist/index.esm.js' : 'src/index.ts'
 
 const browsers = (process.env.VITEST_BROWSERS ?? 'chromium,firefox,webkit').split(',')
 

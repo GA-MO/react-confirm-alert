@@ -141,8 +141,7 @@ describe('buttons and timing', () => {
     buttonByText('Cancel').click()
   })
 
-  // B21: v3 never unmounts the replaced dialog and logs a createRoot error.
-  test.fails('the replaced dialog gets willUnmount and afterClose once, with no console error (B21)', async () => {
+  test('the replaced dialog gets willUnmount and afterClose once, with no console error (B21)', async () => {
     const consoleSpy = spyConsole()
     const first = { willUnmount: vi.fn(), afterClose: vi.fn() }
     lib.confirmAlert({ title: 'First', ...first })
@@ -154,8 +153,7 @@ describe('buttons and timing', () => {
     expect(consoleSpy.error).not.toHaveBeenCalled()
   })
 
-  // B21: v3 runs close() twice when Esc is also in keyCodeForClose.
-  test.fails('afterClose runs once when Esc is also in keyCodeForClose (B21)', async () => {
+  test('afterClose runs once when Esc is also in keyCodeForClose (B21)', async () => {
     const afterClose = vi.fn()
     lib.confirmAlert({ title: 'Twice', keyCodeForClose: [27], afterClose })
     await waitForOverlay()
@@ -280,8 +278,7 @@ describe('default export', () => {
 })
 
 describe('focus', () => {
-  // B14: v3 leaves focus on the page behind the dialog.
-  test.fails('focus moves to the panel, not to a button (B14)', async () => {
+  test('focus moves to the panel, not to a button (B14)', async () => {
     document.getElementById('behind')!.focus()
     lib.confirmAlert({ title: 'Focus' })
     const el = await waitForOverlay()

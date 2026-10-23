@@ -24,7 +24,7 @@ export default defineConfig({
     minify: false,
     sourcemap: false,
     lib: {
-      entry: 'src/index.tsx',
+      entry: 'src/index.ts',
       formats: ['es', 'cjs'],
       fileName: (format) => (format === 'es' ? 'dist/index.esm.js' : 'lib/index.js')
     },

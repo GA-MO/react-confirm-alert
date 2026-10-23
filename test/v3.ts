@@ -6,6 +6,8 @@ let instance = 0
 
 // Each test gets its own copy of the module, so v3's module-level `root` never leaks between tests.
 export async function loadV3(): Promise<any> {
+  // The library keeps its page state on globalThis (shared by ESM and CJS copies). Each test starts clean.
+  delete (globalThis as any)[Symbol.for('react-confirm-alert/runtime')]
   instance += 1
   return import(/* @vite-ignore */ `/${__RCA_ENTRY__}?instance=${instance}`)
 }
