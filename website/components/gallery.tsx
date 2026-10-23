@@ -1,4 +1,5 @@
 'use client'
+import Link from 'next/link'
 import type { ComponentType, ReactNode } from 'react'
 import type { DialogKind, DialogSlot, StyleOptions } from 'react-confirm-alert'
 
@@ -67,11 +68,11 @@ export function Gallery({ items }: { items: readonly GalleryItem[] }) {
       {items.map(({ id, href = `#${id}`, label, change, Demo, picture }) => (
         <div key={id} className="flex flex-col gap-3 rounded-xl border bg-fd-card p-3">
           <DialogThumbnail {...picture} />
-          <div className="gallery-tile flex flex-col items-start gap-3 px-1 pb-1">
-            <a href={href} className="hover:underline">
+          <div className="gallery-tile flex flex-wrap items-center gap-x-2 gap-y-3 px-1 pb-1">
+            <Link href={href} className="basis-full hover:underline">
               <span className="block text-sm font-medium text-fd-foreground">{label}</span>
               <span className="block text-xs text-fd-muted-foreground">{change}</span>
-            </a>
+            </Link>
             <Demo />
           </div>
         </div>
