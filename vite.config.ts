@@ -19,6 +19,8 @@ export default defineConfig({
   build: {
     outDir: '.',
     emptyOutDir: false,
+    // webpack 4's parser stops at ES2019 syntax (no class fields or static blocks), and v3 shipped ES5.
+    target: 'es2018',
     minify: false,
     sourcemap: false,
     lib: {
