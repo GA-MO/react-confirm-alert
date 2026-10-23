@@ -1,5 +1,11 @@
 # react-confirm-alert
 
+## 3.1.1
+
+### Patch Changes
+
+- [#99](https://github.com/GA-MO/react-confirm-alert/pull/99) [`83cad54`](https://github.com/GA-MO/react-confirm-alert/commit/83cad544985803daee385a24df418373420db3c6) Thanks [@GA-MO](https://github.com/GA-MO)! - Add a shorter CSS path: `import 'react-confirm-alert/style.css'`. It is a copy of `src/react-confirm-alert.css`, which keeps working.
+
 ## 3.1.0
 
 ### Minor Changes
