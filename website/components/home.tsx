@@ -2,8 +2,17 @@
 import Link from 'next/link'
 import { useState } from 'react'
 import { confirm, prompt } from 'react-confirm-alert'
+import { customUIExamples } from './custom-ui/gallery'
+import { cardFrom, Gallery } from './gallery'
+import { stylingExamples } from './styling/gallery'
 
 const starter = ['Q3 report.pdf', 'Brand guidelines.fig', 'Launch notes.md']
+
+const showcase = [
+  cardFrom(customUIExamples, '/docs/custom-ui', 'a-form-with-validation', 'Your own form', 'Plain HTML, no class names'),
+  cardFrom(stylingExamples, '/docs/styling', 'dark-mode', 'Dark mode', 'A class on <html>'),
+  cardFrom(stylingExamples, '/docs/styling', 'tailwind-only', 'Tailwind only', 'unstyled + classNames'),
+]
 
 type Entry = { id: number, call: string, value: string }
 
@@ -79,6 +88,10 @@ export function Home () {
               </ul>
               )}
         </div>
+      </section>
+      <section aria-labelledby="showcase" className="md:col-span-2">
+        <h2 id="showcase" className="text-sm font-medium text-zinc-500">Forms, dark mode and Tailwind, from the same calls</h2>
+        <Gallery items={showcase} />
       </section>
     </main>
   )

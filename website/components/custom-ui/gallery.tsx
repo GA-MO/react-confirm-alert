@@ -9,7 +9,7 @@ const cancel = { label: 'Cancel' }
 
 // Same order and anchors as the headings in content/docs/custom-ui.mdx.
 // Each picture repeats its example's content, so the card shows the dialog the button opens.
-const examples: GalleryItem[] = [
+export const customUIExamples: GalleryItem[] = [
   {
     id: 'a-form-with-validation',
     label: 'A form with validation',
@@ -84,5 +84,5 @@ const examples: GalleryItem[] = [
 ]
 
 export function CustomUIGallery() {
-  return <Gallery items={examples} />
+  return <Gallery items={customUIExamples} />
 }

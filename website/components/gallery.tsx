@@ -25,6 +25,13 @@ export interface GalleryItem {
   picture: Picture
 }
 
+// A card from another page's gallery, linked to its section on that page and relabelled.
+export function cardFrom(items: readonly GalleryItem[], page: string, id: string, label: string, change: string): GalleryItem {
+  const item = items.find((e) => e.id === id)
+  if (!item) throw new Error(`No ${id} card on ${page}`)
+  return { ...item, href: `${page}#${id}`, label, change }
+}
+
 // The class names the library adds per slot (src/classNames.ts), left out with unstyled.
 const builtIn: Partial<Record<DialogSlot, string>> = {
   dialog: 'react-confirm-alert-overlay',
