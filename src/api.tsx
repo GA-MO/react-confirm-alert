@@ -1,7 +1,7 @@
-import { useId, useState, type FormEvent, type ReactNode, type ReactElement } from 'react'
+import { useContext, useId, useState, type FormEvent, type ReactNode, type ReactElement } from 'react'
 import { closeDialog as closeEntry, openEntry } from './lifecycle'
 import { runtime, store, update } from './store'
-import { useSlot } from './classNames'
+import { FrameContext, useSlot } from './classNames'
 import type {
   AlertOptions,
   ConfirmOptions,
@@ -41,13 +41,14 @@ function open<R> (options: Omit<EntryOptions, 'render'>, dismissValue: R, body: 
 
 export function Body ({ props, children }: { props: DialogRenderProps<any>, children: ReactNode }): ReactElement {
   const slot = useSlot()
+  const frame = useContext(FrameContext)
   return (
     <div {...slot('body')}>
       {props.title && <h1 id={props.titleId} {...slot('title')}>{props.title}</h1>}
       {props.message != null && (typeof props.message === 'object'
         ? <div id={props.descriptionId} {...slot('message')}>{props.message}</div>
         : <p id={props.descriptionId} {...slot('message')}>{props.message}</p>)}
-      {props.content}
+      {props.content != null && <FrameContext.Provider value={{ ...frame, inBody: true }}>{props.content}</FrameContext.Provider>}
       {children}
     </div>
   )

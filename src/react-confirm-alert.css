@@ -208,7 +208,7 @@ dialog.react-confirm-alert-overlay::backdrop {
   color: var(--rca-title, var(--_title));
 }
 .react-confirm-alert-overlay[data-skin] [data-slot=input],
-:where(.react-confirm-alert-overlay[data-skin]) div :is(input:where(:not([type=checkbox], [type=radio], [type=range], [type=file], [type=color])), textarea, select) {
+:where(.react-confirm-alert-overlay[data-skin]) div :is(input:where(:not([type=checkbox], [type=radio], [type=range], [type=file], [type=color], [type=submit], [type=button], [type=reset], [type=image])), textarea, select) {
   display: block;
   box-sizing: border-box;
   width: 100%;

@@ -75,6 +75,8 @@ function LegacyContent ({ props, titleId, close, id, skin }: LegacyContentProps)
   useLayoutEffect(() => {
     const keyboard = (event: KeyboardEvent) => {
       if (id && topmost(store.get())?.id !== id) return
+      // A DialogLayout action that waits keeps the dialog open, as in the new API.
+      if (id && runtime().busy.has(id)) return
       const { props } = latest.current
       // A key that closes the dialog stops there: focus returns to the opener before the key's
       // default action, so Enter would otherwise click the opener and reopen the dialog (#84).
