@@ -43,13 +43,17 @@ export function DialogFrame (props: DialogFrameProps) {
     // The v3 API focuses the panel, so Enter cannot press a button by accident (B14). The new API
     // focuses the element its body marks, or keeps what showModal chose.
     const marked = panel.current?.querySelector<HTMLElement>('[data-autofocus]')
-    if (props.legacy || !marked) panel.current?.focus({ preventScroll: true })
-    else marked.focus({ preventScroll: true })
+    const inside = panel.current?.contains(document.activeElement)
+    if (props.legacy || (!marked && !inside)) panel.current?.focus({ preventScroll: true })
+    else if (marked) marked.focus({ preventScroll: true })
     return () => {
       if (props.id) registerFrame(props.id, null, null)
       const dialog = element as HTMLDialogElement
       if (native && dialog.open) dialog.close()
-      if (previous instanceof HTMLElement && previous.isConnected) previous.focus({ preventScroll: true })
+      // After the whole batch of closes commits, so an element under another closing modal is no longer inert.
+      queueMicrotask(() => {
+        if (previous instanceof HTMLElement && previous.isConnected) previous.focus({ preventScroll: true })
+      })
     }
   }, [])
 
@@ -82,8 +86,12 @@ export function DialogFrame (props: DialogFrameProps) {
   }
 
   // Some browsers close a modal dialog on a repeated Escape even when cancel was prevented.
+  // Escape is blocked by closeOnEscape: false or a busy button, so the dialog opens again.
   const onClose = () => {
-    if (props.state === 'open') props.onDismiss()
+    if (props.state !== 'open') return
+    const blocked = !props.closeOnEscape || isBusy()
+    if (blocked) (frame.current as HTMLDialogElement).showModal()
+    else props.onDismiss()
   }
 
   const shared = {

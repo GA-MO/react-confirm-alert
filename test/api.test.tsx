@@ -120,3 +120,26 @@ test('an aborted signal dismisses the dialog', async () => {
   controller.abort()
   await expect(result).resolves.toBe(false)
 })
+
+test('repeated Escape does not close a dialog whose button is still busy', async () => {
+  const result = vi.fn()
+  lib.confirm({ title: 'Busy', onConfirm: () => new Promise(() => {}) }).then(result)
+  await vi.waitFor(() => expect(titles()).toEqual(['Busy']))
+  buttonByText('Confirm').click()
+  await userEvent.keyboard('{Escape}')
+  await userEvent.keyboard('{Escape}')
+  await new Promise((r) => setTimeout(r, 50))
+  expect(titles()).toEqual(['Busy'])
+  expect(result).not.toHaveBeenCalled()
+})
+
+test('a rejected validate logs the error and leaves the prompt usable', async () => {
+  const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
+  const result = lib.prompt({ title: 'Name', validate: () => Promise.reject(new Error('down')) })
+  await vi.waitFor(() => expect(document.querySelector('input')).not.toBeNull())
+  await userEvent.keyboard('{Enter}')
+  await vi.waitFor(() => expect(consoleError).toHaveBeenCalled())
+  expect(buttonByText('OK').disabled).toBe(false)
+  buttonByText('Cancel').click()
+  await expect(result).resolves.toBe(null)
+})

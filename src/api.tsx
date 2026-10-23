@@ -27,11 +27,13 @@ function open<R> (options: Omit<EntryOptions, 'render'>, dismissValue: R, body: 
   const settle = (value: unknown) => {
     if (controller.signal.aborted) return
     controller.abort()
+    options.signal?.removeEventListener('abort', onAbort)
     resolve(value === undefined ? dismissValue : value as R)
   }
   const render = (props: DialogRenderProps<any>) => <>{body(props, controller.signal)}</>
+  const onAbort = () => closeEntry(id)
   const id = openEntry({ ...options, render }, null, options.strategy ?? 'stack', settle)
-  options.signal?.addEventListener('abort', () => closeEntry(id), { once: true })
+  options.signal?.addEventListener('abort', onAbort, { once: true })
   if (options.signal?.aborted) closeEntry(id)
   return { id, result }
 }
@@ -49,18 +51,21 @@ function Body ({ props, children }: { props: DialogRenderProps<any>, children: R
 function Buttons<R> ({ props, signal, focus }: { props: DialogRenderProps<R>, signal: AbortSignal, focus: number }) {
   const [busy, setBusy] = useState<number | null>(null)
   const press = async (button: DialogButton<R>, index: number) => {
-    const outcome = button.onClick?.({ close: props.close, dismiss: props.dismiss, signal })
-    if (!(outcome instanceof Promise)) {
-      if (outcome !== false) props.close(button.value as R)
-      return
-    }
-    setBusy(index)
-    runtime().busy.add(props.id)
+    let waiting = false
     try {
+      const outcome = button.onClick?.({ close: props.close, dismiss: props.dismiss, signal })
+      if (!(outcome instanceof Promise)) {
+        if (outcome !== false) props.close(button.value as R)
+        return
+      }
+      waiting = true
+      setBusy(index)
+      runtime().busy.add(props.id)
       if ((await outcome) !== false && !signal.aborted) props.close(button.value as R)
     } catch (error) {
       console.error(error)
     } finally {
+      if (!waiting) return
       runtime().busy.delete(props.id)
       if (!signal.aborted) setBusy(null)
     }
@@ -124,10 +129,17 @@ function PromptBody ({ props, options }: { props: DialogRenderProps<string>, opt
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     const value = (event.currentTarget.elements.namedItem('value') as HTMLInputElement).value
-    const check = options.validate?.(value) ?? null
-    if (check instanceof Promise) setBusy(true)
-    const message = await check
-    setBusy(false)
+    let message: string | null
+    try {
+      const check = options.validate?.(value) ?? null
+      if (check instanceof Promise) setBusy(true)
+      message = await check
+    } catch (error) {
+      console.error(error)
+      return
+    } finally {
+      setBusy(false)
+    }
     if (message) setError(message)
     else props.close(value)
   }
