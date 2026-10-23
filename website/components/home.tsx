@@ -2,16 +2,15 @@
 import Link from 'next/link'
 import { useState } from 'react'
 import { confirm, prompt } from 'react-confirm-alert'
-import { customUIExamples } from './custom-ui/gallery'
 import { cardFrom, Gallery } from './gallery'
 import { stylingExamples } from './styling/gallery'
 
 const starter = ['Q3 report.pdf', 'Brand guidelines.fig', 'Launch notes.md']
 
 const showcase = [
-  cardFrom(customUIExamples, '/docs/custom-ui', 'a-form-with-validation', 'Your own form', 'Plain HTML, no class names'),
-  cardFrom(stylingExamples, '/docs/styling', 'dark-mode', 'Dark mode', 'A class on <html>'),
-  cardFrom(stylingExamples, '/docs/styling', 'tailwind-only', 'Tailwind only', 'unstyled + classNames'),
+  cardFrom(stylingExamples, 'a-form-in-your-own-content', { href: '/docs/custom-ui', label: 'Your own form', change: 'Plain HTML, no class names' }),
+  cardFrom(stylingExamples, 'dark-mode', { href: '/docs/styling#dark-mode', label: 'Dark mode', change: 'A class on <html>' }),
+  cardFrom(stylingExamples, 'tailwind-only', { href: '/docs/recipes/tailwind', label: 'Tailwind only', change: 'unstyled + classNames' }),
 ]
 
 type Entry = { id: number, call: string, value: string }
