@@ -1,27 +1,117 @@
 ---
 title: Styling
-description: CSS variables, classNames per slot, data attributes and unstyled.
+description: Change colours, corners, size and layout. Every example opens a real dialog you can copy.
 ---
 
-## CSS variables
+import { Example } from '@/components/example'
+import { StylingGallery } from '@/components/styling/gallery'
+import { BrandColor } from '@/components/styling/brand-color'
+import { RoundCorners } from '@/components/styling/round-corners'
+import { SharpCorners } from '@/components/styling/sharp-corners'
+import { Compact } from '@/components/styling/compact'
+import { DarkMode } from '@/components/styling/dark-mode'
+import { FullWidthButtons } from '@/components/styling/full-width-buttons'
+import { IconTitle } from '@/components/styling/icon-title'
+import { FeedbackForm } from '@/components/styling/feedback-form'
+import { TailwindOnly } from '@/components/styling/tailwind-only'
 
-The default CSS reads every value from a variable. For `confirmAlert` the fallbacks are the 3.0 values. `--rca-title`, `--rca-border`, `--rca-ring`, `--rca-button-bg-hover` and `--rca-danger-hover` style `confirm`, `alert` and `prompt` only. The two hover colours default to `--rca-button-bg` and `--rca-danger` made 15% darker.
+Most looks take one to three CSS variables. Press a button to open the dialog, then copy the code under its example. The examples go from the smallest change to the largest.
 
-`--rca-width`, `--rca-padding`, `--rca-radius`, `--rca-bg`, `--rca-fg`, `--rca-title`, `--rca-border`, `--rca-shadow`, `--rca-font`, `--rca-gap`, `--rca-backdrop`, `--rca-blur`, `--rca-z-index`, `--rca-button-bg`, `--rca-button-bg-hover`, `--rca-button-fg`, `--rca-button-radius`, `--rca-danger`, `--rca-danger-hover`, `--rca-ring`, `--rca-focus-ring`, `--rca-duration`, `--rca-delay`, `--rca-easing`.
+<StylingGallery />
+
+Each example puts its variables on a class that it passes to `classNames.dialog`, so only that dialog changes. To change every dialog in your app, put the same variables on `:root` and leave `classNames` out:
 
 ```css
-:root { --rca-width: 28rem; --rca-button-bg: #111; }
+:root {
+  --rca-button-bg: #4f46e5;
+}
 ```
 
-## Dark mode
+## Examples
 
-Dark mode is off until you turn it on. It doesn't follow the OS setting by itself, so it can't disagree with your app's own theme switch. Put the `dark` class or `data-theme="dark"` on an ancestor, usually `<html>`:
+### Brand colour
+
+`--rca-button-bg` colours the main button. Its hover colour follows by itself.
+
+<Example preview={<BrandColor />}>
+<include meta='title="brand-color.css"'>../../components/styling/brand-color.css</include>
+<include meta='title="brand-color.tsx"'>../../components/styling/brand-color.tsx</include>
+</Example>
+
+### Round corners
+
+`--rca-radius` rounds the panel and `--rca-button-radius` rounds the buttons. `999px` makes a pill.
+
+<Example preview={<RoundCorners />}>
+<include meta='title="round-corners.css"'>../../components/styling/round-corners.css</include>
+<include meta='title="round-corners.tsx"'>../../components/styling/round-corners.tsx</include>
+</Example>
+
+### Sharp corners
+
+<Example preview={<SharpCorners />}>
+<include meta='title="sharp-corners.css"'>../../components/styling/sharp-corners.css</include>
+<include meta='title="sharp-corners.tsx"'>../../components/styling/sharp-corners.tsx</include>
+</Example>
+
+### Compact
+
+A narrower panel with less space inside and between the buttons. The panel never grows wider than the screen.
+
+<Example preview={<Compact />}>
+<include meta='title="compact.css"'>../../components/styling/compact.css</include>
+<include meta='title="compact.tsx"'>../../components/styling/compact.tsx</include>
+</Example>
+
+### Dark mode
+
+Dark colours are off until you turn them on. Put `class="dark"` or `data-theme="dark"` on an ancestor of the dialog, usually `<html>`:
 
 ```html
 <html class="dark">
 ```
 
-To follow the OS setting instead, set the class from `prefers-color-scheme` in your theme code. Set `--rca-*` variables under your dark selector to change the dark colours.
+The library does not follow the OS setting by itself, so it cannot disagree with your app's own theme switch. To follow the OS, set the class from `prefers-color-scheme` in your theme code. To change the dark colours, set `--rca-*` variables under your dark selector.
+
+The preview puts the attribute on a `div` around a `<Dialog>`, which renders in place, so you can see dark mode on a light page:
+
+<Example preview={<DarkMode />}>
+<include meta='title="dark-mode.tsx"'>../../components/styling/dark-mode.tsx</include>
+</Example>
+
+### Full-width buttons
+
+`classNames.button` adds a class to every button. The default CSS sets no `flex-grow` on buttons, so one line makes them share the row. On screens 480px wide or narrower, the buttons already stack at full width.
+
+<Example preview={<FullWidthButtons />}>
+<include meta='title="full-width-buttons.css"'>../../components/styling/full-width-buttons.css</include>
+<include meta='title="full-width-buttons.tsx"'>../../components/styling/full-width-buttons.tsx</include>
+</Example>
+
+### Icon before the title
+
+`title` takes any React node, so an icon goes in with the text.
+
+<Example preview={<IconTitle />}>
+<include meta='title="icon-title.css"'>../../components/styling/icon-title.css</include>
+<include meta='title="icon-title.tsx"'>../../components/styling/icon-title.tsx</include>
+</Example>
+
+### A form in your own content
+
+Plain `label`, `select`, `textarea` and checkbox elements get the default look with no class names. [Your own content](#your-own-content) lists the rules. [Custom UI](/docs/custom-ui) has more forms.
+
+<Example preview={<FeedbackForm />}>
+<include meta='title="feedback-form.tsx"'>../../components/styling/feedback-form.tsx</include>
+</Example>
+
+### Tailwind only
+
+`unstyled: true` drops the default CSS, and `classNames` styles each slot. To use the same look for every dialog, pass these options once to `configureDialogs`. The [Tailwind recipe](/docs/recipes/tailwind) shows how to keep the default CSS and add utilities instead.
+
+<Example preview={<TailwindOnly />}>
+<include meta='title="tailwind-only.tsx"'>../../components/styling/tailwind-only.tsx</include>
+</Example>
 
 ## Slots
 
@@ -63,8 +153,6 @@ A `data-slot` rule is more specific than the plain element rules, so use it when
 
 The plain element rules are built to beat Tailwind v4 preflight. Tailwind v3 preflight and `@tailwindcss/forms` use attribute selectors such as `[type='button']`, which win over them: there, a plain `<button type="button">` loses its background. Use `data-slot` and `data-variant`, `DialogLayout`, or classes in those setups.
 
-Radios and checkboxes take `--rca-button-bg` as their accent colour.
-
 ## Data attributes
 
 The frame has `data-rca`, `data-state` (`open` or `closing`), `data-kind`, `data-tone`, `data-depth`, `data-topmost` and, while a button waits, `data-busy`. Every slot has `data-slot`; buttons have `data-variant`.
@@ -76,3 +164,46 @@ The frame has `data-rca`, `data-state` (`open` or `closing`), `data-kind`, `data
 ## Motion
 
 Closing waits for animations and transitions on the frame, its `::backdrop` and the panel, so an exit transition on `[data-state='closing']` plays out. `prefers-reduced-motion: reduce` turns the default fade-in off.
+
+## Reference
+
+Every CSS variable the default CSS reads. The Default column is what `confirm`, `alert`, `prompt`, `openDialog` and `<Dialog>` use. `confirmAlert` without `skin` keeps its 3.0 look and reads the values in the 3.0 column. A dash means the 3.0 look does not read that variable.
+
+### Colours
+
+| Variable | Default | 3.0 | What it changes |
+| --- | --- | --- | --- |
+| `--rca-button-bg` | `#18181b`, dark `#fafafa` | `#333` | Main button background. Also the checkbox and radio accent. |
+| `--rca-button-fg` | `#fff`, dark `#18181b` | `#eee` | Main button text. In 3.0, the text of every button. |
+| `--rca-button-bg-hover` | `--rca-button-bg` 15% darker | – | Main button on hover. |
+| `--rca-danger` | `#dc2626`; error text `#f87171` in dark | `#c62828` | Danger button, error text and the border of an invalid input. |
+| `--rca-danger-hover` | `--rca-danger` 15% darker | – | Danger button on hover. |
+| `--rca-bg` | `#fff`, dark `#18181b` | `#fff` | Panel background. Also the background of the other buttons. |
+| `--rca-fg` | `#71717a`, dark `#a1a1aa` | `#666` | Message text. |
+| `--rca-title` | `#09090b`, dark `#fafafa` | – | Title, labels, input text and the text of the other buttons. |
+| `--rca-border` | `#e4e4e7`, dark `#3f3f46` | – | Border of the panel, the inputs and the other buttons. |
+| `--rca-ring` | `#a1a1aa`, dark `#71717a` | – | Input border and glow on focus. |
+| `--rca-focus-ring` | `2px solid` in the ring colour | `2px solid Highlight` | Button outline on keyboard focus. Takes a full `outline` value. |
+| `--rca-backdrop` | `rgba(0, 0, 0, 0.5)`, dark `rgba(0, 0, 0, 0.7)` | `rgba(255, 255, 255, 0.9)` | The layer over your page behind the dialog. |
+| `--rca-shadow` | `0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1)` | `0 20px 75px rgba(0, 0, 0, 0.13)` | Panel shadow. |
+
+### Size and shape
+
+| Variable | Default | 3.0 | What it changes |
+| --- | --- | --- | --- |
+| `--rca-width` | `420px` | `400px` | Panel width. The panel never grows wider than the screen. |
+| `--rca-padding` | `24px` | `30px` | Space inside the panel. |
+| `--rca-radius` | `10px` | `10px` | Panel corners. |
+| `--rca-button-radius` | `6px` | `5px` | Button corners. |
+| `--rca-gap` | `8px` | `10px` | Space between buttons. |
+| `--rca-font` | `inherit`, your page font | `Arial, Helvetica, sans-serif` | Font family. |
+
+### Motion and layering
+
+| Variable | Default | 3.0 | What it changes |
+| --- | --- | --- | --- |
+| `--rca-duration` | `200ms` | `0.5s` | Length of the open animation. Closing always takes 150ms. |
+| `--rca-easing` | `cubic-bezier(0.32, 0.72, 0, 1)` | `ease` | Curve of the open animation. |
+| `--rca-delay` | – | `0.2s` | Wait before the 3.0 fade-in starts. |
+| `--rca-blur` | – | `2px` | Blur on your app behind a 3.0 dialog. |
+| `--rca-z-index` | `99` | `99` | Stack order of the overlay with `modal: false`. A modal dialog sits in the top layer, above everything. |

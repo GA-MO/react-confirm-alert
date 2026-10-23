@@ -43,6 +43,11 @@ html > body[data-scroll-locked] {
 .dark .example-preview output { @apply text-zinc-200; }
 .dark .example-preview output:not(:empty) { @apply bg-zinc-900 ring-white/10; }
 .dark .example-preview output:empty::before { @apply text-zinc-400; }
+/* Styling examples render a bare trigger <button>, or one inside a data-theme wrapper. */
+:is(.example-preview, .gallery-tile) > button, :is(.example-preview, .gallery-tile) > [data-theme] > button {
+  @apply shrink-0 cursor-pointer whitespace-nowrap rounded-md bg-white px-2.5 py-1 text-sm text-zinc-700 ring-1 ring-zinc-200 transition duration-150 ease-out-quint hover:bg-zinc-100 hover:text-zinc-950 active:scale-97 focus-visible:outline-2 focus-visible:outline-indigo-500;
+}
+.dark :is(.example-preview, .gallery-tile) > button, .dark :is(.example-preview, .gallery-tile) > [data-theme] > button { @apply bg-zinc-900 text-zinc-300 ring-white/15 hover:bg-white/5 hover:text-white; }
 .example-code figure { margin: 0; border-width: 0; border-radius: 0; }
 
 /* Code sits apart from the grey page: white in light, a raised grey in dark (bg in lib/code-themes.json). */
