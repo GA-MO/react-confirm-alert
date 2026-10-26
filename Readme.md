@@ -2,7 +2,7 @@
 
 Confirm, alert and prompt dialogs for React 18 and 19. `await confirm()`, a native modal, focus that moves in and back, and the 3.0 `confirmAlert` unchanged.
 
-[![npm version](https://badge.fury.io/js/react-confirm-alert.svg)](https://badge.fury.io/js/react-confirm-alert)
+[![npm version](https://img.shields.io/npm/v/react-confirm-alert.svg)](https://www.npmjs.com/package/react-confirm-alert)
 
 [Docs](https://ga-mo.github.io/react-confirm-alert/docs/) · [Playground](https://ga-mo.github.io/react-confirm-alert/playground/) · [What's new in 3.1](https://ga-mo.github.io/react-confirm-alert/docs/whats-new-in-3-1/)
 
